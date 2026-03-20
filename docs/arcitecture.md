@@ -28,7 +28,7 @@ lib/
 
 То есть сначала feature, потом внутри неё:
 
-- presentation — UI, BLoC/Cubit/ViewModel
+- presentation — UI, BLoC
 - domain — entities, use cases, repository interfaces
 - data — repository impl, data sources, mappers, models
 
