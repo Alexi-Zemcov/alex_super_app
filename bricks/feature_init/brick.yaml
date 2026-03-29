@@ -1,0 +1,12 @@
+name: feature_init
+description: Initializes a feature folder (domain/data/presentation) in a Clean Architecture style.
+version: 0.1.0+1
+environment:
+  mason: '>=0.1.0 <0.2.0'
+vars:
+  featureName:
+    type: string
+    description: Feature name (e.g. Orders)
+    prompt: What is the feature name?
+    default: Orders
+
