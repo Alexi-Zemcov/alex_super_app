@@ -81,4 +81,3 @@ String _insertIntoDependencies(String pubspec, String dependencyLine) {
   final insertAt = afterHeaderLine + 1;
   return pubspec.replaceRange(insertAt, insertAt, dependencyLine);
 }
-

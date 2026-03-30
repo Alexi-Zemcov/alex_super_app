@@ -1,0 +1,1406 @@
+[
+  {
+    "category": "Dart — язык",
+    "question": "Что произойдёт, если обратиться к nullable-переменной без проверки на null в Dart с sound null safety?",
+    "options": [
+      "Ошибка компиляции",
+      "Runtime exception",
+      "Вернётся значение по умолчанию",
+      "Программа продолжит работу с null"
+    ],
+    "correct": 0,
+    "explanation": "Sound null safety в Dart проверяет null-безопасность на этапе компиляции. Если переменная объявлена как nullable (Type?), обращение к её методам без проверки на null вызовет ошибку компиляции."
+  },
+  {
+    "category": "Dart — язык",
+    "question": "Чем sealed class отличается от abstract class в Dart 3?",
+    "options": [
+      "sealed class нельзя наследовать вне файла, где он объявлен",
+      "sealed class может иметь реализацию методов, а abstract — нет",
+      "sealed class автоматически генерирует toString()",
+      "sealed class не может содержать конструкторов"
+    ],
+    "correct": 0,
+    "explanation": "Sealed class ограничивает наследование рамками одного файла (библиотеки). Это позволяет компилятору проверять exhaustiveness в switch-выражениях — все подтипы известны."
+  },
+  {
+    "category": "Асинхронность",
+    "question": "В каком порядке выполнятся задачи: scheduleMicrotask(() => print('A')); Future(() => print('B')); print('C');?",
+    "options": [
+      "C, A, B",
+      "A, B, C",
+      "C, B, A",
+      "A, C, B"
+    ],
+    "correct": 0,
+    "explanation": "Сначала выполняется синхронный код (C), затем microtask queue (A), затем event queue (B). Microtask'и всегда имеют приоритет над event queue."
+  },
+  {
+    "category": "Асинхронность",
+    "question": "Когда стоит использовать Isolate вместо async/await?",
+    "options": [
+      "Для CPU-интенсивных вычислений (парсинг JSON, шифрование)",
+      "Для любых HTTP-запросов",
+      "Для работы с SharedPreferences",
+      "Для анимаций во Flutter"
+    ],
+    "correct": 0,
+    "explanation": "Isolate нужен для CPU-интенсивных задач, которые блокируют основной поток (и UI). HTTP-запросы уже асинхронны и не блокируют event loop, так что для них достаточно Future/async-await."
+  },
+  {
+    "category": "Flutter ядро",
+    "question": "Какую роль играет Element в трёх деревьях Flutter (Widget → Element → RenderObject)?",
+    "options": [
+      "Связывает Widget-конфигурацию с RenderObject и управляет жизненным циклом",
+      "Отвечает за отрисовку на экране",
+      "Хранит состояние приложения между сессиями",
+      "Обрабатывает пользовательский ввод (жесты, тапы)"
+    ],
+    "correct": 0,
+    "explanation": "Element — это «живой» объект в дереве. Он связывает неизменяемый Widget (конфигурацию) с RenderObject (отрисовкой) и решает, нужно ли пересоздавать RenderObject при изменении Widget."
+  },
+  {
+    "category": "Flutter ядро",
+    "question": "Зачем нужен GlobalKey?",
+    "options": [
+      "Для сохранения State при перемещении виджета в дереве и доступа к State/RenderObject",
+      "Для ускорения рендеринга виджетов",
+      "Для задания уникального ID в базе данных",
+      "Для автоматической сериализации виджета"
+    ],
+    "correct": 0,
+    "explanation": "GlobalKey уникально идентифицирует Element во всём дереве. Это позволяет сохранить State при перемещении виджета (например, из одного списка в другой) и даёт доступ к State/RenderObject через currentState/currentContext."
+  },
+  {
+    "category": "State Management",
+    "question": "В чём основное отличие Cubit от Bloc?",
+    "options": [
+      "Cubit использует методы для изменения состояния, Bloc — события (events)",
+      "Cubit работает только с примитивными типами",
+      "Bloc не поддерживает реактивность",
+      "Cubit нельзя тестировать"
+    ],
+    "correct": 0,
+    "explanation": "Cubit — упрощённая версия Bloc. В Cubit состояние меняется вызовом методов (emit), а в Bloc — через отправку событий, что даёт трансформации (debounce, throttle) и полную трассировку."
+  },
+  {
+    "category": "State Management",
+    "question": "Когда setState() — это анти-паттерн?",
+    "options": [
+      "Когда состояние нужно нескольким виджетам в разных частях дерева",
+      "Когда виджет содержит всего одну переменную",
+      "Когда используется StatefulWidget",
+      "setState() всегда является анти-паттерном"
+    ],
+    "correct": 0,
+    "explanation": "setState() отлично работает для локального состояния одного виджета. Анти-паттерн начинается, когда через setState пытаются управлять shared state — передавая его через множество уровней (prop drilling)."
+  },
+  {
+    "category": "Архитектура",
+    "question": "Какой слой в Clean Architecture НЕ должен зависеть от других слоёв?",
+    "options": [
+      "Domain (бизнес-логика, entities, use cases)",
+      "Data (репозитории, API, БД)",
+      "Presentation (UI, виджеты)",
+      "Все слои равноправны"
+    ],
+    "correct": 0,
+    "explanation": "В Clean Architecture зависимости направлены внутрь: Presentation → Domain ← Data. Domain-слой (entities, use cases) не знает ни о UI, ни о конкретных реализациях хранилищ. Data реализует интерфейсы из Domain."
+  },
+  {
+    "category": "Архитектура",
+    "question": "Что такое Repository pattern и зачем он нужен?",
+    "options": [
+      "Абстракция над источниками данных, позволяет менять реализацию без изменения бизнес-логики",
+      "Паттерн для хранения UI-состояния",
+      "Способ организации маршрутов в приложении",
+      "Метод кеширования HTTP-запросов"
+    ],
+    "correct": 0,
+    "explanation": "Repository — абстракция (обычно интерфейс), которая скрывает детали получения данных (API, БД, кеш). Бизнес-логика работает с интерфейсом репозитория, а конкретная реализация подставляется через DI."
+  },
+  {
+    "category": "Навигация",
+    "question": "В чём главное преимущество Navigator 2.0 (Router API) над Navigator 1.0?",
+    "options": [
+      "Декларативное управление стеком навигации и поддержка deep links",
+      "Более быстрая работа анимаций переходов",
+      "Автоматическое кеширование экранов",
+      "Меньше кода для простых приложений"
+    ],
+    "correct": 0,
+    "explanation": "Navigator 2.0 позволяет декларативно описывать стек экранов на основе состояния приложения. Это необходимо для deep linking, web-навигации и сложных сценариев, где URL должен синхронизироваться со стеком."
+  },
+  {
+    "category": "Навигация",
+    "question": "Как передать результат обратно с экрана при Navigator.pop()?",
+    "options": [
+      "Navigator.pop(context, result) + await Navigator.push() для получения",
+      "Через глобальную переменную",
+      "Только через Provider",
+      "Это невозможно в Flutter"
+    ],
+    "correct": 0,
+    "explanation": "Navigator.push() возвращает Future, который завершается значением, переданным в Navigator.pop(context, result). Это стандартный способ получить результат с дочернего экрана."
+  },
+  {
+    "category": "Сеть и данные",
+    "question": "Для чего нужны interceptors в пакете Dio?",
+    "options": [
+      "Для перехвата запросов/ответов: добавление токенов, логирование, retry-логика",
+      "Для шифрования всех HTTP-запросов",
+      "Для автоматического кеширования ответов в SQLite",
+      "Для компрессии JSON-данных перед отправкой"
+    ],
+    "correct": 0,
+    "explanation": "Interceptors в Dio позволяют перехватывать запросы (добавить headers, токены), ответы (обработка ошибок) и ошибки (retry, refresh token). Это chain of responsibility — каждый interceptor может модифицировать запрос/ответ."
+  },
+  {
+    "category": "Сеть и данные",
+    "question": "Как безопасно хранить JWT refresh token на мобильном устройстве?",
+    "options": [
+      "В flutter_secure_storage (Keychain на iOS, EncryptedSharedPreferences на Android)",
+      "В SharedPreferences",
+      "В обычном файле в документах приложения",
+      "В глобальной переменной в памяти"
+    ],
+    "correct": 0,
+    "explanation": "flutter_secure_storage использует платформенные механизмы безопасности: Keychain на iOS и EncryptedSharedPreferences / KeyStore на Android. SharedPreferences хранит данные в открытом виде и не подходит для секретов."
+  },
+  {
+    "category": "Тестирование",
+    "question": "Чем mock отличается от fake в контексте тестирования?",
+    "options": [
+      "Mock проверяет вызовы методов (верификация), fake — рабочая упрощённая реализация",
+      "Mock быстрее работает",
+      "Fake нельзя использовать в unit-тестах",
+      "Это синонимы"
+    ],
+    "correct": 0,
+    "explanation": "Mock — объект, настроенный на конкретные вызовы (when/verify). Fake — простая рабочая реализация интерфейса (например, FakeRepository с данными в памяти). Stub — mock, который только возвращает данные без верификации."
+  },
+  {
+    "category": "Тестирование",
+    "question": "Какой метод используется для рендеринга виджета в widget-тесте?",
+    "options": [
+      "tester.pumpWidget()",
+      "tester.renderWidget()",
+      "tester.buildWidget()",
+      "tester.mountWidget()"
+    ],
+    "correct": 0,
+    "explanation": "pumpWidget() создаёт и рендерит виджет в тестовом окружении. После взаимодействий нужно вызвать pump() или pumpAndSettle() для обработки кадров и анимаций."
+  },
+  {
+    "category": "Производительность",
+    "question": "Зачем нужен const конструктор у виджетов?",
+    "options": [
+      "Создаёт один экземпляр в памяти и позволяет Flutter пропустить rebuild",
+      "Ускоряет HTTP-запросы",
+      "Запрещает изменение полей виджета (иммутабельность и так есть)",
+      "Уменьшает размер APK"
+    ],
+    "correct": 0,
+    "explanation": "const виджет создаётся один раз и переиспользуется. При rebuild родителя Flutter видит, что const-виджет не изменился (идентичен по ссылке), и пропускает его rebuild целиком."
+  },
+  {
+    "category": "Производительность",
+    "question": "Когда следует использовать RepaintBoundary?",
+    "options": [
+      "Для изоляции часто перерисовываемых областей от остального дерева",
+      "Для ускорения HTTP-запросов",
+      "Для кеширования данных из API",
+      "Для предотвращения утечек памяти"
+    ],
+    "correct": 0,
+    "explanation": "RepaintBoundary создаёт отдельный слой (Layer), который кешируется отдельно. Если внутри него ничего не изменилось, Flutter не перерисовывает эту область, даже если соседние виджеты перерисовываются."
+  },
+  {
+    "category": "CI/CD",
+    "question": "Для чего используются flavors (dart-define) в Flutter-проекте?",
+    "options": [
+      "Для настройки разных окружений (dev, staging, prod) с разными API URL, иконками и т.д.",
+      "Для изменения языка приложения",
+      "Для ускорения компиляции",
+      "Для добавления анимаций при запуске"
+    ],
+    "correct": 0,
+    "explanation": "Flavors позволяют собирать одно приложение для разных окружений: разные API endpoints, bundle ID, иконки, названия. Используется --dart-define или пакет flavorizr для автоматической конфигурации."
+  },
+  {
+    "category": "CI/CD",
+    "question": "Что такое code signing и зачем он нужен для мобильных приложений?",
+    "options": [
+      "Подпись кода сертификатом для подтверждения авторства и целостности приложения",
+      "Шифрование исходного кода от конкурентов",
+      "Минификация кода для уменьшения размера",
+      "Автоматическое тестирование перед релизом"
+    ],
+    "correct": 0,
+    "explanation": "Code signing — подпись приложения криптографическим сертификатом. На Android — keystore, на iOS — provisioning profiles + сертификаты. Без подписи магазины не примут приложение, а устройства не установят."
+  },
+  {
+    "category": "Git",
+    "question": "В чём разница между git merge и git rebase?",
+    "options": [
+      "Merge создаёт merge-коммит, rebase переносит коммиты на вершину целевой ветки",
+      "Merge удаляет историю, rebase сохраняет",
+      "Rebase работает только с remote-ветками",
+      "Merge можно делать только в main"
+    ],
+    "correct": 0,
+    "explanation": "Merge создаёт отдельный merge-коммит, сохраняя параллельную историю. Rebase переписывает коммиты поверх целевой ветки, создавая линейную историю. Rebase не рекомендуется для уже опубликованных веток."
+  },
+  {
+    "category": "Git",
+    "question": "Для чего используется git bisect?",
+    "options": [
+      "Для поиска коммита, который внёс баг, методом бинарного поиска",
+      "Для разделения большого коммита на несколько",
+      "Для слияния двух веток",
+      "Для удаления устаревших веток"
+    ],
+    "correct": 0,
+    "explanation": "git bisect выполняет бинарный поиск по истории коммитов: помечаете «хороший» и «плохой» коммиты, а git автоматически сужает диапазон, пока не найдёт точный коммит с багом."
+  },
+  {
+    "category": "Платформы",
+    "question": "Чем отличается обработка background execution на iOS и Android?",
+    "options": [
+      "iOS жёстко ограничивает фоновую работу (~30 сек), Android более лояльный",
+      "Android не поддерживает фоновое выполнение",
+      "iOS позволяет неограниченную фоновую работу",
+      "Нет различий — Flutter абстрагирует платформу"
+    ],
+    "correct": 0,
+    "explanation": "iOS строго ограничивает background execution: приложение получает ~30 секунд после ухода в фон. Android более лояльный, но с Android 8+ появились ограничения (background service limits). Flutter не абстрагирует эти различия."
+  },
+  {
+    "category": "Платформы",
+    "question": "Как MethodChannel работает в Flutter?",
+    "options": [
+      "Асинхронный обмен сообщениями между Dart и нативным кодом (Kotlin/Swift)",
+      "Синхронный вызов нативных функций из Dart",
+      "Канал для передачи видеопотока",
+      "Механизм горячей перезагрузки"
+    ],
+    "correct": 0,
+    "explanation": "MethodChannel — асинхронный механизм вызова нативного кода из Dart и наоборот. Dart вызывает invokeMethod(), нативная сторона обрабатывает вызов и возвращает результат. Данные сериализуются через StandardMessageCodec."
+  },
+  {
+    "category": "UI/UX",
+    "question": "Чем implicit-анимации отличаются от explicit в Flutter?",
+    "options": [
+      "Implicit (AnimatedContainer) — декларативные, explicit (AnimationController) — ручное управление",
+      "Implicit работают только с opacity",
+      "Explicit не поддерживают кривые (Curves)",
+      "Нет различий, это синонимы"
+    ],
+    "correct": 0,
+    "explanation": "Implicit-анимации (AnimatedContainer, AnimatedOpacity) автоматически анимируют изменения свойств — достаточно изменить значение. Explicit-анимации (AnimationController + Tween) дают полный контроль: repeat, reverse, chaining."
+  },
+  {
+    "category": "UI/UX",
+    "question": "Для чего нужен виджет Semantics?",
+    "options": [
+      "Для обеспечения accessibility — предоставляет информацию screen reader'ам",
+      "Для стилизации текста",
+      "Для оптимизации производительности",
+      "Для добавления анимаций"
+    ],
+    "correct": 0,
+    "explanation": "Semantics описывает смысл виджета для assistive technologies (VoiceOver, TalkBack). Определяет label, hint, role для screen reader'ов. Это критически важно для accessibility и обязательно в enterprise-приложениях."
+  },
+  {
+    "category": "Soft skills",
+    "question": "Что такое ADR (Architecture Decision Record)?",
+    "options": [
+      "Документ, фиксирующий архитектурное решение, контекст и обоснование выбора",
+      "Автоматический отчёт о покрытии тестами",
+      "Диаграмма зависимостей между модулями",
+      "Список задач для спринта"
+    ],
+    "correct": 0,
+    "explanation": "ADR — короткий документ (обычно в markdown): Заголовок, Контекст (проблема), Решение, Последствия. Фиксирует WHY за архитектурным выбором, чтобы через полгода было понятно, почему выбрали именно этот подход."
+  },
+  {
+    "category": "Soft skills",
+    "question": "Как правильно декомпозировать задачу для оценки?",
+    "options": [
+      "Разбить на подзадачи до уровня, где каждая оценивается в 1-2 дня, учесть риски",
+      "Назвать первое число, которое приходит в голову",
+      "Всегда умножать оценку на 3",
+      "Оценивать только общий срок без разбивки"
+    ],
+    "correct": 0,
+    "explanation": "Правильная декомпозиция: разбить на мелкие подзадачи (каждая ≤ 1-2 дня), определить зависимости, добавить буфер на риски (неизвестные, интеграции). Story points помогают оценивать относительную сложность, а не часы."
+  },
+  {
+    "category": "Dart — язык",
+    "question": "Что такое extension methods в Dart?",
+    "options": [
+      "Способ добавить методы к существующему классу без его модификации",
+      "Методы, доступные только в тестах",
+      "Методы, работающие только с generics",
+      "Аналог перегрузки операторов"
+    ],
+    "correct": 0,
+    "explanation": "Extension methods (extension on Type) позволяют добавить функциональность к любому типу (включая сторонние) без наследования. Например: extension on String { bool get isEmail => contains('@'); }"
+  },
+  {
+    "category": "Flutter ядро",
+    "question": "Как работает протокол Layout во Flutter (Constraints → Size → Offset)?",
+    "options": [
+      "Родитель передаёт constraints вниз, ребёнок выбирает size, родитель задаёт offset",
+      "Ребёнок сообщает свой желаемый размер, родитель масштабирует",
+      "Flutter автоматически рассчитывает всё без участия виджетов",
+      "Размеры задаются только в пикселях, без constraints"
+    ],
+    "correct": 0,
+    "explanation": "Layout Protocol: 1) Родитель передаёт constraints (min/max width/height) дочернему виджету. 2) Ребёнок выбирает свой размер в рамках constraints. 3) Родитель решает, где разместить ребёнка (offset). Constraints идут вниз, размеры — вверх."
+  },
+  {
+    "category": "Dart — язык",
+    "question": "Какое утверждение о Records в Dart 3 верно?",
+    "options": [
+      "Records — анонимные неизменяемые типы-кортежи с позиционными и именованными полями",
+      "Records — это мутабельные контейнеры для хранения данных",
+      "Records заменяют классы во всех случаях",
+      "Records не поддерживают именованные поля"
+    ],
+    "correct": 0,
+    "explanation": "Records — лёгкие immutable композитные типы. Могут содержать позиционные поля (int, String) и именованные ({String name}). Имеют value equality — два record с одинаковыми значениями равны. Идеальны для возврата нескольких значений из функции."
+  },
+  {
+    "category": "Dart — язык",
+    "question": "Что делает collection-if в Dart?",
+    "options": [
+      "Позволяет условно добавлять элементы прямо в литерал коллекции: [1, if (flag) 2]",
+      "Проверяет, является ли объект коллекцией",
+      "Фильтрует коллекцию по условию (аналог where)",
+      "Создаёт условную подписку на изменения коллекции"
+    ],
+    "correct": 0,
+    "explanation": "Collection-if и collection-for — синтаксис Dart для декларативного построения коллекций: [1, if (isAdmin) 'admin', for (var i in items) i.name]. Особенно полезно в Flutter для условного добавления виджетов в Column/Row."
+  },
+  {
+    "category": "Dart — язык",
+    "question": "Что такое замыкание (closure) в Dart?",
+    "options": [
+      "Функция, которая захватывает переменные из окружающей области видимости",
+      "Функция, которая закрывает доступ к переменным",
+      "Метод класса, помеченный аннотацией @closure",
+      "Конструкция для завершения потока выполнения"
+    ],
+    "correct": 0,
+    "explanation": "Замыкание — функция, которая «помнит» переменные из лексического окружения, где она была создана. В Dart все функции — объекты первого класса (можно передавать как аргументы, хранить в переменных). typedef задаёт алиас для типа функции."
+  },
+  {
+    "category": "Dart — язык",
+    "question": "Что позволяют Enhanced enums в Dart 2.17+?",
+    "options": [
+      "Добавлять поля, конструкторы, методы и реализовывать интерфейсы",
+      "Только добавлять числовые индексы к значениям",
+      "Наследовать enum от другого enum",
+      "Динамически добавлять новые значения в runtime"
+    ],
+    "correct": 0,
+    "explanation": "Enhanced enums могут иметь final-поля, const-конструкторы, методы, геттеры и реализовывать интерфейсы (implements). Нельзя: наследовать, создавать экземпляры вручную, менять values. Пример: enum Color { red('FF0000'); final String hex; const Color(this.hex); }"
+  },
+  {
+    "category": "Dart — язык",
+    "question": "В чём разница между Error и Exception в Dart?",
+    "options": [
+      "Error — ошибки программиста (не ловить), Exception — ожидаемые ситуации (ловить)",
+      "Error и Exception — синонимы",
+      "Exception нельзя поймать через try/catch",
+      "Error происходит только в debug-режиме"
+    ],
+    "correct": 0,
+    "explanation": "Error (TypeError, StackOverflowError) — баги в коде, не предназначены для перехвата. Exception (FormatException, HttpException) — ожидаемые ошибки, которые нужно обрабатывать. on ловит конкретный тип, catch — любой. Zone позволяет перехватывать необработанные ошибки."
+  },
+  {
+    "category": "Dart — язык",
+    "question": "Как работает сборщик мусора (GC) в Dart?",
+    "options": [
+      "Поколенческий (generational) GC: молодое поколение — частые быстрые сборки, старое — редкие полные",
+      "Ручное управление памятью через free()",
+      "Reference counting без циклических ссылок",
+      "GC запускается только при нехватке памяти"
+    ],
+    "correct": 0,
+    "explanation": "Dart использует generational GC. Молодые объекты (nursery) собираются часто и быстро (scavenge). Долгоживущие объекты переносятся в старое поколение (mark-sweep/compact). WeakReference и Finalizer (Dart 2.17+) позволяют следить за объектами без предотвращения их сборки."
+  },
+  {
+    "category": "Dart — язык",
+    "question": "Для чего используется build_runner в Dart?",
+    "options": [
+      "Для запуска кодогенераторов (json_serializable, freezed, injectable и др.)",
+      "Для компиляции Dart в машинный код",
+      "Для запуска тестов в CI/CD",
+      "Для горячей перезагрузки Flutter-приложений"
+    ],
+    "correct": 0,
+    "explanation": "build_runner — инструмент для запуска code generators. Пакеты (json_serializable, freezed, auto_route) используют аннотации (@JsonSerializable) и source_gen для генерации .g.dart / .freezed.dart файлов. Команда: dart run build_runner build."
+  },
+  {
+    "category": "Dart — язык",
+    "question": "Чем отличаются режимы компиляции Dart: JIT и AOT?",
+    "options": [
+      "JIT — интерпретация с hot reload (debug), AOT — нативный код без рефлексии (release)",
+      "JIT быстрее в production, AOT — для отладки",
+      "JIT и AOT дают одинаковый результат",
+      "AOT поддерживает hot reload, JIT — нет"
+    ],
+    "correct": 0,
+    "explanation": "JIT (Just-In-Time) компилирует во время выполнения — даёт hot reload, но медленнее запуск. AOT (Ahead-Of-Time) компилирует в нативный код заранее — быстрый старт, меньше памяти, но без hot reload. dart2js компилирует в JavaScript, dart2wasm — в WebAssembly."
+  },
+  {
+    "category": "Асинхронность",
+    "question": "Чем Future.wait() отличается от Future.any()?",
+    "options": [
+      "wait ждёт завершения ВСЕХ futures, any — завершения ПЕРВОГО",
+      "wait работает параллельно, any — последовательно",
+      "wait возвращает один результат, any — список",
+      "Нет разницы — это синонимы"
+    ],
+    "correct": 0,
+    "explanation": "Future.wait([f1, f2, f3]) ждёт завершения всех futures и возвращает List результатов. Если хотя бы один завершится с ошибкой — весь wait падает. Future.any() возвращает результат первого завершившегося future (race condition)."
+  },
+  {
+    "category": "Асинхронность",
+    "question": "Что происходит под капотом, когда встречается await?",
+    "options": [
+      "Функция приостанавливается, управление возвращается event loop, продолжение — по завершении Future",
+      "Создаётся новый поток (thread) для ожидания",
+      "Программа блокируется до получения результата",
+      "await преобразуется в синхронный вызов при компиляции"
+    ],
+    "correct": 0,
+    "explanation": "await — синтаксический сахар над Future/then. При встрече await функция регистрирует continuation и отдаёт управление event loop. Когда Future завершается, continuation добавляется в microtask queue и выполняется. Никаких потоков — всё в одном isolate."
+  },
+  {
+    "category": "Асинхронность",
+    "question": "Чем single-subscription Stream отличается от broadcast Stream?",
+    "options": [
+      "Single-subscription — один слушатель, буферизирует события; broadcast — много слушателей, без буфера",
+      "Single-subscription быстрее broadcast",
+      "Broadcast поддерживает только строковые данные",
+      "Нет разницы — любой Stream поддерживает много слушателей"
+    ],
+    "correct": 0,
+    "explanation": "Single-subscription Stream (по умолчанию) буферизирует события до подписки и допускает только одного слушателя. Broadcast Stream — для нескольких слушателей (как EventBus), события теряются если никто не слушает. StreamController() — single, StreamController.broadcast() — broadcast."
+  },
+  {
+    "category": "Асинхронность",
+    "question": "Для чего используется asyncMap в Stream?",
+    "options": [
+      "Трансформирует каждый элемент стрима через асинхронную функцию, ожидая её завершения",
+      "Создаёт новый асинхронный стрим из синхронного списка",
+      "Объединяет несколько стримов в один",
+      "Фильтрует стрим по асинхронному условию"
+    ],
+    "correct": 0,
+    "explanation": "asyncMap((event) async => ...) обрабатывает каждый элемент стрима через async-функцию и ждёт её завершения перед обработкой следующего. В отличие от map, который работает синхронно. Другие трансформеры: where (фильтр), expand (1→N), debounce (задержка)."
+  },
+  {
+    "category": "Асинхронность",
+    "question": "Когда нужен Completer?",
+    "options": [
+      "Когда нужно создать Future и завершить его вручную из другого места в коде",
+      "Когда нужно завершить приложение корректно",
+      "Для автоматического завершения всех Future при таймауте",
+      "Для отмены текущей async-операции"
+    ],
+    "correct": 0,
+    "explanation": "Completer — мост между callback-based и Future-based API. Создаёте completer.future, передаёте его как результат, а позже вызываете completer.complete(value) или completer.completeError(). Полезно для обёртывания callback-API в Future."
+  },
+  {
+    "category": "Асинхронность",
+    "question": "Как задать таймаут для Future в Dart?",
+    "options": [
+      "future.timeout(Duration(seconds: 5), onTimeout: () => fallback)",
+      "Future.withTimeout(5, future)",
+      "await future с параметром timeout: 5",
+      "Timer.cancel(future)"
+    ],
+    "correct": 0,
+    "explanation": "Метод .timeout() бросает TimeoutException, если Future не завершился за указанное время. Опциональный onTimeout позволяет вернуть fallback-значение. Для отмены StreamSubscription используется cancel(). CancelableOperation из package:async даёт отменяемые Future."
+  },
+  {
+    "category": "Flutter ядро",
+    "question": "Когда следует использовать StatefulWidget вместо StatelessWidget?",
+    "options": [
+      "Когда виджету нужно хранить изменяемое состояние, которое влияет на UI",
+      "Когда виджет содержит более 3 дочерних виджетов",
+      "Когда виджет использует const конструктор",
+      "StatefulWidget всегда предпочтительнее"
+    ],
+    "correct": 0,
+    "explanation": "StatelessWidget — для виджетов, чей внешний вид зависит только от входных параметров. StatefulWidget — когда виджет должен хранить mutable state (счётчик, ввод, анимация). State-объект переживает rebuild виджета и хранит данные между перестройками."
+  },
+  {
+    "category": "Flutter ядро",
+    "question": "В каком порядке вызываются методы жизненного цикла State?",
+    "options": [
+      "initState → didChangeDependencies → build → didUpdateWidget → dispose",
+      "build → initState → dispose",
+      "constructor → build → initState → dispose",
+      "didChangeDependencies → initState → build → dispose"
+    ],
+    "correct": 0,
+    "explanation": "initState() — один раз при создании. didChangeDependencies() — после initState и при изменении InheritedWidget. build() — при каждом rebuild. didUpdateWidget() — когда родитель передал новый widget. deactivate() → dispose() — при удалении из дерева."
+  },
+  {
+    "category": "Flutter ядро",
+    "question": "Для чего нужен InheritedWidget?",
+    "options": [
+      "Для эффективной передачи данных вниз по дереву виджетов без prop drilling",
+      "Для наследования стилей от родительского виджета",
+      "Для создания виджетов с наследованием классов",
+      "Для кеширования виджетов в памяти"
+    ],
+    "correct": 0,
+    "explanation": "InheritedWidget позволяет потомкам получать данные через context.dependOnInheritedWidgetOfExactType(). При изменении данных перестраиваются только зависимые виджеты. Это основа Provider, Theme, MediaQuery. InheritedModel — более гранулярный: можно подписаться на конкретный аспект."
+  },
+  {
+    "category": "Flutter ядро",
+    "question": "Что представляет собой BuildContext?",
+    "options": [
+      "Ссылка на Element в дереве — определяет положение виджета и доступ к предкам",
+      "Контейнер для хранения бизнес-логики",
+      "Объект для управления навигацией",
+      "Конфигурация сборки приложения (debug/release)"
+    ],
+    "correct": 0,
+    "explanation": "BuildContext — это интерфейс Element'а. Он определяет позицию виджета в дереве и позволяет искать предков: Theme.of(context), Navigator.of(context), context.findAncestorWidgetOfExactType(). Нельзя использовать context в initState — дерево ещё не полностью построено."
+  },
+  {
+    "category": "Flutter ядро",
+    "question": "Чем Expanded отличается от Flexible?",
+    "options": [
+      "Expanded заставляет ребёнка занять всё оставшееся пространство (fit: tight), Flexible — до максимума (fit: loose)",
+      "Expanded работает только в Row, Flexible — только в Column",
+      "Flexible поддерживает анимации, Expanded — нет",
+      "Нет разницы — это синонимы"
+    ],
+    "correct": 0,
+    "explanation": "Expanded = Flexible(fit: FlexFit.tight) — ребёнок ОБЯЗАН занять всё пространство по flex-фактору. Flexible(fit: FlexFit.loose) — ребёнок МОЖЕТ быть меньше выделенного пространства. Оба работают в Row, Column, Flex."
+  },
+  {
+    "category": "Flutter ядро",
+    "question": "Как Stack располагает дочерние виджеты?",
+    "options": [
+      "Накладывает друг на друга (z-axis), Positioned задаёт точные координаты относительно Stack",
+      "Выстраивает в горизонтальную линию",
+      "Создаёт вложенную навигацию экранов",
+      "Группирует виджеты для одновременной анимации"
+    ],
+    "correct": 0,
+    "explanation": "Stack — оверлейный layout, дети отрисовываются один поверх другого. Non-positioned дети определяют размер Stack (fit: StackFit.loose/expand). Positioned(left, top, right, bottom) — абсолютное позиционирование. Align — относительное (0.5, 0.5 = центр)."
+  },
+  {
+    "category": "Flutter ядро",
+    "question": "Для чего используется CustomPainter?",
+    "options": [
+      "Для произвольной отрисовки на Canvas: линии, фигуры, градиенты, графики",
+      "Для изменения темы приложения",
+      "Для создания пользовательских анимаций переходов",
+      "Для рендеринга HTML-контента"
+    ],
+    "correct": 0,
+    "explanation": "CustomPainter — класс с методом paint(Canvas, Size), где можно рисовать через Canvas API: drawLine, drawCircle, drawPath, drawArc. Используется через CustomPaint виджет. shouldRepaint() определяет, нужна ли перерисовка. Идеально для графиков, кастомных индикаторов, фонов."
+  },
+  {
+    "category": "Flutter ядро",
+    "question": "Зачем нужны Slivers в Flutter?",
+    "options": [
+      "Для создания продвинутых скроллируемых layouts с ленивым рендерингом и эффектами",
+      "Для разделения приложения на модули",
+      "Для создания анимаций слайдов",
+      "Для сетевого кеширования данных"
+    ],
+    "correct": 0,
+    "explanation": "Slivers — «кусочки» скроллируемого пространства. CustomScrollView объединяет slivers: SliverList (ленивый список), SliverGrid, SliverAppBar (сворачиваемый), SliverToBoxAdapter (обычный виджет). Дают полный контроль над скроллингом и ленивой загрузкой."
+  },
+  {
+    "category": "Flutter ядро",
+    "question": "Для чего используется Overlay в Flutter?",
+    "options": [
+      "Для отображения виджетов поверх всего UI (tooltips, dropdown menus, popups)",
+      "Для наложения цветного фильтра на экран",
+      "Для создания splash-экрана при запуске",
+      "Для перехвата пользовательского ввода"
+    ],
+    "correct": 0,
+    "explanation": "Overlay — стек виджетов, отображаемых поверх основного контента. OverlayEntry — элемент в этом стеке. CompositedTransformFollower + CompositedTransformTarget позволяют привязать overlay к конкретному виджету (например, dropdown к кнопке)."
+  },
+  {
+    "category": "Flutter ядро",
+    "question": "Чем EventChannel отличается от MethodChannel?",
+    "options": [
+      "EventChannel — для потока событий (Stream) от нативной стороны, MethodChannel — для одиночных вызовов",
+      "EventChannel работает только на iOS",
+      "MethodChannel поддерживает только строки",
+      "EventChannel — устаревший API"
+    ],
+    "correct": 0,
+    "explanation": "MethodChannel — request-response (вызвал → получил ответ). EventChannel — для continuous stream событий от нативной стороны (сенсоры, Bluetooth, геолокация). BasicMessageChannel — для простого обмена сообщениями без привязки к методам."
+  },
+  {
+    "category": "Flutter ядро",
+    "question": "Как отслеживать жизненный цикл приложения во Flutter?",
+    "options": [
+      "Реализовать WidgetsBindingObserver и переопределить didChangeAppLifecycleState()",
+      "Подписаться на SystemChannels.lifecycle",
+      "Использовать Timer для периодической проверки",
+      "Это невозможно во Flutter"
+    ],
+    "correct": 0,
+    "explanation": "WidgetsBindingObserver — mixin с методом didChangeAppLifecycleState(AppLifecycleState). Состояния: resumed (активно), inactive (частично скрыто), paused (в фоне), detached (отвязано от view). В Dart 3.13+ есть AppLifecycleListener — более удобный API."
+  },
+  {
+    "category": "Flutter ядро",
+    "question": "Почему во Flutter предпочтительна композиция виджетов, а не наследование?",
+    "options": [
+      "Виджеты неизменяемы — композиция гибче, позволяет комбинировать поведение без связанности",
+      "Наследование не поддерживается в Dart",
+      "Композиция работает быстрее при рендеринге",
+      "Наследование запрещено в Flutter SDK"
+    ],
+    "correct": 0,
+    "explanation": "Widget-классы immutable, и Flutter перестраивает их каждый кадр — наследование создаёт жёсткую связность. Композиция (оборачивание виджетов, параметризация через callbacks/builders) даёт гибкость и переиспользуемость. Принцип: «composition over inheritance»."
+  },
+  {
+    "category": "State Management",
+    "question": "Чем Selector отличается от Consumer в Provider?",
+    "options": [
+      "Selector перестраивает виджет только при изменении выбранной части состояния",
+      "Selector работает только с примитивными типами",
+      "Consumer поддерживает несколько провайдеров, Selector — нет",
+      "Нет разницы — это синонимы"
+    ],
+    "correct": 0,
+    "explanation": "Consumer<T> перестраивает builder при любом изменении T. Selector<T, S> извлекает конкретное значение (selector: (_, state) => state.count) и перестраивает только если это значение изменилось. ProxyProvider — для зависимостей между провайдерами."
+  },
+  {
+    "category": "State Management",
+    "question": "Что даёт bloc_concurrency при работе с BLoC?",
+    "options": [
+      "Управление параллельной обработкой событий: sequential, droppable, restartable, concurrent",
+      "Параллельный запуск нескольких BLoC одновременно",
+      "Многопоточность для BLoC-обработчиков",
+      "Автоматическую синхронизацию состояния между устройствами"
+    ],
+    "correct": 0,
+    "explanation": "bloc_concurrency определяет, как обрабатываются события, пришедшие до завершения предыдущего: sequential (по очереди), droppable (новые игнорируются), restartable (текущий отменяется), concurrent (все параллельно). По умолчанию — concurrent."
+  },
+  {
+    "category": "State Management",
+    "question": "Чем Riverpod отличается от Provider?",
+    "options": [
+      "Не зависит от BuildContext, compile-safe, поддерживает autoDispose и family",
+      "Riverpod — это Provider для веб-приложений",
+      "Provider быстрее Riverpod",
+      "Riverpod не поддерживает ChangeNotifier"
+    ],
+    "correct": 0,
+    "explanation": "Riverpod решает ограничения Provider: не нужен BuildContext, провайдеры объявляются глобально. autoDispose — автоматическое освобождение ресурсов. family — параметризованные провайдеры. Типы: Provider, StateProvider, FutureProvider, StreamProvider, NotifierProvider."
+  },
+  {
+    "category": "State Management",
+    "question": "Какой state management лучше подходит для крупного enterprise-приложения?",
+    "options": [
+      "BLoC — строгое разделение, трассировка событий, хорошая тестируемость",
+      "setState — самый простой и быстрый",
+      "Глобальные переменные — нет overhead",
+      "InheritedWidget напрямую — максимальная производительность"
+    ],
+    "correct": 0,
+    "explanation": "Для enterprise: BLoC — предсказуемый поток данных (Event → State), легко тестировать, трассировать и отлаживать. Riverpod — гибче, меньше boilerplate. Provider — проще для средних проектов. setState — только для локального состояния. Выбор зависит от команды и требований."
+  },
+  {
+    "category": "State Management",
+    "question": "Что означает реактивный подход к управлению состоянием?",
+    "options": [
+      "UI автоматически обновляется при изменении данных (подписка на изменения)",
+      "Разработчик вручную вызывает обновление каждого виджета",
+      "Состояние обновляется только по таймеру",
+      "Данные передаются только через конструкторы"
+    ],
+    "correct": 0,
+    "explanation": "Реактивный подход: UI подписывается на источник данных и автоматически перестраивается при изменениях (Stream, ChangeNotifier, ValueListenable). Императивный: разработчик явно вызывает обновление (setState, controller.text = ...). Flutter сочетает оба подхода."
+  },
+  {
+    "category": "State Management",
+    "question": "Какое состояние считается локальным и не требует state management решения?",
+    "options": [
+      "Состояние одного виджета: текущая вкладка, фокус, открыт ли dropdown",
+      "Данные пользователя (профиль, токен)",
+      "Список товаров из API",
+      "Тема приложения (тёмная/светлая)"
+    ],
+    "correct": 0,
+    "explanation": "Локальный state (ephemeral) — относится к одному виджету: анимация, ввод текста, выбранная вкладка. Достаточно setState. Глобальный state (app state) — данные, нужные в разных частях приложения: авторизация, корзина, настройки. Для него — Provider/BLoC/Riverpod."
+  },
+  {
+    "category": "Архитектура",
+    "question": "Как реализуется MVVM в контексте Flutter?",
+    "options": [
+      "View (Widget) подписывается на ViewModel (ChangeNotifier/BLoC), ViewModel обращается к Model (data layer)",
+      "Model напрямую обновляет View",
+      "ViewModel содержит все виджеты приложения",
+      "MVVM невозможен во Flutter"
+    ],
+    "correct": 0,
+    "explanation": "MVVM во Flutter: View — виджеты (без логики), ViewModel — ChangeNotifier/StateNotifier/Cubit (логика + состояние), Model — данные и репозитории. View подписывается на ViewModel через Provider/Riverpod/BLoC. ViewModel не знает о View."
+  },
+  {
+    "category": "Архитектура",
+    "question": "Когда Layered architecture предпочтительнее Clean Architecture?",
+    "options": [
+      "В небольших проектах, где строгое разделение на domain/data/presentation избыточно",
+      "Layered architecture всегда лучше",
+      "Только в веб-приложениях",
+      "Когда проект не использует state management"
+    ],
+    "correct": 0,
+    "explanation": "Layered architecture (UI → Business Logic → Data) проще Clean Architecture. Подходит для малых и средних проектов, где нет необходимости в строгих boundaries и абстракциях. Clean Architecture оправдана в крупных проектах с независимыми domain-правилами."
+  },
+  {
+    "category": "Архитектура",
+    "question": "Какова роль UseCase (Interactor) в Clean Architecture?",
+    "options": [
+      "Инкапсулирует одну бизнес-операцию и оркестрирует вызовы репозиториев",
+      "Отвечает за навигацию между экранами",
+      "Управляет состоянием виджетов",
+      "Генерирует код моделей данных"
+    ],
+    "correct": 0,
+    "explanation": "UseCase — единица бизнес-логики (GetUserProfileUseCase, PlaceOrderUseCase). Содержит один метод call/execute, который оркестрирует работу с репозиториями. Позволяет переиспользовать логику между разными UI и легко тестировать изолированно."
+  },
+  {
+    "category": "Архитектура",
+    "question": "Чем feature-first структура проекта отличается от layer-first?",
+    "options": [
+      "Feature-first группирует по фичам (auth/, cart/), layer-first — по слоям (data/, domain/, ui/)",
+      "Feature-first — для мобильных, layer-first — для веба",
+      "Layer-first не поддерживает DI",
+      "Нет разницы — это одно и то же"
+    ],
+    "correct": 0,
+    "explanation": "Layer-first: lib/data/, lib/domain/, lib/presentation/ — удобно для маленьких проектов. Feature-first: lib/features/auth/, lib/features/cart/ — каждая фича содержит свои data/domain/presentation. Масштабируется лучше, уменьшает связность между фичами."
+  },
+  {
+    "category": "Архитектура",
+    "question": "Зачем нужен Dependency Injection и как get_it его реализует?",
+    "options": [
+      "DI инвертирует зависимости — get_it как Service Locator регистрирует и отдаёт зависимости по типу",
+      "DI автоматически генерирует классы",
+      "get_it — это HTTP-клиент",
+      "DI нужен только для тестирования"
+    ],
+    "correct": 0,
+    "explanation": "DI — класс не создаёт зависимости сам, а получает их извне (через конструктор или Service Locator). get_it — глобальный Service Locator: registerSingleton/registerFactory, получение через GetIt.I<Type>(). injectable — кодогенерация для get_it через аннотации."
+  },
+  {
+    "category": "Архитектура",
+    "question": "Что означает принцип Single Responsibility (S в SOLID) применительно к Flutter?",
+    "options": [
+      "Класс/виджет должен иметь одну причину для изменения — одну ответственность",
+      "Приложение должно иметь один экран",
+      "Только один state management в проекте",
+      "Каждый файл должен содержать ровно один класс"
+    ],
+    "correct": 0,
+    "explanation": "SRP: виджет — только отображение, BLoC — только бизнес-логика, Repository — только доступ к данным. Если класс меняется по разным причинам (UI + логика + данные), его нужно разделить. Остальные: Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion."
+  },
+  {
+    "category": "Архитектура",
+    "question": "Для чего используется Melos в Flutter?",
+    "options": [
+      "Для управления mono-repo с несколькими пакетами: зависимости, версионирование, скрипты",
+      "Для генерации UI из макетов",
+      "Для деплоя приложений в магазины",
+      "Для профилирования производительности"
+    ],
+    "correct": 0,
+    "explanation": "Melos — инструмент для mono-repo: управляет зависимостями между пакетами, запускает команды во всех пакетах (тесты, анализ), управляет версионированием (conventional commits). Package-based architecture: каждый модуль — отдельный пакет с явным API."
+  },
+  {
+    "category": "Архитектура",
+    "question": "Как правильно управлять техническим долгом?",
+    "options": [
+      "Фиксировать долг, приоритизировать по влиянию на разработку, выделять время на рефакторинг в каждом спринте",
+      "Игнорировать долг до полной переписки",
+      "Рефакторить только перед релизами",
+      "Технический долг — признак плохой команды и его не должно быть"
+    ],
+    "correct": 0,
+    "explanation": "Тех. долг неизбежен. Управление: 1) Фиксировать (TODO, backlog). 2) Оценивать влияние (замедляет ли разработку, увеличивает ли баги). 3) Выделять 10-20% времени спринта на рефакторинг. 4) Рефакторить зону, в которой ведётся активная работа (Boy Scout Rule)."
+  },
+  {
+    "category": "Навигация",
+    "question": "Для чего используется onGenerateRoute в Navigator 1.0?",
+    "options": [
+      "Для централизованной обработки именованных маршрутов и передачи аргументов",
+      "Для автоматической генерации экранов из JSON",
+      "Для создания анимаций переходов",
+      "Для логирования навигации"
+    ],
+    "correct": 0,
+    "explanation": "onGenerateRoute — callback в MaterialApp, вызываемый при Navigator.pushNamed(). Позволяет парсить route name, извлекать аргументы, возвращать нужный PageRoute. Лучше, чем routes map, так как поддерживает динамические параметры и аргументы."
+  },
+  {
+    "category": "Навигация",
+    "question": "Какие преимущества даёт пакет auto_route?",
+    "options": [
+      "Кодогенерация маршрутов, type-safe аргументы, guards, nested navigation",
+      "Автоматическое создание UI для каждого маршрута",
+      "Замена Navigator на собственный движок",
+      "Работает только с Navigator 1.0"
+    ],
+    "correct": 0,
+    "explanation": "auto_route генерирует роутинг-код из аннотаций: type-safe навигация (router.push(ProfileRoute(id: 1))), route guards (проверка авторизации), nested navigation (табы), deep links. Поддерживает Navigator 2.0 под капотом."
+  },
+  {
+    "category": "Навигация",
+    "question": "Что нужно настроить для поддержки deep links на iOS?",
+    "options": [
+      "Associated Domains (Universal Links) в Xcode + apple-app-site-association на сервере",
+      "Только Info.plist с URL-схемой",
+      "Ничего — Flutter поддерживает deep links автоматически",
+      "Только pubspec.yaml с плагином"
+    ],
+    "correct": 0,
+    "explanation": "Universal Links (iOS): 1) Associated Domains в Xcode (applinks:domain.com). 2) apple-app-site-association JSON на сервере. На Android: intent-filter в AndroidManifest.xml + assetlinks.json на сервере (App Links). Custom URL schemes (myapp://) проще, но менее безопасны."
+  },
+  {
+    "category": "Сеть и данные",
+    "question": "Чем freezed отличается от json_serializable?",
+    "options": [
+      "freezed генерирует immutable data-классы с copyWith, ==, toString + JSON, json_serializable — только JSON",
+      "freezed работает только с Map, json_serializable — с List",
+      "json_serializable быстрее",
+      "Нет разницы — это один пакет"
+    ],
+    "correct": 0,
+    "explanation": "json_serializable — только fromJson/toJson. freezed — полноценные data-классы: immutable, copyWith, ==, toString, sealed unions (для состояний). freezed использует json_serializable под капотом для JSON. Идеально для моделей и состояний BLoC."
+  },
+  {
+    "category": "Сеть и данные",
+    "question": "Как правильно обрабатывать ошибки REST API в Flutter-приложении?",
+    "options": [
+      "Маппить HTTP-статусы и тело ответа в типизированные ошибки (sealed class / Either)",
+      "Показывать пользователю сырой JSON ответа",
+      "Игнорировать ошибки — пользователь повторит действие",
+      "Ловить все ошибки через try/catch и показывать 'Ошибка'"
+    ],
+    "correct": 0,
+    "explanation": "Хороший подход: Repository возвращает Result<Success, Failure> или Either. Failure — sealed class с подтипами (NetworkFailure, ServerFailure, ValidationFailure). Это позволяет UI показывать осмысленные сообщения и предлагать действия (повтор, офлайн-режим)."
+  },
+  {
+    "category": "Сеть и данные",
+    "question": "В чём главное преимущество GraphQL перед REST?",
+    "options": [
+      "Клиент запрашивает только нужные поля — нет over-fetching и under-fetching",
+      "GraphQL работает быстрее на сервере",
+      "GraphQL не требует авторизации",
+      "GraphQL автоматически кеширует данные"
+    ],
+    "correct": 0,
+    "explanation": "GraphQL: клиент описывает, какие поля нужны — один запрос вместо нескольких REST-эндпоинтов. graphql_flutter предоставляет Query/Mutation виджеты и кеш. Минусы: сложнее кеширование, нет HTTP-кеша из коробки, более сложная серверная реализация."
+  },
+  {
+    "category": "Сеть и данные",
+    "question": "Как обеспечить стабильное WebSocket-соединение в мобильном приложении?",
+    "options": [
+      "Heartbeat (ping/pong), автоматическое переподключение с exponential backoff, обработка обрывов",
+      "Достаточно просто открыть соединение — оно стабильно",
+      "Переключаться на HTTP при каждом обрыве",
+      "Использовать новое соединение для каждого сообщения"
+    ],
+    "correct": 0,
+    "explanation": "Мобильная сеть нестабильна. Нужно: heartbeat (ping каждые N секунд для определения обрыва), автоматическое переподключение с exponential backoff (1s, 2s, 4s...), буферизация сообщений при offline, обработка AppLifecycleState (пауза при фоне)."
+  },
+  {
+    "category": "Сеть и данные",
+    "question": "Когда использовать Hive, а когда Drift (SQLite)?",
+    "options": [
+      "Hive — для простых key-value данных без связей; Drift — для реляционных данных с запросами",
+      "Hive всегда быстрее Drift",
+      "Drift не поддерживает Flutter",
+      "Нет разницы — оба для key-value"
+    ],
+    "correct": 0,
+    "explanation": "Hive — быстрое NoSQL key-value хранилище, идеально для настроек, кеша, простых моделей. Drift (бывший Moor) — type-safe обёртка над SQLite с поддержкой JOIN, WHERE, миграций, reactive queries. Для сложных связанных данных (orders → items → products) — Drift."
+  },
+  {
+    "category": "Сеть и данные",
+    "question": "Что означает стратегия stale-while-revalidate?",
+    "options": [
+      "Сначала показать данные из кеша (stale), параллельно запросить свежие и обновить UI",
+      "Всегда ждать ответа от сервера",
+      "Кешировать данные навсегда без обновления",
+      "Удалять кеш при каждом запуске приложения"
+    ],
+    "correct": 0,
+    "explanation": "Stale-while-revalidate: 1) Показать кешированные данные мгновенно. 2) В фоне запросить свежие. 3) Обновить UI, когда ответ придёт. Даёт моментальный отклик + актуальные данные. Другие стратегии: cache-first (только кеш), network-first (сеть с fallback на кеш)."
+  },
+  {
+    "category": "Сеть и данные",
+    "question": "Какой паттерн используется для синхронизации данных в offline-first приложении?",
+    "options": [
+      "Очередь операций (operation queue): локальные изменения записываются в очередь и синхронизируются при появлении сети",
+      "Данные хранятся только на сервере",
+      "При каждом изменении делается HTTP-запрос",
+      "Offline-режим невозможен в Flutter"
+    ],
+    "correct": 0,
+    "explanation": "Offline-first: все данные сначала в локальной БД, UI работает с локальными данными. Изменения записываются в sync queue. При появлении сети — очередь синхронизируется. Конфликты решаются стратегией (last-write-wins, merge, manual resolution)."
+  },
+  {
+    "category": "Тестирование",
+    "question": "Для чего используется group() в unit-тестах Dart?",
+    "options": [
+      "Для логической группировки связанных тестов с общими setUp/tearDown",
+      "Для параллельного запуска тестов",
+      "Для пропуска группы тестов",
+      "Для создания mock-объектов"
+    ],
+    "correct": 0,
+    "explanation": "group() объединяет тесты: общее описание, общие setUp/tearDown, можно вкладывать group в group. setUp() — перед каждым тестом в группе. setUpAll() — один раз перед всей группой. Matchers: expect(value, equals/isA/throwsA/contains/...)."
+  },
+  {
+    "category": "Тестирование",
+    "question": "Что проверяют Golden-тесты?",
+    "options": [
+      "Сравнивают скриншот виджета с эталонным изображением (pixel-perfect)",
+      "Проверяют производительность рендеринга",
+      "Тестируют бизнес-логику золотого пути (happy path)",
+      "Проверяют цветовую схему приложения"
+    ],
+    "correct": 0,
+    "explanation": "Golden-тесты рендерят виджет и сравнивают с сохранённым эталонным изображением (.png). Обнаруживают визуальные регрессии. Команда: flutter test --update-goldens для обновления эталонов. matchesGoldenFile('golden/my_widget.png') — matcher."
+  },
+  {
+    "category": "Тестирование",
+    "question": "Чем integration_test отличается от widget-тестов?",
+    "options": [
+      "Integration-тесты запускают реальное приложение на устройстве/эмуляторе с реальными зависимостями",
+      "Widget-тесты медленнее integration",
+      "Integration-тесты не могут взаимодействовать с UI",
+      "Нет разницы — это одно и то же"
+    ],
+    "correct": 0,
+    "explanation": "Widget-тесты — быстрые, без реального рендеринга, моки зависимостей. Integration-тесты (integration_test пакет) — полное приложение на реальном устройстве: навигация, сеть, анимации. Patrol — надстройка с поддержкой нативных диалогов (permissions, system UI)."
+  },
+  {
+    "category": "Тестирование",
+    "question": "Почему Dependency Injection критически важен для тестируемости?",
+    "options": [
+      "Позволяет подставить mock/fake зависимости вместо реальных (API, БД) в тестах",
+      "DI ускоряет выполнение тестов",
+      "Без DI тесты не компилируются",
+      "DI автоматически генерирует тесты"
+    ],
+    "correct": 0,
+    "explanation": "Без DI класс создаёт зависимости внутри (new ApiClient()) — нельзя подменить в тесте. С DI зависимости приходят извне (конструктор) — в тесте передаём MockApiClient. Это позволяет тестировать логику изолированно, без сети/БД."
+  },
+  {
+    "category": "Тестирование",
+    "question": "Как тестировать BLoC с помощью bloc_test?",
+    "options": [
+      "blocTest: задать build (создание), act (события), expect (последовательность состояний)",
+      "Напрямую вызывать emit и проверять state",
+      "Рендерить BlocBuilder в widget-тесте",
+      "BLoC нельзя тестировать изолированно"
+    ],
+    "correct": 0,
+    "explanation": "blocTest<MyBloc, MyState>(build: () => MyBloc(), act: (bloc) => bloc.add(MyEvent()), expect: () => [State1(), State2()]). Проверяет точную последовательность состояний. seed — начальное состояние. verify — дополнительные проверки (вызовы репозитория)."
+  },
+  {
+    "category": "Тестирование",
+    "question": "Когда высокое покрытие кода тестами НЕ гарантирует качества?",
+    "options": [
+      "Когда тесты проверяют реализацию (как), а не поведение (что), и хрупки при рефакторинге",
+      "Покрытие всегда гарантирует качество",
+      "Когда покрытие выше 90%",
+      "Когда тесты написаны на другом языке"
+    ],
+    "correct": 0,
+    "explanation": "Покрытие — метрика количества, не качества. Тесты, которые проверяют внутреннюю реализацию (verify вызов метода), ломаются при рефакторинге. Лучше: тестировать поведение (вход → выход), критические пути, edge cases. 100% покрытие — не цель, а побочный эффект."
+  },
+  {
+    "category": "Производительность",
+    "question": "Какие три фазы проходит каждый кадр рендеринга Flutter?",
+    "options": [
+      "Build (создание виджетов) → Layout (расчёт размеров) → Paint (отрисовка на Canvas)",
+      "Compile → Execute → Display",
+      "Parse → Render → Animate",
+      "Init → Update → Dispose"
+    ],
+    "correct": 0,
+    "explanation": "Build: создание/обновление Widget и Element деревьев. Layout: расчёт размеров и позиций (Constraints вниз, Size вверх). Paint: отрисовка RenderObject на Canvas. Compositing: объединение слоёв. Rasterization: преобразование в пиксели (Skia/Impeller)."
+  },
+  {
+    "category": "Производительность",
+    "question": "Почему ListView.builder эффективнее ListView с children?",
+    "options": [
+      "Builder создаёт виджеты лениво — только видимые элементы, а не весь список сразу",
+      "Builder использует многопоточность",
+      "Builder кеширует данные из API",
+      "Нет разницы в производительности"
+    ],
+    "correct": 0,
+    "explanation": "ListView(children: [...]) создаёт ВСЕ виджеты сразу — плохо для длинных списков. ListView.builder(itemBuilder) создаёт виджеты по требованию: только видимые + буфер. Для ещё лучшей производительности — ListView.builder + const виджеты + itemExtent (фиксированная высота)."
+  },
+  {
+    "category": "Производительность",
+    "question": "Как оптимизировать загрузку изображений во Flutter?",
+    "options": [
+      "Кешировать (cached_network_image), задавать размер (cacheWidth/cacheHeight), precache",
+      "Загружать все изображения при старте приложения",
+      "Использовать только SVG",
+      "Отключить кеширование для экономии памяти"
+    ],
+    "correct": 0,
+    "explanation": "cached_network_image — кеш на диске. cacheWidth/cacheHeight в Image — декодировать в нужном размере (меньше памяти). precacheImage() — предзагрузка. Для списков: fadeInDuration: Duration.zero убирает задержку. ResizeImage — resize при декодировании."
+  },
+  {
+    "category": "Производительность",
+    "question": "Что такое shader compilation jank и как его избежать?",
+    "options": [
+      "Задержки при первой компиляции шейдеров — решается SkSL warmup (предкомпиляция)",
+      "Баг в Dart-компиляторе",
+      "Задержки из-за медленного интернета",
+      "Проблема только в debug-режиме"
+    ],
+    "correct": 0,
+    "explanation": "Skia компилирует шейдеры при первом использовании — это вызывает jank (пропуск кадров). SkSL warmup: записать шейдеры (flutter run --cache-sksl), собрать с --bundle-sksl-path. Impeller (новый движок) компилирует шейдеры заранее, устраняя эту проблему."
+  },
+  {
+    "category": "Производительность",
+    "question": "Какой инструмент в Flutter DevTools показывает, какие виджеты перестраиваются?",
+    "options": [
+      "Widget rebuild tracker в Performance view (или debugPrintRebuildDirtyWidgets)",
+      "Network profiler",
+      "Memory heap snapshot",
+      "Logging view"
+    ],
+    "correct": 0,
+    "explanation": "DevTools Performance view: Timeline (длительность кадров), Widget Rebuild Stats (кто и сколько раз перестроился). Performance Overlay — два графика (UI/Raster thread). Memory profiler — heap, allocations, GC. debugPrintRebuildDirtyWidgets = true — лог rebuild'ов в консоль."
+  },
+  {
+    "category": "Производительность",
+    "question": "Какая частая причина утечек памяти во Flutter?",
+    "options": [
+      "Незакрытые StreamSubscription и контроллеры (AnimationController, TextEditingController)",
+      "Использование const виджетов",
+      "Слишком много StatelessWidget",
+      "Вызов setState"
+    ],
+    "correct": 0,
+    "explanation": "Утечки: 1) StreamSubscription не отменена в dispose(). 2) AnimationController/ScrollController не disposed. 3) Closures с ссылкой на State в долгоживущих объектах. 4) Сильные ссылки в глобальных кешах. Диагностика: DevTools Memory tab, Leak Tracker."
+  },
+  {
+    "category": "Производительность",
+    "question": "Как уменьшить размер Flutter-приложения?",
+    "options": [
+      "Tree shaking, deferred components (ленивая загрузка), --obfuscate, --split-debug-info, удаление неиспользуемых ресурсов",
+      "Удалить все тесты",
+      "Использовать только один виджет",
+      "Отключить null safety"
+    ],
+    "correct": 0,
+    "explanation": "Tree shaking удаляет неиспользуемый код автоматически. --obfuscate минимизирует имена. --split-debug-info выносит debug-символы. Deferred components — загрузка кода/ресурсов по требованию. flutter build appbundle --analyze-size показывает, что занимает место."
+  },
+  {
+    "category": "CI/CD",
+    "question": "Какие этапы обычно включает CI/CD pipeline для Flutter?",
+    "options": [
+      "Анализ (dart analyze) → Тесты → Сборка → Code signing → Деплой в магазин",
+      "Только сборка и деплой",
+      "Только запуск тестов",
+      "Только code review"
+    ],
+    "correct": 0,
+    "explanation": "Типичный pipeline: 1) flutter analyze (линтер). 2) flutter test (unit + widget). 3) flutter build (apk/ipa/appbundle). 4) Code signing (keystore/provisioning). 5) Deploy (fastlane, Codemagic, Firebase App Distribution). Codemagic и Bitrise — CI/CD платформы специально для Flutter."
+  },
+  {
+    "category": "CI/CD",
+    "question": "Что нужно для публикации Flutter-приложения в Google Play?",
+    "options": [
+      "Аккаунт разработчика, подписанный App Bundle (.aab), иконки, описание, политика конфиденциальности",
+      "Только APK-файл",
+      "Аккаунт в Firebase",
+      "Публикация полностью автоматическая через Flutter CLI"
+    ],
+    "correct": 0,
+    "explanation": "Google Play: 1) Developer account ($25). 2) Подписанный .aab (не .apk). 3) Иконки, скриншоты, описание. 4) Content rating (возрастной рейтинг). 5) Privacy policy URL. 6) Target API level. App Store: Apple Developer ($99/год), provisioning profiles, App Store Connect review."
+  },
+  {
+    "category": "CI/CD",
+    "question": "Что такое Shorebird и как он работает?",
+    "options": [
+      "OTA-сервис для Flutter: обновление Dart-кода без пересборки и ревью в магазине",
+      "Инструмент для A/B тестирования UI",
+      "Система мониторинга ошибок",
+      "Пакет для анимаций"
+    ],
+    "correct": 0,
+    "explanation": "Shorebird позволяет push'ить обновления Dart-кода напрямую на устройства (как CodePush для React Native). Ограничения: только Dart-код (не нативный), не для изменения нативных ресурсов. Полезно для hotfix'ов без ожидания ревью магазинов (1-7 дней)."
+  },
+  {
+    "category": "CI/CD",
+    "question": "Зачем нужен Sentry/Crashlytics в production-приложении?",
+    "options": [
+      "Автоматический сбор crash-репортов, стектрейсов и контекста ошибок от реальных пользователей",
+      "Для ускорения приложения",
+      "Для A/B тестирования",
+      "Для автоматического исправления багов"
+    ],
+    "correct": 0,
+    "explanation": "Crashlytics (Firebase) / Sentry собирают: необработанные исключения, стектрейсы (с deobfuscation), контекст (устройство, OS, версия, breadcrumbs). Позволяют увидеть реальные краши пользователей, приоритизировать по количеству и влиянию. --split-debug-info + --obfuscate требуют загрузки символов."
+  },
+  {
+    "category": "CI/CD",
+    "question": "Какое ограничение часто вызывает отклонение приложений в App Store?",
+    "options": [
+      "Приложение является обёрткой над веб-сайтом (WebView-only) без нативной функциональности",
+      "Приложение использует тёмную тему",
+      "Приложение написано на Flutter, а не Swift",
+      "Приложение весит больше 50 МБ"
+    ],
+    "correct": 0,
+    "explanation": "Частые причины отклонения: WebView-only (guideline 4.2), отсутствие Privacy Policy, сбор данных без объяснения, неработающие ссылки, crash при ревью, скрытая функциональность. Google Play: target API level, Data Safety section, Families Policy для детских приложений."
+  },
+  {
+    "category": "Git",
+    "question": "В чём суть Git Flow и когда он избыточен?",
+    "options": [
+      "Модель с ветками develop, feature, release, hotfix — избыточен для маленьких команд с частыми релизами",
+      "Git Flow — единственный правильный способ работы с Git",
+      "Git Flow не поддерживает merge",
+      "Git Flow требует отдельного сервера"
+    ],
+    "correct": 0,
+    "explanation": "Git Flow: main (production), develop (интеграция), feature/* (фичи), release/* (подготовка релиза), hotfix/* (срочные фиксы). Избыточен для CI/CD с частыми релизами — там лучше GitHub Flow (feature branch → main) или Trunk-based development."
+  },
+  {
+    "category": "Git",
+    "question": "На что в первую очередь обращать внимание при code review?",
+    "options": [
+      "Корректность логики, edge cases, безопасность, читаемость — НЕ стиль кода (это задача линтера)",
+      "Только отступы и форматирование",
+      "Количество строк кода",
+      "Скорость выполнения каждой строки"
+    ],
+    "correct": 0,
+    "explanation": "Приоритеты ревью: 1) Корректность (баги, edge cases). 2) Безопасность (инъекции, утечки данных). 3) Архитектура (правильный ли подход). 4) Читаемость (понятен ли код через месяц). Стиль — на линтер (dart analyze). Фидбек: конкретный, конструктивный, с примерами."
+  },
+  {
+    "category": "Git",
+    "question": "Что такое conventional commits?",
+    "options": [
+      "Формат коммитов: type(scope): description — позволяет автоматизировать changelog и версионирование",
+      "Коммиты только в рабочее время",
+      "Коммиты с обязательным ревью",
+      "Коммиты размером не более 100 строк"
+    ],
+    "correct": 0,
+    "explanation": "Формат: feat(auth): add login screen, fix(cart): resolve total calculation, chore(deps): update packages. Типы: feat (фича), fix (баг), docs, refactor, test, chore. Позволяет автогенерацию CHANGELOG и семантическое версионирование (feat=minor, fix=patch, BREAKING=major)."
+  },
+  {
+    "category": "Git",
+    "question": "Когда doc comments в Dart-коде действительно полезны?",
+    "options": [
+      "Для публичного API: объяснение контракта, параметров и side effects — НЕ для очевидного кода",
+      "Для каждой строки кода",
+      "Только для приватных методов",
+      "Doc comments запрещены в Flutter"
+    ],
+    "correct": 0,
+    "explanation": "/// doc comments — для публичного API пакетов и библиотек: что делает метод, параметры, возвращаемое значение, исключения. Не комментировать очевидное (/// Returns the name → бесполезно). dartdoc генерирует HTML-документацию из doc comments."
+  },
+  {
+    "category": "Платформы",
+    "question": "Как правильно запрашивать разрешения у пользователя?",
+    "options": [
+      "Запрашивать в контексте действия (не при старте), объяснять зачем, обрабатывать отказ gracefully",
+      "Запрашивать все разрешения при первом запуске",
+      "Запрашивать разрешения в фоне без UI",
+      "Достаточно добавить в AndroidManifest — пользователь согласится при установке"
+    ],
+    "correct": 0,
+    "explanation": "Лучшие практики: 1) Запрашивать just-in-time (при нажатии на камеру → запрос камеры). 2) Показать rationale ДО системного диалога. 3) Обработать отказ: альтернативный flow или кнопка 'Открыть настройки'. permission_handler — пакет для единого API на обеих платформах."
+  },
+  {
+    "category": "Платформы",
+    "question": "Как работает архитектура push-уведомлений на мобильных платформах?",
+    "options": [
+      "Сервер → FCM/APNs (облачный сервис) → устройство → приложение обрабатывает payload",
+      "Приложение периодически опрашивает сервер",
+      "Уведомления хранятся локально и показываются по расписанию",
+      "Push работает только при открытом приложении"
+    ],
+    "correct": 0,
+    "explanation": "Поток: Backend → FCM (Android) / APNs (iOS) → устройство показывает уведомление. firebase_messaging — для получения. flutter_local_notifications — для локальных и кастомного отображения. Обработка: foreground (onMessage), background (onBackgroundMessage), terminated (getInitialMessage)."
+  },
+  {
+    "category": "Платформы",
+    "question": "Как создать адаптивный UI, который выглядит нативно на обеих платформах?",
+    "options": [
+      "Проверять Platform.isIOS/isAndroid и использовать Material/Cupertino виджеты соответственно",
+      "Всегда использовать только Material Design",
+      "Создавать два отдельных приложения",
+      "Адаптивный UI невозможен во Flutter"
+    ],
+    "correct": 0,
+    "explanation": "Подходы: 1) Platform-aware виджеты (flutter_platform_widgets). 2) Собственные адаптивные компоненты с Platform.isIOS. 3) Material Design на обеих платформах (наиболее частый подход). Cupertino-стиль важен, если приложение должно чувствоваться «нативным» на iOS."
+  },
+  {
+    "category": "Платформы",
+    "question": "Что происходит с Flutter-приложением при сворачивании на iOS?",
+    "options": [
+      "Переходит в paused state, UI не обновляется, ~30 секунд на фоновые задачи, затем может быть убито",
+      "Приложение продолжает работать без ограничений",
+      "Приложение мгновенно завершается",
+      "UI продолжает рендериться в фоне"
+    ],
+    "correct": 0,
+    "explanation": "iOS: inactive → paused. В paused: нет UI-обновлений, ~30 сек на background tasks. После — suspended (может быть убито OS). Android: похоже, но background services работают дольше. Для длительных задач: WorkManager (Android), BGTaskScheduler (iOS), flutter_background_service."
+  },
+  {
+    "category": "UI/UX",
+    "question": "Чем LayoutBuilder отличается от MediaQuery для адаптивной вёрстки?",
+    "options": [
+      "LayoutBuilder даёт constraints родителя (локальный размер), MediaQuery — размер всего экрана",
+      "LayoutBuilder работает только в web",
+      "MediaQuery не доступен в StatelessWidget",
+      "Нет разницы — это синонимы"
+    ],
+    "correct": 0,
+    "explanation": "MediaQuery.of(context).size — размер всего экрана (глобально). LayoutBuilder(builder: (context, constraints)) — constraints от родителя (может быть меньше экрана, например внутри Column). Для responsive UI: LayoutBuilder для компонентов, MediaQuery для breakpoints (phone/tablet/desktop)."
+  },
+  {
+    "category": "UI/UX",
+    "question": "Как правильно реализовать поддержку тёмной темы во Flutter?",
+    "options": [
+      "Задать theme и darkTheme в MaterialApp, использовать Theme.of(context) в виджетах",
+      "Менять цвета вручную в каждом виджете через if",
+      "Создать отдельное приложение для тёмной темы",
+      "Использовать глобальные переменные для цветов"
+    ],
+    "correct": 0,
+    "explanation": "MaterialApp(theme: lightTheme, darkTheme: darkTheme, themeMode: ThemeMode.system). В виджетах: Theme.of(context).colorScheme.primary. ColorScheme.fromSeed() генерирует гармоничную палитру. Dynamic color (Material You) — цвета из обоев пользователя (dynamic_color пакет)."
+  },
+  {
+    "category": "UI/UX",
+    "question": "Как работает Hero-анимация во Flutter?",
+    "options": [
+      "Виджеты с одинаковым Hero tag на двух экранах анимируются при навигации (плавный переход)",
+      "Hero — это название библиотеки анимаций",
+      "Hero создаёт 3D-эффект при переходе",
+      "Hero работает только с изображениями"
+    ],
+    "correct": 0,
+    "explanation": "Hero(tag: 'avatar', child: Image(...)) — на обоих экранах одинаковый tag. При push/pop Flutter автоматически анимирует перемещение, масштабирование и морфинг между двумя Hero-виджетами. PageRouteBuilder — для кастомных transitions (fade, slide, scale)."
+  },
+  {
+    "category": "UI/UX",
+    "question": "Как реализуется интернационализация (i18n) во Flutter?",
+    "options": [
+      "Пакет intl + .arb файлы с переводами + кодогенерация через gen-l10n",
+      "Хранить все строки в одном JSON-файле",
+      "Использовать Google Translate API в runtime",
+      "Создать отдельное приложение для каждого языка"
+    ],
+    "correct": 0,
+    "explanation": "flutter_localizations + intl: 1) Создать .arb файлы (app_en.arb, app_ru.arb) с переводами. 2) flutter gen-l10n генерирует AppLocalizations класс. 3) AppLocalizations.of(context)!.helloWorld. Поддержка plurals, select, datetime formatting. easy_localization — альтернативный пакет."
+  },
+  {
+    "category": "UI/UX",
+    "question": "Какой подход к вёрстке по макетам из Figma наиболее эффективен?",
+    "options": [
+      "Создавать переиспользуемые виджеты по дизайн-системе, а не копировать пиксели экранов",
+      "Генерировать код автоматически через плагин Figma-to-Flutter",
+      "Верстать каждый экран с нуля по скриншоту",
+      "Использовать только готовые Material-виджеты без кастомизации"
+    ],
+    "correct": 0,
+    "explanation": "Эффективный подход: 1) Выделить дизайн-систему из Figma (цвета, типографика, отступы, компоненты). 2) Реализовать как ThemeData + набор переиспользуемых виджетов. 3) Собирать экраны из готовых компонентов. Figma Inspect — для точных значений (padding, colors, fonts)."
+  },
+  {
+    "category": "Soft skills",
+    "question": "Как Senior-разработчик должен аргументировать архитектурное решение?",
+    "options": [
+      "Описать проблему, сравнить варианты с trade-offs, обосновать выбор с учётом контекста команды",
+      "Сказать 'я так делал на прошлом проекте'",
+      "Выбрать самую модную технологию",
+      "Решить единолично без обсуждения"
+    ],
+    "correct": 0,
+    "explanation": "Правильная аргументация: 1) Контекст — какую проблему решаем. 2) Варианты — минимум 2-3 подхода. 3) Trade-offs — плюсы/минусы каждого (сложность, производительность, maintainability). 4) Рекомендация — с учётом контекста: размер команды, сроки, опыт. ADR фиксирует это."
+  },
+  {
+    "category": "Soft skills",
+    "question": "Что важнее всего при менторинге Junior-разработчика?",
+    "options": [
+      "Задавать наводящие вопросы, а не давать готовые ответы — развивать самостоятельное мышление",
+      "Переписывать весь его код без объяснений",
+      "Давать только теоретические материалы",
+      "Избегать code review, чтобы не демотивировать"
+    ],
+    "correct": 0,
+    "explanation": "Эффективный менторинг: 1) Socratic method — вопросы вместо ответов ('а что если...?'). 2) Pair programming — совместная работа. 3) Постепенное усложнение задач. 4) Конструктивный фидбек: конкретный, по делу, с позитивным подкреплением. 5) Безопасная среда для ошибок."
+  },
+  {
+    "category": "Soft skills",
+    "question": "Как эффективно взаимодействовать с backend-командой?",
+    "options": [
+      "Согласовать API-контракт заранее (OpenAPI/Swagger), определить формат ошибок, договориться о версионировании",
+      "Ждать пока backend будет готов, потом начать работу",
+      "Использовать любой формат, который удобен фронтенду",
+      "Общаться только через тимлида"
+    ],
+    "correct": 0,
+    "explanation": "Правильно: 1) Contract-first подход (OpenAPI spec до реализации). 2) Согласовать формат ошибок и пагинации. 3) Mock API для параллельной работы. 4) Версионирование API. 5) Регулярные синки. С дизайном: участие в проектировании, обсуждение реализуемости."
+  },
+  {
+    "category": "Soft skills",
+    "question": "Что должен учитывать Senior при проектировании мобильного приложения целиком?",
+    "options": [
+      "Архитектуру, масштабируемость, offline-сценарии, безопасность, аналитику и мониторинг",
+      "Только UI/UX дизайн",
+      "Только выбор state management",
+      "Только скорость разработки"
+    ],
+    "correct": 0,
+    "explanation": "Полное проектирование: 1) Архитектура и модульность. 2) Навигация и deep links. 3) Offline/sync стратегия. 4) Безопасность (хранение токенов, certificate pinning). 5) CI/CD pipeline. 6) Аналитика и crashlytics. 7) Accessibility. 8) Масштабирование команды."
+  },
+  {
+    "category": "Soft skills",
+    "question": "Как Senior обеспечивает качество и стабильность приложения?",
+    "options": [
+      "Внедряет code review, тестирование, CI/CD, мониторинг крашей и определяет стандарты кода",
+      "Пишет весь код самостоятельно",
+      "Полагается только на QA-команду",
+      "Качество — ответственность менеджера"
+    ],
+    "correct": 0,
+    "explanation": "Senior отвечает за: 1) Стандарты (линтер, code style, архитектурные правила). 2) Code review процесс. 3) Тестовая стратегия (unit + widget + integration). 4) CI/CD с автоматическими проверками. 5) Мониторинг (Crashlytics/Sentry). 6) Культура качества в команде."
+  },
+  {
+    "category": "Soft skills",
+    "question": "Как поддерживать Flutter-проект в долгосрочной перспективе?",
+    "options": [
+      "Регулярно обновлять зависимости, следить за deprecations, управлять тех. долгом, документировать решения",
+      "Не обновлять зависимости, чтобы ничего не сломалось",
+      "Переписывать приложение с нуля каждый год",
+      "Долгосрочная поддержка не нужна для мобильных приложений"
+    ],
+    "correct": 0,
+    "explanation": "Долгосрочная поддержка: 1) Обновлять Flutter SDK и пакеты регулярно (не копить). 2) Следить за deprecated API. 3) ADR — документировать архитектурные решения. 4) Тех. долг — выделять время в спринтах. 5) Модульность — заменять части без переписки всего."
+  }
+]
