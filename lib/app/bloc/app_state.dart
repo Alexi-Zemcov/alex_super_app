@@ -1,8 +1,7 @@
+import 'package:alex_super_app/app/theme/app_theme_factory.dart';
+import 'package:alex_super_app/features/theme/domain/entities/theme_preference.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-
-import '../../features/theme/domain/entities/theme_preference.dart';
-import '../theme/app_theme_factory.dart';
 
 final class AppState extends Equatable {
   const AppState({required this.themePreference});

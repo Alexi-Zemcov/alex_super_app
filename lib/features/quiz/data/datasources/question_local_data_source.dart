@@ -1,8 +1,7 @@
 import 'dart:convert';
 
+import 'package:alex_super_app/features/quiz/data/models/quiz_question_model.dart';
 import 'package:flutter/services.dart';
-
-import '../models/quiz_question_model.dart';
 
 abstract interface class QuestionLocalDataSource {
   Future<List<QuizQuestionModel>> loadQuestions();

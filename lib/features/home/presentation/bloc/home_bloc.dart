@@ -1,12 +1,11 @@
+import 'package:alex_super_app/features/home/domain/usecases/get_home_progress_use_case.dart';
+import 'package:alex_super_app/features/home/presentation/bloc/home_event.dart';
+import 'package:alex_super_app/features/home/presentation/bloc/home_state.dart';
+import 'package:alex_super_app/features/home/presentation/models/home_destination.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../domain/usecases/get_home_progress.dart';
-import '../models/home_destination.dart';
-import 'home_event.dart';
-import 'home_state.dart';
-
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  HomeBloc({required GetHomeProgress getHomeProgress})
+  HomeBloc({required GetHomeProgressUseCase getHomeProgress})
     : _getHomeProgress = getHomeProgress,
       super(const HomeInitial()) {
     on<HomeStarted>(_onStarted);
@@ -16,7 +15,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   static const _destinations = HomeDestination.values;
 
-  final GetHomeProgress _getHomeProgress;
+  final GetHomeProgressUseCase _getHomeProgress;
 
   Future<void> _onStarted(HomeStarted event, Emitter<HomeState> emit) async {
     emit(const HomeLoading());

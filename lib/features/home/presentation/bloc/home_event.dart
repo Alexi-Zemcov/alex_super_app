@@ -1,6 +1,5 @@
+import 'package:alex_super_app/features/home/presentation/models/home_destination.dart';
 import 'package:equatable/equatable.dart';
-
-import '../models/home_destination.dart';
 
 sealed class HomeEvent extends Equatable {
   const HomeEvent();

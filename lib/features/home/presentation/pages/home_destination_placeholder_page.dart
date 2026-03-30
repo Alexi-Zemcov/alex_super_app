@@ -1,9 +1,8 @@
+import 'package:alex_super_app/features/home/presentation/models/home_destination.dart';
 import 'package:flutter/material.dart';
 
-import '../models/home_destination.dart';
-
 class HomeDestinationPlaceholderPage extends StatelessWidget {
-  const HomeDestinationPlaceholderPage({super.key, required this.destination});
+  const HomeDestinationPlaceholderPage({required this.destination, super.key});
 
   final HomeDestination destination;
 

@@ -1,6 +1,6 @@
-import '../../domain/entities/theme_preference.dart';
-import '../../domain/repositories/theme_repository.dart';
-import '../datasources/theme_local_data_source.dart';
+import 'package:alex_super_app/features/theme/data/datasources/theme_local_data_source.dart';
+import 'package:alex_super_app/features/theme/domain/entities/theme_preference.dart';
+import 'package:alex_super_app/features/theme/domain/repositories/theme_repository.dart';
 
 class ThemeRepositoryImpl implements ThemeRepository {
   ThemeRepositoryImpl({required ThemeLocalDataSource localDataSource})

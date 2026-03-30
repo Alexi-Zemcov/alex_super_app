@@ -1,6 +1,5 @@
+import 'package:alex_super_app/features/quiz/domain/entities/quiz_question.dart';
 import 'package:equatable/equatable.dart';
-
-import 'quiz_question.dart';
 
 class Topic extends Equatable {
   const Topic({required this.id, required this.name, required this.questions});

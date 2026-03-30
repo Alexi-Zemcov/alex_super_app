@@ -1,13 +1,12 @@
+import 'package:alex_super_app/app/bloc/app_event.dart';
+import 'package:alex_super_app/app/bloc/app_state.dart';
+import 'package:alex_super_app/features/theme/domain/entities/theme_preference.dart';
+import 'package:alex_super_app/features/theme/domain/usecases/cycle_theme_use_case.dart';
+import 'package:alex_super_app/features/theme/domain/usecases/load_theme_use_case.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../features/theme/domain/entities/theme_preference.dart';
-import '../../features/theme/domain/usecases/cycle_theme.dart';
-import '../../features/theme/domain/usecases/load_theme.dart';
-import 'app_event.dart';
-import 'app_state.dart';
-
 class AppBloc extends Bloc<AppEvent, AppState> {
-  AppBloc({required LoadTheme loadTheme, required CycleTheme cycleTheme})
+  AppBloc({required LoadThemeUseCase loadTheme, required CycleThemeUseCase cycleTheme})
     : _loadTheme = loadTheme,
       _cycleTheme = cycleTheme,
       super(const AppState(themePreference: ThemePreference.dark)) {
@@ -15,8 +14,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     on<AppThemeCycleRequested>(_onThemeCycleRequested);
   }
 
-  final LoadTheme _loadTheme;
-  final CycleTheme _cycleTheme;
+  final LoadThemeUseCase _loadTheme;
+  final CycleThemeUseCase _cycleTheme;
 
   Future<void> _onStarted(AppStarted event, Emitter<AppState> emit) async {
     try {

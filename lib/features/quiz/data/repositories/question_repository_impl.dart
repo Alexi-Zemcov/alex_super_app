@@ -1,9 +1,9 @@
-import '../../domain/entities/quiz_question.dart';
-import '../../domain/entities/ticket.dart';
-import '../../domain/entities/topic.dart';
-import '../../domain/repositories/question_repository.dart';
-import '../../domain/services/quiz_catalog_builder.dart';
-import '../datasources/question_local_data_source.dart';
+import 'package:alex_super_app/features/quiz/data/datasources/question_local_data_source.dart';
+import 'package:alex_super_app/features/quiz/domain/entities/quiz_question.dart';
+import 'package:alex_super_app/features/quiz/domain/entities/ticket.dart';
+import 'package:alex_super_app/features/quiz/domain/entities/topic.dart';
+import 'package:alex_super_app/features/quiz/domain/repositories/question_repository.dart';
+import 'package:alex_super_app/features/quiz/domain/services/quiz_catalog_builder.dart';
 
 class QuestionRepositoryImpl implements QuestionRepository {
   QuestionRepositoryImpl({

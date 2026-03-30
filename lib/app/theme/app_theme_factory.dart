@@ -1,7 +1,6 @@
+import 'package:alex_super_app/app/theme/quiz_colors.dart';
+import 'package:alex_super_app/features/theme/domain/entities/theme_preference.dart';
 import 'package:flutter/material.dart';
-
-import '../../features/theme/domain/entities/theme_preference.dart';
-import 'quiz_colors.dart';
 
 abstract final class AppThemeFactory {
   static ThemeData fromPreference(ThemePreference preference) {

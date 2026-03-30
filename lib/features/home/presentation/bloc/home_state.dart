@@ -1,7 +1,6 @@
+import 'package:alex_super_app/features/home/domain/entities/home_progress.dart';
+import 'package:alex_super_app/features/home/presentation/models/home_destination.dart';
 import 'package:equatable/equatable.dart';
-
-import '../../domain/entities/home_progress.dart';
-import '../models/home_destination.dart';
 
 sealed class HomeState extends Equatable {
   const HomeState();

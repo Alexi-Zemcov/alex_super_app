@@ -1,4 +1,4 @@
-import '../entities/theme_preference.dart';
+import 'package:alex_super_app/features/theme/domain/entities/theme_preference.dart';
 
 abstract interface class ThemeRepository {
   Future<ThemePreference> loadTheme();

@@ -1,9 +1,9 @@
-import '../../../quiz/domain/repositories/progress_repository.dart';
-import '../../../quiz/domain/repositories/question_repository.dart';
-import '../entities/home_progress.dart';
+import 'package:alex_super_app/features/home/domain/entities/home_progress.dart';
+import 'package:alex_super_app/features/quiz/domain/repositories/progress_repository.dart';
+import 'package:alex_super_app/features/quiz/domain/repositories/question_repository.dart';
 
-class GetHomeProgress {
-  const GetHomeProgress({
+class GetHomeProgressUseCase {
+  const GetHomeProgressUseCase({
     required QuestionRepository questionRepository,
     required ProgressRepository progressRepository,
   }) : _questionRepository = questionRepository,

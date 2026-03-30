@@ -1,6 +1,5 @@
+import 'package:alex_super_app/features/theme/domain/entities/theme_preference.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../domain/entities/theme_preference.dart';
 
 abstract interface class ThemeLocalDataSource {
   Future<ThemePreference> loadTheme();

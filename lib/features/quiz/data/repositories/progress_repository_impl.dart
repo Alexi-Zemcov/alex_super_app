@@ -1,7 +1,7 @@
-import '../../domain/entities/question_stats.dart';
-import '../../domain/entities/quiz_question.dart';
-import '../../domain/repositories/progress_repository.dart';
-import '../datasources/progress_local_data_source.dart';
+import 'package:alex_super_app/features/quiz/data/datasources/progress_local_data_source.dart';
+import 'package:alex_super_app/features/quiz/domain/entities/question_stats.dart';
+import 'package:alex_super_app/features/quiz/domain/entities/quiz_question.dart';
+import 'package:alex_super_app/features/quiz/domain/repositories/progress_repository.dart';
 
 class ProgressRepositoryImpl implements ProgressRepository {
   ProgressRepositoryImpl({required ProgressLocalDataSource localDataSource})

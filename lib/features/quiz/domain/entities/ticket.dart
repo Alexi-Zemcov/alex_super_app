@@ -1,6 +1,5 @@
+import 'package:alex_super_app/features/quiz/domain/entities/quiz_question.dart';
 import 'package:equatable/equatable.dart';
-
-import 'quiz_question.dart';
 
 class Ticket extends Equatable {
   const Ticket({required this.id, required this.questions});
