@@ -1,0 +1,31 @@
+name: quiz
+description: Self-contained quiz module for the super app.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.11.0
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  app_theme: ^0.1.0
+  equatable: ^2.0.7
+  flutter_bloc: ^9.1.1
+  module_contracts: ^0.1.0
+  provider: ^6.1.5+1
+  shared_preferences: ^2.5.3
+
+dev_dependencies:
+  bloc_test: ^10.0.0
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/data/questions.json
+    - assets/images/dashatars.png

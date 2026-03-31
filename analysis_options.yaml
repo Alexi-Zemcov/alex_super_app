@@ -20,7 +20,7 @@ analyzer:
   plugins:
     - custom_lint
   exclude:
-    - bricks/**
+    - tools/mason/bricks/**
     - modules/**/lib/**.g.dart
     - lib/**.g.dart
     - lib/**.freezed.dart
@@ -52,11 +52,6 @@ linter:
 
     ## https://dart.dev/tools/linter-rules/sort_constructors_first
     sort_constructors_first: false
-
-
-    ## Conditions should not unconditionally evaluate to true or to false.
-    ## https://dart.dev/tools/linter-rules/invariant_booleans
-    invariant_booleans: false
 
     ###################################################################################################################
     ## Enabled rules.
@@ -542,10 +537,6 @@ linter:
     ## https://dart.dev/tools/linter-rules/only_throw_errors
     only_throw_errors: true
 
-    ## Prefer using a boolean as the assert condition.
-    ## https://dart.dev/tools/linter-rules/prefer_bool_in_asserts
-    prefer_bool_in_asserts: true
-
     ## Prefer if elements to conditional expressions where possible.
     ## https://dart.dev/tools/linter-rules/prefer_if_elements_to_conditional_expressions
     prefer_if_elements_to_conditional_expressions: true
@@ -587,10 +578,6 @@ linter:
     ## A Container is a heavier Widget than a DecoratedBox, and as bonus, DecoratedBox has a const constructor.
     ## https://dart.dev/tools/linter-rules/use_decorated_box
     use_decorated_box: true
-
-    ## Use ?? operators to convert nulls to bools.
-    ## https://dart.dev/tools/linter-rules/use_if_null_to_convert_nulls_to_bools
-    use_if_null_to_convert_nulls_to_bools: true
 
     ## Prefer intValue.isOdd/isEven instead of checking the result of % 2.
     ## https://dart.dev/tools/linter-rules/use_is_even_rather_than_modulo

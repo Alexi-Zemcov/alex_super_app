@@ -1,28 +1,63 @@
-# alex_super_app
+# alex-super-app
 
-A new Flutter project.
+Flutter monorepo for a personal super app of pet projects, built on Dart/Flutter workspaces.
 
-## Flutter SDK (FVM)
+## Workspace Layout
 
-This repo pins the Flutter SDK with [FVM](https://fvm.app/). After cloning, install the configured SDK and use FVM for CLI commands:
+```text
+apps/
+  super_app/
+
+modules/
+  quiz/
+  circle_of_fifths/
+
+packages/
+  core/
+    app_theme/
+    design_system/
+    module_contracts/
+  integrations/
+
+tools/
+  mason/
+  scripts/
+```
+
+## Flutter SDK
+
+This repo uses [FVM](https://fvm.app/) and pins Flutter in [`.fvmrc`](./.fvmrc).
 
 ```sh
 fvm install
-fvm flutter run
-fvm dart …
+fvm flutter pub get
 ```
 
-VS Code / Cursor: `dart.flutterSdkPath` is set to `.fvm/flutter_sdk` in [`.vscode/settings.json`](.vscode/settings.json).
+## Common Commands
 
-## Getting Started
+Resolve the whole workspace from the repository root:
 
-This project is a starting point for a Flutter application.
+```sh
+fvm flutter pub get
+fvm dart pub workspace list
+```
 
-A few resources to get you started if this is your first Flutter project:
+Run the current app shell:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+```sh
+cd apps/super_app
+fvm flutter run
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Run tests for a member package:
+
+```sh
+cd modules/quiz
+fvm flutter test
+```
+
+## Notes
+
+- The repository root is a workspace root, not a runnable Flutter app.
+- `apps/super_app` is the current executable shell.
+- `modules/circle_of_fifths`, `packages/core/design_system`, and `packages/integrations` are reserved for future packages and intentionally do not have `pubspec.yaml` files yet.
