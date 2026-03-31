@@ -16,6 +16,7 @@ dependencies:
   flutter_bloc: ^9.1.1
   module_contracts: ^0.1.0
   provider: ^6.1.5+1
+  scoped_di: ^0.1.0
   shared_preferences: ^2.5.3
 
 dev_dependencies:

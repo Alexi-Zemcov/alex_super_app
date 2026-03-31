@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
-
-import 'package:quiz/src/di/scope_module.dart';
+import 'package:scoped_di/src/scope_module.dart';
 
 class FeatureScope extends StatelessWidget {
   const FeatureScope({required this.modules, required this.child, super.key});

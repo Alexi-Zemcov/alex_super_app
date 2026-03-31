@@ -2,7 +2,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
-import 'package:quiz/src/di/scope_module.dart';
 import 'package:quiz/src/features/quiz/data/datasources/progress_local_data_source.dart';
 import 'package:quiz/src/features/quiz/data/datasources/question_local_data_source.dart';
 import 'package:quiz/src/features/quiz/data/repositories/progress_repository_impl.dart';
@@ -10,6 +9,7 @@ import 'package:quiz/src/features/quiz/data/repositories/question_repository_imp
 import 'package:quiz/src/features/quiz/domain/repositories/progress_repository.dart';
 import 'package:quiz/src/features/quiz/domain/repositories/question_repository.dart';
 import 'package:quiz/src/features/quiz/domain/services/quiz_catalog_builder.dart';
+import 'package:scoped_di/scoped_di.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class QuizDataModule extends ScopeModule {
@@ -36,8 +36,9 @@ class QuizDataModule extends ScopeModule {
       ),
     ),
     RepositoryProvider<ProgressRepository>(
-      create: (context) =>
-          ProgressRepositoryImpl(localDataSource: context.read<ProgressLocalDataSource>()),
+      create: (context) => ProgressRepositoryImpl(
+        localDataSource: context.read<ProgressLocalDataSource>(),
+      ),
     ),
   ];
 }

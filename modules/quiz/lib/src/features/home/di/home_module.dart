@@ -1,13 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
-
-import 'package:quiz/src/di/scope_module.dart';
 import 'package:quiz/src/features/home/domain/usecases/get_home_progress_use_case.dart';
 import 'package:quiz/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:quiz/src/features/home/presentation/bloc/home_event.dart';
 import 'package:quiz/src/features/quiz/domain/repositories/progress_repository.dart';
 import 'package:quiz/src/features/quiz/domain/repositories/question_repository.dart';
+import 'package:scoped_di/scoped_di.dart';
 
 class HomeModule extends ScopeModule {
   const HomeModule();

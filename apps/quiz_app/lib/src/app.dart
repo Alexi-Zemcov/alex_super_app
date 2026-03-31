@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:quiz/quiz.dart';
+import 'package:quiz_app/src/di/quiz_app_scope_module.dart';
+import 'package:scoped_di/scoped_di.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class QuizApp extends StatelessWidget {
@@ -19,11 +21,13 @@ class QuizApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        Provider<AssetBundle>.value(value: assetBundle),
-        Provider<SharedPreferences>.value(value: sharedPreferences),
-        ChangeNotifierProvider<AppThemeController>.value(value: themeController),
+    return FeatureScope(
+      modules: [
+        QuizAppScopeModule(
+          sharedPreferences: sharedPreferences,
+          themeController: themeController,
+          assetBundle: assetBundle,
+        ),
       ],
       child: Consumer<AppThemeController>(
         builder: (context, controller, child) {

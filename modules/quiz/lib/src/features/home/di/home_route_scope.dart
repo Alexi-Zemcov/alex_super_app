@@ -1,8 +1,7 @@
 import 'package:flutter/widgets.dart';
-
-import 'package:quiz/src/di/route_scope.dart';
 import 'package:quiz/src/features/home/di/home_module.dart';
 import 'package:quiz/src/features/home/presentation/pages/home_page.dart';
+import 'package:scoped_di/scoped_di.dart';
 
 class HomeRouteScope extends StatelessWidget {
   const HomeRouteScope({super.key});
