@@ -5,6 +5,7 @@ environment:
   sdk: ^3.11.0
 
 workspace:
+  - apps/quiz_app
   - apps/super_app
   - modules/quiz
   - packages/core/app_theme
