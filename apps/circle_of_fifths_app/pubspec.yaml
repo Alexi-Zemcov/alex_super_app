@@ -1,0 +1,26 @@
+name: circle_of_fifths_app
+description: Shell application that launches the Circle of Fifths module directly.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.11.0
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  app_theme: ^0.1.0
+  circle_of_fifths: ^0.1.0
+  provider: ^6.1.5+1
+  scoped_di: ^0.1.0
+  shared_preferences: ^2.5.3
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

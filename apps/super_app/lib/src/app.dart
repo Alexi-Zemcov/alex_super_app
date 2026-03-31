@@ -1,4 +1,5 @@
 import 'package:app_theme/app_theme.dart';
+import 'package:circle_of_fifths/circle_of_fifths.dart';
 import 'package:flutter/material.dart';
 import 'package:module_contracts/module_contracts.dart';
 import 'package:provider/provider.dart';
@@ -14,7 +15,7 @@ class SuperApp extends StatelessWidget {
     required this.themeController,
     List<AppModuleDescriptor>? modules,
     super.key,
-  }) : modules = modules ?? [quizModule];
+  }) : modules = modules ?? [quizModule, circleOfFifthsModule];
 
   final SharedPreferences sharedPreferences;
   final AppThemeController themeController;
