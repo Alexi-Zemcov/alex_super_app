@@ -1,12 +1,13 @@
-# quiz_app
+# super_app
 
-Отдельное приложение-хост для прямого запуска модуля `quiz` без super app shell.
+Shell-приложение workspace. Отвечает за composition root, публикацию app-level зависимостей и подключение продуктовых модулей.
 
 ## Основные точки входа
 
 - `lib/main.dart` - запуск приложения
-- `lib/src/app.dart` - сборка `MaterialApp` и подключение `quizModule`
-- `lib/src/di/quiz_app_scope_module.dart` - app-level DI для standalone host
+- `lib/src/app.dart` - сборка `MaterialApp` и список подключённых модулей
+- `lib/src/di/super_app_scope_module.dart` - shell-level DI
+- `lib/src/shell/dashboard_page.dart` - UI верхнего уровня для каталога модулей
 
 ## Актуальные docs
 
