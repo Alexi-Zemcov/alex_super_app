@@ -7,6 +7,7 @@ import 'package:quiz/src/features/home/presentation/screens/home/bloc/home_event
 import 'package:quiz/src/features/home/presentation/screens/home/bloc/home_state.dart';
 import 'package:quiz/src/features/home/presentation/screens/home/models/home_destination.dart';
 import 'package:quiz/src/features/home/presentation/screens/home/models/home_destination_tone.dart';
+import 'package:quiz/src/navigation/quiz_routes.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -30,10 +31,7 @@ class HomeScreen extends StatelessWidget {
         final destination = currentState.pendingDestination!;
 
         context.read<HomeBloc>().add(const HomeNavigationHandled());
-        await Navigator.of(context).pushNamed(
-          destination.routeName,
-          arguments: destination.routeArguments,
-        );
+        await _pushDestination(context, destination);
         if (!context.mounted) {
           return;
         }
@@ -55,6 +53,26 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+Future<void> _pushDestination(
+  BuildContext context,
+  HomeDestination destination,
+) {
+  switch (destination) {
+    case HomeDestination.tickets:
+      return const QuizTicketsRoute().push<void>(context);
+    case HomeDestination.blitz:
+      return const QuizBlitzRoute().push<void>(context);
+    case HomeDestination.topics:
+      return const QuizTopicsRoute().push<void>(context);
+    case HomeDestination.marathon:
+      return const QuizMarathonRoute().push<void>(context);
+    case HomeDestination.errors:
+      return const QuizErrorsRoute().push<void>(context);
+    case HomeDestination.favorites:
+      return const QuizFavoritesRoute().push<void>(context);
   }
 }
 

@@ -2,6 +2,7 @@ import 'package:app_theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:quiz/quiz.dart';
@@ -28,10 +29,7 @@ void main() {
     expect(find.text('0 / 2'), findsOneWidget);
 
     await tester.tap(
-      find.descendant(
-        of: find.byType(GridView),
-        matching: find.text('Билеты'),
-      ),
+      find.descendant(of: find.byType(GridView), matching: find.text('Билеты')),
     );
     await tester.pumpAndSettle();
 
@@ -60,6 +58,11 @@ class _QuizTestApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final router = GoRouter(
+      initialLocation: quizModule.entryLocation,
+      routes: [quizModule.rootRoute],
+    );
+
     return FeatureScope(
       modules: [
         _QuizTestScopeModule(
@@ -70,9 +73,9 @@ class _QuizTestApp extends StatelessWidget {
       ],
       child: Consumer<AppThemeController>(
         builder: (context, controller, child) {
-          return MaterialApp(
+          return MaterialApp.router(
             theme: controller.themeData,
-            home: Builder(builder: quizModule.rootPageBuilder),
+            routerConfig: router,
           );
         },
       ),

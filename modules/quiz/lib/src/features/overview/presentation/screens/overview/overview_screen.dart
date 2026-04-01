@@ -5,7 +5,7 @@ import 'package:quiz/src/features/overview/presentation/screens/overview/bloc/ov
 import 'package:quiz/src/features/overview/presentation/screens/overview/bloc/overview_event.dart';
 import 'package:quiz/src/features/overview/presentation/screens/overview/bloc/overview_state.dart';
 import 'package:quiz/src/features/quiz/domain/entities/quiz_mode.dart';
-import 'package:quiz/src/navigation/quiz_route_names.dart';
+import 'package:quiz/src/navigation/quiz_routes.dart';
 
 class OverviewScreen extends StatelessWidget {
   const OverviewScreen({required this.mode, super.key});
@@ -30,9 +30,7 @@ class OverviewScreen extends StatelessWidget {
         final navigation = currentState.pendingNavigation!;
 
         context.read<OverviewBloc>().add(const OverviewNavigationHandled());
-        await Navigator.of(
-          context,
-        ).pushNamed(QuizRouteNames.quizFlow, arguments: navigation);
+        await _pushOverviewNavigation(context, navigation.mode);
         if (!context.mounted) {
           return;
         }
@@ -234,15 +232,28 @@ class _EmptyOverview extends StatelessWidget {
           const SizedBox(height: 20),
           FilledButton(
             onPressed: () {
-              Navigator.of(
-                context,
-              ).popUntil((route) => route.settings.name == QuizRouteNames.home);
+              const QuizHomeRoute().go(context);
             },
             child: const Text('На главную'),
           ),
         ],
       ],
     );
+  }
+}
+
+Future<void> _pushOverviewNavigation(BuildContext context, QuizMode mode) {
+  switch (mode) {
+    case QuizMode.marathon:
+      return const QuizMarathonRunRoute().push<void>(context);
+    case QuizMode.errors:
+      return const QuizErrorsRunRoute().push<void>(context);
+    case QuizMode.favorites:
+      return const QuizFavoritesRunRoute().push<void>(context);
+    case QuizMode.ticket:
+    case QuizMode.blitz:
+    case QuizMode.topic:
+      throw StateError('Unsupported overview navigation mode: $mode');
   }
 }
 

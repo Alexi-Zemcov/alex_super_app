@@ -9,7 +9,7 @@ import 'package:quiz/src/features/quiz/domain/entities/quiz_session.dart';
 import 'package:quiz/src/features/quiz_flow/presentation/screens/quiz_flow/bloc/quiz_flow_bloc.dart';
 import 'package:quiz/src/features/quiz_flow/presentation/screens/quiz_flow/bloc/quiz_flow_event.dart';
 import 'package:quiz/src/features/quiz_flow/presentation/screens/quiz_flow/bloc/quiz_flow_state.dart';
-import 'package:quiz/src/navigation/quiz_route_names.dart';
+import 'package:quiz/src/navigation/quiz_routes.dart';
 
 class QuizFlowScreen extends StatelessWidget {
   const QuizFlowScreen({super.key});
@@ -74,9 +74,7 @@ class QuizFlowScreen extends StatelessWidget {
   }
 
   static void _goHome(BuildContext context) {
-    Navigator.of(
-      context,
-    ).popUntil((route) => route.settings.name == QuizRouteNames.home);
+    const QuizHomeRoute().go(context);
   }
 }
 

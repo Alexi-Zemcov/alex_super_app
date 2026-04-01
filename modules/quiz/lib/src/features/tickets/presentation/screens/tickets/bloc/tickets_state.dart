@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:quiz/src/features/tickets/presentation/screens/tickets/models/ticket_list_item.dart';
 import 'package:quiz/src/features/tickets/presentation/screens/tickets/models/ticket_resume_prompt.dart';
-import 'package:quiz/src/navigation/quiz_flow_route_args.dart';
+import 'package:quiz/src/navigation/quiz_flow_intent.dart';
 
 sealed class TicketsState extends Equatable {
   const TicketsState();
@@ -27,12 +27,12 @@ final class TicketsLoaded extends TicketsState {
 
   final List<TicketListItem> tickets;
   final TicketResumePrompt? pendingResumePrompt;
-  final QuizFlowRouteArgs? pendingNavigation;
+  final QuizFlowIntent? pendingNavigation;
 
   TicketsLoaded copyWith({
     TicketResumePrompt? pendingResumePrompt,
     bool clearPrompt = false,
-    QuizFlowRouteArgs? pendingNavigation,
+    QuizFlowIntent? pendingNavigation,
     bool clearNavigation = false,
   }) {
     return TicketsLoaded(

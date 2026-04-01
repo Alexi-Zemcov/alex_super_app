@@ -38,6 +38,28 @@ void main() {
       expect(themeController.themePreference, ThemePreference.white);
     },
   );
+
+  testWidgets('opens /circle/settings directly after bootstrap', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final sharedPreferences = await SharedPreferences.getInstance();
+    final themeController = AppThemeController();
+
+    await tester.pumpWidget(
+      Provider<AudioPlaybackService>.value(
+        value: _FakeAudioPlaybackService(),
+        child: CircleOfFifthsApp(
+          sharedPreferences: sharedPreferences,
+          themeController: themeController,
+          initialLocation: '/circle/settings',
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Settings'), findsOneWidget);
+  });
 }
 
 class _FakeAudioPlaybackService implements AudioPlaybackService {

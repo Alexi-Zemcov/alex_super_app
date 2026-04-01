@@ -6,7 +6,7 @@ import 'package:quiz/src/features/tickets/presentation/screens/tickets/bloc/tick
 import 'package:quiz/src/features/tickets/presentation/screens/tickets/bloc/tickets_state.dart';
 import 'package:quiz/src/features/tickets/presentation/screens/tickets/models/ticket_list_item.dart';
 import 'package:quiz/src/features/tickets/presentation/screens/tickets/models/ticket_resume_prompt.dart';
-import 'package:quiz/src/navigation/quiz_flow_route_args.dart';
+import 'package:quiz/src/navigation/quiz_flow_intent.dart';
 
 class TicketsBloc extends Bloc<TicketsEvent, TicketsState> {
   TicketsBloc({
@@ -105,9 +105,7 @@ class TicketsBloc extends Bloc<TicketsEvent, TicketsState> {
 
     emit(
       currentState.copyWith(
-        pendingNavigation: QuizFlowRouteArgs.ticket(
-          ticketId: selectedTicket.id,
-        ),
+        pendingNavigation: QuizFlowIntent.ticket(ticketId: selectedTicket.id),
         clearPrompt: true,
       ),
     );
@@ -125,7 +123,7 @@ class TicketsBloc extends Bloc<TicketsEvent, TicketsState> {
     emit(
       currentState.copyWith(
         clearPrompt: true,
-        pendingNavigation: QuizFlowRouteArgs.ticket(
+        pendingNavigation: QuizFlowIntent.ticket(
           ticketId: event.ticketId,
           startBehavior: QuizStartBehavior.resume,
         ),
@@ -145,7 +143,7 @@ class TicketsBloc extends Bloc<TicketsEvent, TicketsState> {
     emit(
       currentState.copyWith(
         clearPrompt: true,
-        pendingNavigation: QuizFlowRouteArgs.ticket(
+        pendingNavigation: QuizFlowIntent.ticket(
           ticketId: event.ticketId,
           startBehavior: QuizStartBehavior.restartWithReset,
         ),

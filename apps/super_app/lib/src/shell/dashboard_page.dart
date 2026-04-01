@@ -1,19 +1,22 @@
 import 'package:app_theme/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:module_contracts/module_contracts.dart';
 import 'package:provider/provider.dart';
 
 class DashboardPage extends StatelessWidget {
-  const DashboardPage({required this.modules, super.key});
-
-  final List<AppModuleDescriptor> modules;
+  const DashboardPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final colors = context.quizColors;
+    final modules = context.watch<List<AppModuleDescriptor>>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Alex Super App'), actions: const [_DashboardThemeToggle()]),
+      appBar: AppBar(
+        title: const Text('Alex Super App'),
+        actions: const [_DashboardThemeToggle()],
+      ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(20),
@@ -38,10 +41,11 @@ class DashboardPage extends StatelessWidget {
                   children: [
                     Text(
                       'Каталог модулей',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: colors.textStrong,
-                        fontWeight: FontWeight.w800,
-                      ),
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(
+                            color: colors.textStrong,
+                            fontWeight: FontWeight.w800,
+                          ),
                     ),
                     const SizedBox(height: 10),
                     Text(
@@ -53,9 +57,9 @@ class DashboardPage extends StatelessWidget {
                     const SizedBox(height: 16),
                     Text(
                       '${modules.length} модуль${modules.length == 1 ? '' : 'я'} доступно сейчас',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.titleMedium?.copyWith(color: colors.textMuted),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: colors.textMuted,
+                      ),
                     ),
                   ],
                 ),
@@ -84,7 +88,10 @@ class _DashboardThemeToggle extends StatelessWidget {
       padding: const EdgeInsets.only(right: 8),
       child: TextButton(
         onPressed: controller.cycleTheme,
-        child: Text(controller.themePreference.icon, style: const TextStyle(fontSize: 24)),
+        child: Text(
+          controller.themePreference.icon,
+          style: const TextStyle(fontSize: 24),
+        ),
       ),
     );
   }
@@ -122,7 +129,11 @@ class _ModuleCard extends StatelessWidget {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(12),
-                      child: Icon(module.icon, color: colors.accentBlue, size: 28),
+                      child: Icon(
+                        module.icon,
+                        color: colors.accentBlue,
+                        size: 28,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -132,17 +143,17 @@ class _ModuleCard extends StatelessWidget {
                       children: [
                         Text(
                           module.title,
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: colors.textStrong,
-                            fontWeight: FontWeight.w800,
-                          ),
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(
+                                color: colors.textStrong,
+                                fontWeight: FontWeight.w800,
+                              ),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           module.description,
-                          style: Theme.of(
-                            context,
-                          ).textTheme.bodyMedium?.copyWith(color: colors.textSoft),
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: colors.textSoft),
                         ),
                       ],
                     ),
@@ -167,11 +178,6 @@ class _ModuleCard extends StatelessWidget {
   }
 
   Future<void> _openModule(BuildContext context) async {
-    await Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        settings: RouteSettings(name: '/module/${module.id}'),
-        builder: module.rootPageBuilder,
-      ),
-    );
+    await context.push(module.entryLocation);
   }
 }

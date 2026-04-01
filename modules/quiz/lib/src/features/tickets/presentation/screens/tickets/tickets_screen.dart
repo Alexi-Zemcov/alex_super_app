@@ -5,7 +5,8 @@ import 'package:quiz/src/features/tickets/presentation/screens/tickets/bloc/tick
 import 'package:quiz/src/features/tickets/presentation/screens/tickets/bloc/tickets_event.dart';
 import 'package:quiz/src/features/tickets/presentation/screens/tickets/bloc/tickets_state.dart';
 import 'package:quiz/src/features/tickets/presentation/screens/tickets/models/ticket_list_item.dart';
-import 'package:quiz/src/navigation/quiz_route_names.dart';
+import 'package:quiz/src/navigation/quiz_flow_intent.dart';
+import 'package:quiz/src/navigation/quiz_routes.dart';
 
 class TicketsScreen extends StatelessWidget {
   const TicketsScreen({super.key});
@@ -88,9 +89,10 @@ class TicketsScreen extends StatelessWidget {
             final navigation = currentState.pendingNavigation!;
 
             context.read<TicketsBloc>().add(const TicketsNavigationHandled());
-            await Navigator.of(
-              context,
-            ).pushNamed(QuizRouteNames.quizFlow, arguments: navigation);
+            await QuizTicketRoute(
+              ticketId: navigation.ticketId!,
+              startBehavior: navigation.startBehavior.queryValue,
+            ).push<void>(context);
             if (!context.mounted) {
               return;
             }

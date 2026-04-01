@@ -4,7 +4,7 @@ import 'package:quiz/src/features/overview/presentation/screens/overview/bloc/ov
 import 'package:quiz/src/features/quiz/domain/entities/quiz_mode.dart';
 import 'package:quiz/src/features/quiz/domain/repositories/progress_repository.dart';
 import 'package:quiz/src/features/quiz/domain/repositories/question_repository.dart';
-import 'package:quiz/src/navigation/quiz_flow_route_args.dart';
+import 'package:quiz/src/navigation/quiz_flow_intent.dart';
 
 class OverviewBloc extends Bloc<OverviewEvent, OverviewState> {
   OverviewBloc({
@@ -73,9 +73,9 @@ class OverviewBloc extends Bloc<OverviewEvent, OverviewState> {
     }
 
     final navigation = switch (_mode) {
-      QuizMode.marathon => const QuizFlowRouteArgs.marathon(),
-      QuizMode.errors => const QuizFlowRouteArgs.errors(),
-      QuizMode.favorites => const QuizFlowRouteArgs.favorites(),
+      QuizMode.marathon => const QuizFlowIntent.marathon(),
+      QuizMode.errors => const QuizFlowIntent.errors(),
+      QuizMode.favorites => const QuizFlowIntent.favorites(),
       QuizMode.ticket || QuizMode.blitz || QuizMode.topic => null,
     };
 

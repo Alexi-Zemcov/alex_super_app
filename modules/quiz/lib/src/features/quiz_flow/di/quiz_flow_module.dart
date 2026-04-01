@@ -9,23 +9,23 @@ import 'package:quiz/src/features/quiz/domain/usecases/submit_answer_use_case.da
 import 'package:quiz/src/features/quiz/domain/usecases/toggle_favorite_use_case.dart';
 import 'package:quiz/src/features/quiz_flow/presentation/screens/quiz_flow/bloc/quiz_flow_bloc.dart';
 import 'package:quiz/src/features/quiz_flow/presentation/screens/quiz_flow/bloc/quiz_flow_event.dart';
-import 'package:quiz/src/navigation/quiz_flow_route_args.dart';
+import 'package:quiz/src/navigation/quiz_flow_intent.dart';
 import 'package:scoped_di/scoped_di.dart';
 
 class QuizFlowModule extends ScopeModule {
-  const QuizFlowModule({required this.routeArgs});
+  const QuizFlowModule({required this.intent});
 
-  final QuizFlowRouteArgs routeArgs;
+  final QuizFlowIntent intent;
 
   @override
   String get moduleId =>
-      'QuizFlowModule:${routeArgs.mode.name}:${routeArgs.startBehavior.name}:${routeArgs.ticketId}:${routeArgs.topicId}';
+      'QuizFlowModule:${intent.mode.name}:${intent.startBehavior.name}:${intent.ticketId}:${intent.topicId}';
 
   @override
   List<SingleChildWidget> get providers => [
     BlocProvider<QuizFlowBloc>(
       create: (context) => QuizFlowBloc(
-        startRequest: routeArgs.toStartRequest(),
+        startRequest: intent.toStartRequest(),
         startQuizFlow: context.read<StartQuizFlowUseCase>(),
         submitAnswer: context.read<SubmitAnswerUseCase>(),
         getFavorites: context.read<GetFavoritesUseCase>(),

@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class AppModuleDescriptor {
-  const AppModuleDescriptor({
+  AppModuleDescriptor({
     required this.id,
     required this.title,
     required this.description,
     required this.icon,
-    required this.rootPageBuilder,
+    required this.entryLocation,
+    required this.rootRoute,
   });
 
   final String id;
   final String title;
   final String description;
   final IconData icon;
-  final WidgetBuilder rootPageBuilder;
+  final String entryLocation;
+  final RouteBase rootRoute;
 }

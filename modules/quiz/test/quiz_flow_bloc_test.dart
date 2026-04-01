@@ -13,7 +13,7 @@ import 'package:quiz/src/features/quiz/domain/usecases/toggle_favorite_use_case.
 import 'package:quiz/src/features/quiz_flow/presentation/screens/quiz_flow/bloc/quiz_flow_bloc.dart';
 import 'package:quiz/src/features/quiz_flow/presentation/screens/quiz_flow/bloc/quiz_flow_event.dart';
 import 'package:quiz/src/features/quiz_flow/presentation/screens/quiz_flow/bloc/quiz_flow_state.dart';
-import 'package:quiz/src/navigation/quiz_flow_route_args.dart';
+import 'package:quiz/src/navigation/quiz_flow_intent.dart';
 
 import 'test_support.dart';
 
@@ -32,7 +32,7 @@ void main() {
         final bloc = _buildBloc(
           questionRepository: questionRepository,
           progressRepository: progressRepository,
-          routeArgs: const QuizFlowRouteArgs.marathon(),
+          intent: const QuizFlowIntent.marathon(),
         );
 
         bloc.add(const QuizFlowStarted());
@@ -71,7 +71,7 @@ void main() {
         final bloc = _buildBloc(
           questionRepository: questionRepository,
           progressRepository: progressRepository,
-          routeArgs: const QuizFlowRouteArgs.blitz(),
+          intent: const QuizFlowIntent.blitz(),
         );
 
         bloc.add(const QuizFlowStarted());
@@ -103,7 +103,7 @@ void main() {
 QuizFlowBloc _buildBloc({
   required InMemoryQuestionRepository questionRepository,
   required InMemoryProgressRepository progressRepository,
-  required QuizFlowRouteArgs routeArgs,
+  required QuizFlowIntent intent,
 }) {
   final startQuizFlow = StartQuizFlowUseCase(
     questionRepository: questionRepository,
@@ -113,7 +113,7 @@ QuizFlowBloc _buildBloc({
   );
 
   return QuizFlowBloc(
-    startRequest: routeArgs.toStartRequest(),
+    startRequest: intent.toStartRequest(),
     startQuizFlow: startQuizFlow,
     submitAnswer: SubmitAnswerUseCase(progressRepository: progressRepository),
     getFavorites: GetFavoritesUseCase(progressRepository: progressRepository),

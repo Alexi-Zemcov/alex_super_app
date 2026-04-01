@@ -4,7 +4,7 @@ import 'package:quiz/src/features/quiz/domain/repositories/question_repository.d
 import 'package:quiz/src/features/topics/presentation/screens/topics/bloc/topics_event.dart';
 import 'package:quiz/src/features/topics/presentation/screens/topics/bloc/topics_state.dart';
 import 'package:quiz/src/features/topics/presentation/screens/topics/models/topic_list_item.dart';
-import 'package:quiz/src/navigation/quiz_flow_route_args.dart';
+import 'package:quiz/src/navigation/quiz_flow_intent.dart';
 
 class TopicsBloc extends Bloc<TopicsEvent, TopicsState> {
   TopicsBloc({
@@ -60,7 +60,7 @@ class TopicsBloc extends Bloc<TopicsEvent, TopicsState> {
 
     emit(
       currentState.copyWith(
-        pendingNavigation: QuizFlowRouteArgs.topic(topicId: event.topicId),
+        pendingNavigation: QuizFlowIntent.topic(topicId: event.topicId),
       ),
     );
   }

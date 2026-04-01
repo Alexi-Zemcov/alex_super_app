@@ -5,7 +5,7 @@ import 'package:quiz/src/features/topics/presentation/screens/topics/bloc/topics
 import 'package:quiz/src/features/topics/presentation/screens/topics/bloc/topics_event.dart';
 import 'package:quiz/src/features/topics/presentation/screens/topics/bloc/topics_state.dart';
 import 'package:quiz/src/features/topics/presentation/screens/topics/models/topic_list_item.dart';
-import 'package:quiz/src/navigation/quiz_route_names.dart';
+import 'package:quiz/src/navigation/quiz_routes.dart';
 
 class TopicsScreen extends StatelessWidget {
   const TopicsScreen({super.key});
@@ -28,9 +28,7 @@ class TopicsScreen extends StatelessWidget {
         final navigation = currentState.pendingNavigation!;
 
         context.read<TopicsBloc>().add(const TopicsNavigationHandled());
-        await Navigator.of(
-          context,
-        ).pushNamed(QuizRouteNames.quizFlow, arguments: navigation);
+        await QuizTopicRoute(topicId: navigation.topicId!).push<void>(context);
         if (!context.mounted) {
           return;
         }

@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:quiz/src/features/topics/presentation/screens/topics/models/topic_list_item.dart';
-import 'package:quiz/src/navigation/quiz_flow_route_args.dart';
+import 'package:quiz/src/navigation/quiz_flow_intent.dart';
 
 sealed class TopicsState extends Equatable {
   const TopicsState();
@@ -21,10 +21,10 @@ final class TopicsLoaded extends TopicsState {
   const TopicsLoaded({required this.topics, this.pendingNavigation});
 
   final List<TopicListItem> topics;
-  final QuizFlowRouteArgs? pendingNavigation;
+  final QuizFlowIntent? pendingNavigation;
 
   TopicsLoaded copyWith({
-    QuizFlowRouteArgs? pendingNavigation,
+    QuizFlowIntent? pendingNavigation,
     bool clearNavigation = false,
   }) {
     return TopicsLoaded(

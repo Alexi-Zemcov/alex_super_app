@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:quiz/src/navigation/quiz_flow_route_args.dart';
+import 'package:quiz/src/navigation/quiz_flow_intent.dart';
 
 sealed class OverviewState extends Equatable {
   const OverviewState();
@@ -20,12 +20,12 @@ final class OverviewLoaded extends OverviewState {
   const OverviewLoaded({required this.count, this.pendingNavigation});
 
   final int count;
-  final QuizFlowRouteArgs? pendingNavigation;
+  final QuizFlowIntent? pendingNavigation;
 
   bool get isEmpty => count == 0;
 
   OverviewLoaded copyWith({
-    QuizFlowRouteArgs? pendingNavigation,
+    QuizFlowIntent? pendingNavigation,
     bool clearNavigation = false,
   }) {
     return OverviewLoaded(

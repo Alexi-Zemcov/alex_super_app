@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:quiz/src/features/home/presentation/screens/home/models/home_destination_tone.dart';
-import 'package:quiz/src/navigation/quiz_flow_route_args.dart';
-import 'package:quiz/src/navigation/quiz_route_names.dart';
 
 enum HomeDestination {
   tickets,
@@ -56,38 +54,6 @@ enum HomeDestination {
       case HomeDestination.errors:
       case HomeDestination.favorites:
         return HomeDestinationTone.dark;
-    }
-  }
-}
-
-extension HomeDestinationNavigationX on HomeDestination {
-  String get routeName {
-    switch (this) {
-      case HomeDestination.tickets:
-        return QuizRouteNames.tickets;
-      case HomeDestination.blitz:
-        return QuizRouteNames.quizFlow;
-      case HomeDestination.topics:
-        return QuizRouteNames.topics;
-      case HomeDestination.marathon:
-        return QuizRouteNames.marathon;
-      case HomeDestination.errors:
-        return QuizRouteNames.errors;
-      case HomeDestination.favorites:
-        return QuizRouteNames.favorites;
-    }
-  }
-
-  Object? get routeArguments {
-    switch (this) {
-      case HomeDestination.blitz:
-        return const QuizFlowRouteArgs.blitz();
-      case HomeDestination.tickets:
-      case HomeDestination.topics:
-      case HomeDestination.marathon:
-      case HomeDestination.errors:
-      case HomeDestination.favorites:
-        return null;
     }
   }
 }

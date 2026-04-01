@@ -7,9 +7,7 @@ import 'package:quiz/src/features/quiz/domain/services/quiz_catalog_builder.dart
 
 void main() {
   test('builds tickets and topics from the bundled dataset', () async {
-    final rawJson = await File(
-      'modules/quiz/assets/data/questions.json',
-    ).readAsString();
+    final rawJson = await File('assets/data/questions.json').readAsString();
     final decoded = jsonDecode(rawJson) as List<dynamic>;
     final questions = decoded
         .map(

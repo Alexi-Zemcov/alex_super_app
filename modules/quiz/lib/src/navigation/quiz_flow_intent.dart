@@ -3,15 +3,15 @@ import 'package:quiz/src/features/quiz/domain/entities/quiz_mode.dart';
 import 'package:quiz/src/features/quiz/domain/entities/quiz_start_behavior.dart';
 import 'package:quiz/src/features/quiz/domain/entities/quiz_start_request.dart';
 
-class QuizFlowRouteArgs extends Equatable {
-  const QuizFlowRouteArgs._({
+class QuizFlowIntent extends Equatable {
+  const QuizFlowIntent._({
     required this.mode,
     required this.startBehavior,
     this.ticketId,
     this.topicId,
   });
 
-  const QuizFlowRouteArgs.ticket({
+  const QuizFlowIntent.ticket({
     required int ticketId,
     QuizStartBehavior startBehavior = QuizStartBehavior.fresh,
   }) : this._(
@@ -20,23 +20,23 @@ class QuizFlowRouteArgs extends Equatable {
          ticketId: ticketId,
        );
 
-  const QuizFlowRouteArgs.blitz()
+  const QuizFlowIntent.blitz()
     : this._(mode: QuizMode.blitz, startBehavior: QuizStartBehavior.fresh);
 
-  const QuizFlowRouteArgs.topic({required int topicId})
+  const QuizFlowIntent.topic({required int topicId})
     : this._(
         mode: QuizMode.topic,
         startBehavior: QuizStartBehavior.fresh,
         topicId: topicId,
       );
 
-  const QuizFlowRouteArgs.marathon()
+  const QuizFlowIntent.marathon()
     : this._(mode: QuizMode.marathon, startBehavior: QuizStartBehavior.fresh);
 
-  const QuizFlowRouteArgs.errors()
+  const QuizFlowIntent.errors()
     : this._(mode: QuizMode.errors, startBehavior: QuizStartBehavior.fresh);
 
-  const QuizFlowRouteArgs.favorites()
+  const QuizFlowIntent.favorites()
     : this._(mode: QuizMode.favorites, startBehavior: QuizStartBehavior.fresh);
 
   final QuizMode mode;
@@ -44,20 +44,20 @@ class QuizFlowRouteArgs extends Equatable {
   final int? ticketId;
   final int? topicId;
 
-  QuizFlowRouteArgs freshRetryArgs() {
+  QuizFlowIntent freshRetryIntent() {
     switch (mode) {
       case QuizMode.ticket:
-        return QuizFlowRouteArgs.ticket(ticketId: ticketId!);
+        return QuizFlowIntent.ticket(ticketId: ticketId!);
       case QuizMode.blitz:
-        return const QuizFlowRouteArgs.blitz();
+        return const QuizFlowIntent.blitz();
       case QuizMode.topic:
-        return QuizFlowRouteArgs.topic(topicId: topicId!);
+        return QuizFlowIntent.topic(topicId: topicId!);
       case QuizMode.marathon:
-        return const QuizFlowRouteArgs.marathon();
+        return const QuizFlowIntent.marathon();
       case QuizMode.errors:
-        return const QuizFlowRouteArgs.errors();
+        return const QuizFlowIntent.errors();
       case QuizMode.favorites:
-        return const QuizFlowRouteArgs.favorites();
+        return const QuizFlowIntent.favorites();
     }
   }
 
@@ -65,7 +65,7 @@ class QuizFlowRouteArgs extends Equatable {
   List<Object?> get props => [mode, startBehavior, ticketId, topicId];
 }
 
-extension QuizFlowRouteArgsX on QuizFlowRouteArgs {
+extension QuizFlowIntentX on QuizFlowIntent {
   QuizStartRequest toStartRequest() {
     return QuizStartRequest(
       mode: mode,
@@ -74,4 +74,26 @@ extension QuizFlowRouteArgsX on QuizFlowRouteArgs {
       topicId: topicId,
     );
   }
+}
+
+extension QuizStartBehaviorQueryX on QuizStartBehavior {
+  String? get queryValue {
+    return switch (this) {
+      QuizStartBehavior.fresh => null,
+      QuizStartBehavior.resume => QuizStartBehavior.resume.name,
+      QuizStartBehavior.restartWithReset =>
+        QuizStartBehavior.restartWithReset.name,
+    };
+  }
+}
+
+QuizStartBehavior quizStartBehaviorFromQuery(String? value) {
+  if (value == null || value.isEmpty) {
+    return QuizStartBehavior.fresh;
+  }
+
+  return QuizStartBehavior.values.firstWhere(
+    (behavior) => behavior.name == value,
+    orElse: () => QuizStartBehavior.fresh,
+  );
 }
