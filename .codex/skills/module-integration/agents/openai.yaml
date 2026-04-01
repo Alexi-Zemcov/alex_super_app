@@ -1,0 +1,6 @@
+interface:
+  display_name: "Module Integration"
+  short_description: "Add a module entry point and wire it to shell."
+  default_prompt: "Use $module-integration to add this module cleanly and expose only its public integration contract."
+policy:
+  allow_implicit_invocation: true
