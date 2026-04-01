@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 
 enum HomeDestinationTone { blue, red, dark }
 
-enum HomeDestination { tickets, blitz, topics, marathon, errors, favorites }
+enum HomeDestination {
+  tickets,
+  blitz,
+  topics,
+  marathon,
+  errors,
+  favorites;
 
-extension HomeDestinationX on HomeDestination {
   String get title {
     switch (this) {
       case HomeDestination.tickets:
