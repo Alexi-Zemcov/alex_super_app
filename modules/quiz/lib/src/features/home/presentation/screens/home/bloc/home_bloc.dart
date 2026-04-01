@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:quiz/src/features/home/domain/usecases/get_home_progress_use_case.dart';
-import 'package:quiz/src/features/home/presentation/bloc/home_event.dart';
-import 'package:quiz/src/features/home/presentation/bloc/home_state.dart';
-import 'package:quiz/src/features/home/presentation/models/home_destination.dart';
+import 'package:quiz/src/features/home/presentation/screens/home/bloc/home_event.dart';
+import 'package:quiz/src/features/home/presentation/screens/home/bloc/home_state.dart';
+import 'package:quiz/src/features/home/presentation/screens/home/home_destination.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc({required GetHomeProgressUseCase getHomeProgress})

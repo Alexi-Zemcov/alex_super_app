@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:quiz/src/features/home/di/home_module.dart';
-import 'package:quiz/src/features/home/presentation/pages/home_page.dart';
+import 'package:quiz/src/features/home/presentation/screens/home/home_screen.dart';
 import 'package:scoped_di/scoped_di.dart';
 
 class HomeRouteScope extends StatelessWidget {
@@ -8,6 +8,6 @@ class HomeRouteScope extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const RouteScope(modules: [HomeModule()], child: HomePage());
+    return const RouteScope(modules: [HomeModule()], child: HomeScreen());
   }
 }

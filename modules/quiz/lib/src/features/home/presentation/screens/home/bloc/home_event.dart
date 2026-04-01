@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import 'package:quiz/src/features/home/presentation/models/home_destination.dart';
+import 'package:quiz/src/features/home/presentation/screens/home/home_destination.dart';
 
 sealed class HomeEvent extends Equatable {
   const HomeEvent();

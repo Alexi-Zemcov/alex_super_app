@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:quiz/src/features/home/di/home_route_scope.dart';
-import 'package:quiz/src/features/home/presentation/models/home_destination.dart';
-import 'package:quiz/src/features/home/presentation/pages/home_destination_placeholder_page.dart';
+import 'package:quiz/src/features/home/presentation/screens/destination_placeholder/home_destination_placeholder_screen.dart';
+import 'package:quiz/src/features/home/presentation/screens/home/home_destination.dart';
 import 'package:quiz/src/navigation/quiz_route_names.dart';
 
 abstract final class QuizRouter {
@@ -24,7 +24,7 @@ abstract final class QuizRouter {
         return MaterialPageRoute<void>(
           settings: settings,
           builder: (context) {
-            return HomeDestinationPlaceholderPage(destination: destination);
+            return HomeDestinationPlaceholderScreen(destination: destination);
           },
         );
       default:

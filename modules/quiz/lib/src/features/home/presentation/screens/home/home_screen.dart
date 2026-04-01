@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:quiz/src/features/home/domain/entities/home_progress.dart';
-import 'package:quiz/src/features/home/presentation/bloc/home_bloc.dart';
-import 'package:quiz/src/features/home/presentation/bloc/home_event.dart';
-import 'package:quiz/src/features/home/presentation/bloc/home_state.dart';
-import 'package:quiz/src/features/home/presentation/models/home_destination.dart';
+import 'package:quiz/src/features/home/presentation/screens/home/bloc/home_bloc.dart';
+import 'package:quiz/src/features/home/presentation/screens/home/bloc/home_event.dart';
+import 'package:quiz/src/features/home/presentation/screens/home/bloc/home_state.dart';
+import 'package:quiz/src/features/home/presentation/screens/home/home_destination.dart';
 import 'package:quiz/src/navigation/quiz_route_names.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

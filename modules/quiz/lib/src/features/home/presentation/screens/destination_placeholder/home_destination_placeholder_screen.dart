@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'package:quiz/src/features/home/presentation/models/home_destination.dart';
+import 'package:quiz/src/features/home/presentation/screens/home/home_destination.dart';
 
-class HomeDestinationPlaceholderPage extends StatelessWidget {
-  const HomeDestinationPlaceholderPage({required this.destination, super.key});
+class HomeDestinationPlaceholderScreen extends StatelessWidget {
+  const HomeDestinationPlaceholderScreen({
+    required this.destination,
+    super.key,
+  });
 
   final HomeDestination destination;
 
