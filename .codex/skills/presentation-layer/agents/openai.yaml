@@ -1,0 +1,4 @@
+interface:
+  display_name: "Presentation Layer"
+  short_description: "Organize feature presentation code"
+  default_prompt: "Use $presentation-layer to organize a feature presentation layer into screens, widgets, and screen-owned state."

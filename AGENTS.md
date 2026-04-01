@@ -49,6 +49,7 @@
 - Use `$workspace-boundaries` when deciding where new code belongs, whether a new package is needed, or whether an import is allowed.
 - Use `$module-integration` when adding a new module, public entry point, or shell registration.
 - Use `$feature-scoped-di` when adding or changing `ScopeModule`, `FeatureScope`, `RouteScope`, or feature wiring.
+- Use `$presentation-layer` when organizing or refactoring `presentation` directories, deciding between `screens` and `widgets`, or colocating screen-owned `Bloc`/`Cubit` state and presentation models.
 - Use `$feature-contracts-data` when designing feature-to-feature contracts, deciding on `Stream`, or shaping DTO/repository/cache boundaries.
 
 ## Docs lookup
