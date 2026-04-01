@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
-
 import 'package:quiz/src/features/home/domain/entities/home_progress.dart';
-import 'package:quiz/src/features/home/presentation/screens/home/home_destination.dart';
+import 'package:quiz/src/features/home/presentation/screens/home/models/home_destination.dart';
 
 sealed class HomeState extends Equatable {
   const HomeState();
@@ -19,11 +18,7 @@ final class HomeLoading extends HomeState {
 }
 
 final class HomeLoaded extends HomeState {
-  const HomeLoaded({
-    required this.progress,
-    required this.destinations,
-    this.pendingDestination,
-  });
+  const HomeLoaded({required this.progress, required this.destinations, this.pendingDestination});
 
   final HomeProgress progress;
   final List<HomeDestination> destinations;

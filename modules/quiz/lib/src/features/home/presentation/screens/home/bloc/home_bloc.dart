@@ -1,9 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:quiz/src/features/home/domain/usecases/get_home_progress_use_case.dart';
 import 'package:quiz/src/features/home/presentation/screens/home/bloc/home_event.dart';
 import 'package:quiz/src/features/home/presentation/screens/home/bloc/home_state.dart';
-import 'package:quiz/src/features/home/presentation/screens/home/home_destination.dart';
+import 'package:quiz/src/features/home/presentation/screens/home/models/home_destination.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc({required GetHomeProgressUseCase getHomeProgress})
@@ -34,10 +33,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  void _onDestinationPressed(
-    HomeDestinationPressed event,
-    Emitter<HomeState> emit,
-  ) {
+  void _onDestinationPressed(HomeDestinationPressed event, Emitter<HomeState> emit) {
     final currentState = state;
     if (currentState is! HomeLoaded) {
       return;
@@ -46,10 +42,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emit(currentState.withPendingDestination(event.destination));
   }
 
-  void _onNavigationHandled(
-    HomeNavigationHandled event,
-    Emitter<HomeState> emit,
-  ) {
+  void _onNavigationHandled(HomeNavigationHandled event, Emitter<HomeState> emit) {
     final currentState = state;
     if (currentState is! HomeLoaded) {
       return;

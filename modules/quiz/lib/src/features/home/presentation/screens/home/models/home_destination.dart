@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-enum HomeDestinationTone { blue, red, dark }
+import 'package:quiz/src/features/home/presentation/screens/home/models/home_destination_tone.dart';
 
 enum HomeDestination {
   tickets,
