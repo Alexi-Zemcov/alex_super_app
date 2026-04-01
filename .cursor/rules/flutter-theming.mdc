@@ -1,0 +1,59 @@
+---
+description: Flutter theming: ThemeData, Material 3, ColorScheme, ThemeExtension design tokens, typography, accessibility
+globs: "**/*.dart"
+alwaysApply: false
+---
+
+# Flutter Theming & Visual Design
+
+## ThemeData and Material 3
+
+- Define a centralized `ThemeData` in `core_ui/` to ensure consistent app-wide styling.
+- Use `ColorScheme` (or `ColorScheme.fromSeed()`) for the color palette.
+- Customize component appearances via specific theme properties (`appBarTheme`, `elevatedButtonTheme`, `cardTheme`, etc.) — never override styles inline in widgets.
+- All text styles come from `Theme.of(context).textTheme` — never hardcode font sizes or colors in widgets.
+
+## Custom Design Tokens (ThemeExtension)
+
+For custom styles not covered by standard `ThemeData`, use `ThemeExtension<T>`:
+
+- Define a class extending `ThemeExtension<T>` with your custom tokens.
+- Implement `copyWith` and `lerp` (required by Flutter's theme animation system).
+- Register the extension in the `extensions` list of `ThemeData`.
+- Access in widgets via `Theme.of(context).extension<MyColors>()!`.
+
+## Component Styles (WidgetStateProperty)
+
+- Use `WidgetStateProperty.resolveWith` to provide state-dependent values (pressed, disabled, hovered).
+- Use `WidgetStateProperty.all` when the value is the same for all states.
+- Define button and interactive element styles in `ThemeData`, not inline.
+
+## Typography
+
+- Limit to one or two font families for the entire app.
+- Prioritize legibility; prefer sans-serif for body text.
+- Define a full `TextTheme` within `ThemeData` with a clear scale (displayLarge → labelSmall).
+- Set line height to **1.4–1.6x** font size for body text.
+- Use font weight to create visual hierarchy — do not use all-caps for long-form text.
+- For custom fonts, use the `google_fonts` package and define a `TextTheme`.
+
+## Color Hierarchy
+
+- Follow the **60-30-10 rule**: 60% primary/neutral, 30% secondary, 10% accent.
+- Define Primary, Secondary, and Accent colors explicitly in `ColorScheme`.
+- Use complementary colors sparingly — only for accent elements, not text/background pairs.
+
+## Accessibility (A11Y)
+
+- Ensure text contrast ratio ≥ **4.5:1** against background (WCAG 2.1 AA for normal text).
+- Large text (≥18pt or 14pt bold) requires ≥ **3:1** contrast ratio.
+- Test UI with system font size scaling enabled — layout must remain usable.
+- Test with TalkBack (Android) and VoiceOver (iOS); use `Semantics` widgets where needed.
+- Interactive elements must have minimum touch target size of **48×48dp**.
+
+## Images & Assets
+
+- Declare all asset paths in `pubspec.yaml` under `flutter.assets`.
+- For network images, always provide `loadingBuilder` and `errorBuilder`.
+- Use `cached_network_image` for network images that should be cached.
+- Use `flutter_svg` for SVG assets.

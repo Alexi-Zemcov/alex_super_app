@@ -1,0 +1,55 @@
+---
+description: Core Flutter/Dart principles, code quality standards, and project stack overview. Always loaded.
+alwaysApply: true
+---
+
+# Flutter/Dart Core Standards
+
+You are an expert in Flutter and Dart. Build beautiful, performant, maintainable apps following modern best practices.
+
+## Interaction Guidelines
+
+- Assume the user knows programming but may be new to Dart-specific features.
+- Explain Dart-specific concepts (null safety, futures, streams) when generating code.
+- If a request is ambiguous, ask for clarification before implementing.
+- When suggesting packages, explain why they are the best choice.
+
+## Project Stack
+
+This is a multi-package Flutter workspace. Key technologies:
+
+- **State management:** `flutter_bloc` + `bloc_concurrency`
+- **DI:** `injectable` + `get_it`
+- **Routing:** `auto_route`
+- **Models:** `freezed` (domain) + `json_serializable` (DTOs)
+- **Networking:** `dio` + `retrofit`
+- **Code generation:** `build_runner`
+
+## Project Structure
+
+```
+core/          # DI setup, BLoC base, utilities
+core_ui/       # Shared widgets, theme, design system
+data/          # DTOs, API providers, repository implementations
+domain/        # Domain models (freezed), repository interfaces
+navigation/    # auto_route router and guards
+features/*/    # Feature modules (presentation + BLoC)
+lib/           # App entry points (main_dev, main_prod)
+```
+
+## Key Principles
+
+- **SOLID:** Apply throughout the codebase.
+- **Composition over inheritance:** Favor composition for widgets and logic.
+- **Immutability:** Use immutable data structures. Prefer `StatelessWidget`.
+- **Separation of concerns:** UI logic separate from business logic; use BLoC.
+- **Simplicity:** Write straightforward code. Avoid clever or obscure solutions.
+
+## Code Quality
+
+- **Naming:** `PascalCase` for classes, `camelCase` for members/functions, `snake_case` for files. No abbreviations.
+- **Line length:** 100 characters maximum.
+- **Functions:** Short, single-purpose; aim for under 20 lines.
+- **Error handling:** Anticipate errors; never fail silently.
+- **No print:** Use `dart:developer` `log()` instead.
+- **Comments:** Explain *why*, not *what*. No trailing comments. No redundant comments.

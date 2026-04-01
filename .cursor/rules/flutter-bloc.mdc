@@ -1,0 +1,144 @@
+---
+description: Effect-based BLoC state management with flutter_bloc and bloc_concurrency: patterns, naming, widget integration
+globs: "**/*.dart"
+alwaysApply: false
+---
+
+# BLoC State Management (Effect-Based)
+
+This project uses `flutter_bloc` for all state management.
+
+## 1. Business Logic Isolation (BLoC)
+
+**Forbidden**:
+- Using `BuildContext`.
+- Using `Navigator`, `AppRouter`, `AutoRouter`.
+- Using `ScaffoldMessenger`, `showDialog`, `showModalBottomSheet`.
+- Importing any UI libraries (except basic ones if necessary; prefer to avoid).
+
+**Required**:
+- All UI effects (navigation, toasts, dialogs) must be represented as `Effect` objects (sealed class).
+- Effects are passed through `State`.
+- Use effects only when the initiative for navigation or opening dialogs comes from the BLoC (e.g. after successful save). If an action requires business logic (validation, submitting data) → BLoC → Effect → UI. If the action is purely UI (e.g. back without saving) → discuss exceptions; by default use Effect.
+
+## 2. Cubit vs BLoC
+
+- **Cubit:** Use for simple state with direct method calls (no complex event processing).
+- **BLoC:** Use when state transitions depend on events, especially when `bloc_concurrency` transformers are needed.
+
+## 3. File Structure
+
+- `<feature>_bloc.dart`: BLoC logic.
+- `<feature>_event.dart`: Events (Freezed union).
+- `<feature>_state.dart`: State (Freezed class).
+- `<feature>_effect.dart`: Effects (Freezed sealed class).
+
+## 4. Naming Conventions
+
+- Events: `<Feature><Verb>Requested` / `<Feature><Verb>Event` (e.g., `AuthLoginRequested`).
+- States: Use a sealed class or `freezed` union (e.g., `AuthState` with `initial`, `loading`, `success`, `failure` variants).
+- BLoC class: `<Feature>Bloc` / `<Feature>Cubit`.
+- Effects: `<Feature>Effect`.
+
+## 5. Defining Effects
+
+- Create file `<feature>_effect.dart`.
+- Use `@freezed` and `sealed class`.
+- Name: `<Feature>Effect`.
+
+## 6. Defining State
+
+- Add field `Effect? effect` to the state class.
+- State must be immutable. Prefer `freezed` for complex states.
+- Use `copyWith` for state transitions to produce new state instances.
+- Emit only meaningful state changes; avoid emitting the same state twice.
+
+## 7. Defining Events
+
+- Add event `effectHandled` to reset the effect.
+- Example: `const factory FeatureEvent.effectHandled() = _EffectHandled;`
+
+## 8. Event Transformers (bloc_concurrency)
+
+- `droppable()`: Ignore new events while one is in progress (e.g., button taps).
+- `restartable()`: Cancel the previous handler when a new event arrives (e.g., search input).
+- `sequential()`: Process events one at a time in order.
+
+```dart
+on<SearchQueryChanged>(
+  _onSearchQueryChanged,
+  transformer: restartable(),
+);
+```
+
+## 9. BLoC Logic
+
+- **Emitting an effect**: `emit(state.copyWith(effect: FeatureEffect.someEffect()));`
+- **Handling reset**:
+  ```dart
+  on<_EffectHandled>((event, emit) {
+    emit(state.copyWith(effect: null));
+  });
+  ```
+- **Forbidden**: Using `await` to wait for UI actions (e.g. dialog dismissal).
+- **Allowed**: Reacting to new events from the UI after actions complete.
+
+## 10. Error Handling
+
+- When using `try-catch` for unknown error types (`Object`, `dynamic`, or untyped), you **must** end the catch block with `rethrow`. This ensures proper exception propagation and allows logging at higher levels.
+- **Example**:
+  ```dart
+  try {
+    final result = await _repository.getData();
+    emit(state.copyWith(data: result));
+  } catch (e) {
+    emit(state.copyWith(error: e.toString()));
+    rethrow; // Required!
+  }
+  ```
+- **Exception**: If you handle a specific error type and fully deal with it, `rethrow` may be omitted.
+
+## 11. UI Implementation (Screen & Content)
+
+- Split the screen into `<Name>Screen` and `<Name>Content`.
+- `<Name>Screen`:
+  - Owns `BlocProvider` (DI). Use `appLocator<NameBloc>()` for creation.
+  - Listens to state and effects.
+  - Returns `<Name>Content`.
+
+### Choosing Bloc Widgets
+
+1. **IF** `State` has an `effect` field:
+   - Use **`BlocConsumer`**.
+   - **`listenWhen`**: `(p, c) => p.effect != c.effect`.
+   - **`listener`**:
+     1. Get effect: `final effect = state.effect; if (effect == null) return;`
+     2. Handle effect (switch or map).
+     3. Reset effect: `context.read<Bloc>().add(const Event.effectHandled());`
+2. **IF** `State` has **no** `effect` field (simple screen):
+   - Use **`BlocBuilder`**.
+
+Never instantiate a BLoC directly inside a widget — always use `context.read<T>()` or `context.watch<T>()`.
+
+## 12. BLoC Placement
+
+- Each screen has its own BLoC, provided at the screen route level.
+- Shared BLoCs (e.g., auth state) are provided at the app/router level.
+- BLoCs depend on domain repository interfaces — never on data layer classes directly.
+- BLoCs must not contain UI logic or reference `BuildContext`.
+
+## 13. Listener Structure Example
+
+```dart
+listener: (context, state) {
+  final effect = state.effect;
+  if (effect == null) return;
+  switch (effect) {
+    case EffectOne():
+      // action
+    case EffectTwo():
+      // action
+  }
+  context.read<MyBloc>().add(const MyEvent.effectHandled());
+}
+```

@@ -1,0 +1,59 @@
+---
+description: Flutter widget best practices: composition, build methods, const constructors, layout, performance
+globs: "**/*.dart"
+alwaysApply: false
+---
+
+# Flutter Widget Best Practices
+
+## Composition
+
+- Prefer composing small widgets over extending existing ones.
+- Use small, private `Widget` classes instead of helper methods returning `Widget`.
+- Break large `build()` methods into smaller private widget classes — not private methods.
+
+```dart
+// ✅ Private widget class
+class _Header extends StatelessWidget {
+  const _Header({required this.title});
+  final String title;
+
+  @override
+  Widget build(BuildContext context) => Text(title, style: ...);
+}
+
+// ❌ Helper method returning widget
+Widget _buildHeader(String title) => Text(title, style: ...);
+```
+
+## Performance
+
+- Use `const` constructors for widgets and in `build()` wherever possible.
+- Never perform expensive operations (network calls, heavy computation) inside `build()`.
+- Use `ListView.builder` or `SliverList` for long or dynamic lists — never `ListView` with `children`.
+- Use `compute()` for expensive work (e.g., JSON parsing) to avoid blocking the UI thread.
+
+## Layout Primitives
+
+- **`Expanded`:** Fill remaining space along the main axis in a `Row`/`Column`.
+- **`Flexible`:** Allow a widget to shrink-to-fit, but not necessarily expand.
+- **`Wrap`:** Use when items may overflow a `Row`/`Column` and need to wrap to the next line.
+- **`SingleChildScrollView`:** For fixed-size content that may overflow the viewport.
+- **`FittedBox`:** Scale/fit a single child within its parent constraints.
+- **`LayoutBuilder`:** Make layout decisions based on available constraints.
+
+## Responsive Design
+
+- Use `LayoutBuilder` or `MediaQuery` for responsive layouts.
+- Use `Theme.of(context).textTheme` for text styles — never hardcode font sizes.
+
+## Overlays
+
+- Use `OverlayPortal` (with `OverlayPortalController`) for custom dropdowns or tooltips that render on top of everything else.
+- Use `Positioned` to anchor children within a `Stack` by edge offsets.
+- Use `Align` to position children within a `Stack` using alignment values.
+
+## Immutability
+
+- `StatelessWidget` must be fully immutable — all fields `final`.
+- When UI needs to change, Flutter rebuilds the widget tree; do not mutate widget fields.

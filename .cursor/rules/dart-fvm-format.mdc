@@ -1,0 +1,27 @@
+---
+description: Run dart/flutter via FVM and format .dart files using dart-format skill
+alwaysApply: true
+---
+
+# FVM and Dart formatting
+
+## Run dart and flutter via FVM
+
+All `dart` and `flutter` commands must be run through FVM (from project root).
+
+- Use `fvm dart ...` instead of `dart ...`
+- Use `fvm flutter ...` instead of `flutter ...`
+
+Examples:
+
+- `fvm flutter pub get`
+- `fvm flutter test`
+- `fvm dart run build_runner build --delete-conflicting-outputs`
+- `fvm dart format -l 100 .`
+
+## Format after editing .dart files
+
+After any changes to `.dart` files, invoke the **dart-format** skill (see [.cursor/skills/dart-format/SKILL.md](.cursor/skills/dart-format/SKILL.md)).
+
+- Run from project root: `fvm dart format -l 100 .` or pass the path to the changed file(s).
+- Use line length **100** and **FVM**; do not omit or change these.

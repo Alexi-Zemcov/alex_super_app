@@ -1,0 +1,68 @@
+---
+description: Flutter testing conventions: unit, widget, integration tests, Arrange-Act-Assert, fakes vs mocks
+globs: "**/*_test.dart"
+alwaysApply: false
+---
+
+# Testing Conventions
+
+Run tests with: `fvm flutter test`
+
+## Test Types
+
+| Type | Package | What to test |
+|------|---------|-------------|
+| Unit | `package:test` | Domain models, BLoC logic, repositories, mappers |
+| Widget | `package:flutter_test` | UI components, screen rendering, widget interactions |
+| Integration | `package:integration_test` | End-to-end user flows across the full app |
+
+## Pattern: Arrange-Act-Assert
+
+Structure every test with clear sections:
+
+```dart
+test('emits success state when login succeeds', () async {
+  // Arrange
+  when(() => authRepo.login(any())).thenAnswer((_) async => user);
+  final bloc = AuthBloc(authRepository: authRepo);
+
+  // Act
+  bloc.add(const AuthLoginRequested(email: 'a@b.com', password: '123'));
+
+  // Assert
+  await expectLater(
+    bloc.stream,
+    emitsInOrder([AuthState.loading(), AuthState.success(user)]),
+  );
+});
+```
+
+## Fakes and Stubs over Mocks
+
+- Prefer hand-written fakes or stubs over generated mocks.
+- If mocks are necessary (complex interfaces with many methods), use `mocktail`.
+- Avoid `mockito` code generation for mocks — it adds build_runner complexity.
+
+## BLoC Testing
+
+- Use `bloc_test` package for testing BLoCs and Cubits.
+- Test each event handler in isolation.
+- Use `setUp` for common BLoC initialization.
+
+## Widget Testing
+
+- Use `flutter_test` with `WidgetTester`.
+- Pump only the widget under test with its direct dependencies injected.
+- Use `find.byType`, `find.byKey`, `find.text` for assertions.
+- Use `tester.tap` + `tester.pump` to simulate interactions.
+
+## Integration Tests
+
+- Place integration tests in `integration_test/` directory.
+- Add `integration_test` as a dev dependency with `sdk: flutter`.
+- Test critical user journeys (login, booking, checkout) end-to-end.
+
+## Coverage
+
+- Aim for high coverage of domain logic, BLoC states/events, and repository implementations.
+- Widget tests should cover key user interactions and edge-case UI states.

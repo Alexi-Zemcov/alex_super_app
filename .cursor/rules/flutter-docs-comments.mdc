@@ -1,0 +1,50 @@
+---
+description: Dart documentation and commenting standards: doc comments, writing style, what to document
+globs: "**/*.dart"
+alwaysApply: false
+---
+
+# Documentation & Comments
+
+## When to Comment
+
+- Comment **why** the code is written a certain way, not **what** it does.
+- If the code is self-explanatory from its name and structure, do not add a comment.
+- Add comments when explaining non-obvious trade-offs, constraints, or intent.
+
+## Doc Comments (`///`)
+
+- Use `///` for all public API documentation.
+- Start with a single concise sentence ending in a period.
+- Add a blank line after the first sentence before further explanation.
+- Document private APIs when their purpose is non-obvious.
+- Add library-level doc comments where a general overview helps.
+
+```dart
+/// Returns the list of available airports filtered by [query].
+///
+/// Returns an empty list if [query] is blank. Throws [ApiException]
+/// if the network request fails.
+Future<List<Airport>> searchAirports(String query);
+```
+
+## What to Document
+
+- Public classes, methods, and properties with non-obvious behavior.
+- Parameters, return values, and exceptions using prose in the doc comment body.
+- Edge cases and important constraints.
+- Code samples where they add clarity.
+
+## What Not to Document
+
+- Obvious getters/setters that just return or set a value.
+- Both a getter and its setter — document only one.
+- Code that simply restates the method name in prose.
+
+## Style Rules
+
+- No trailing line comments (`// comment at end of line`).
+- Write concisely — avoid jargon and abbreviations.
+- Enclose code references in backticks: `ClassName`, `methodName`.
+- Avoid HTML in doc comments; use Markdown sparingly.
+- Place doc comments **before** any annotations (`@override`, `@JsonKey`, etc.).

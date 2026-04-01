@@ -1,0 +1,14 @@
+---
+description: Preferred MCP tools for documentation and Figma workflows
+alwaysApply: true
+---
+
+# MCP Tool Preferences
+
+## Documentation
+
+Use the **context7-plugin** MCP server (`plugin-context7-plugin-context7`) to look up library and framework documentation instead of web searches or guessing APIs.
+
+## Figma
+
+Use the **Figma** MCP server (`plugin-figma-figma`) for any Figma-related tasks: inspecting designs, fetching component data, and implementing UI from Figma files.

@@ -1,0 +1,60 @@
+---
+description: Multi-package workspace architecture, clean architecture layers, DI with injectable/get_it, repository pattern
+alwaysApply: false
+---
+
+# Application Architecture
+
+## Package Responsibilities
+
+| Package | Responsibility |
+|---------|---------------|
+| `domain/` | Freezed models, repository interfaces — no Flutter deps |
+| `data/` | DTOs, API providers (retrofit/dio), repository implementations, mappers |
+| `core/` | DI setup, BLoC base classes, utilities, shared services |
+| `core_ui/` | Design system widgets, theme, reusable UI components |
+| `navigation/` | auto_route router, route guards, route definitions |
+| `features/*/` | Feature-specific screens, BLoC, and widgets |
+
+## Layer Rules
+
+- `domain` must not depend on `data`, `core`, or any Flutter packages.
+- `data` implements interfaces from `domain`; maps DTOs → domain models.
+- `features` depend on `domain` and `core`; never import `data` directly.
+- `core_ui` has no business logic; only UI and theme.
+
+## Dependency Injection (injectable + get_it)
+
+- Register all services and repositories with `@injectable`, `@singleton`, or `@lazySingleton`.
+- Use `@module` for third-party registrations (Dio, SharedPreferences, etc.).
+- Configure the DI container in `core/` using generated `injectable.config.dart`.
+- Inject dependencies through constructors — never access `GetIt` directly inside widgets or BLoCs.
+
+```dart
+// ✅ Constructor injection via injectable
+@injectable
+class AuthRepository implements IAuthRepository {
+  AuthRepository(this._apiProvider);
+  final AuthApiProvider _apiProvider;
+}
+```
+
+## Repository Pattern
+
+- `domain/` defines abstract repository interfaces (`IAuthRepository`).
+- `data/` provides concrete implementations (`AuthRepository`).
+- BLoCs depend on domain interfaces, not data implementations.
+- Map DTOs to domain models in repositories — BLoCs never see DTOs.
+
+## Feature Module Structure
+
+Each feature follows:
+
+```
+features/my_feature/
+  lib/src/
+    presentation/
+      screens/       # Screens (one BLoC per screen)
+      widgets/       # Private/reusable widgets for this feature
+      bloc/          # BLoC + events + states
+```
