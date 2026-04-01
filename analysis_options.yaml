@@ -20,7 +20,6 @@ analyzer:
   plugins:
     - custom_lint
   exclude:
-    - tools/mason/bricks/**
     - modules/**/lib/**.g.dart
     - lib/**.g.dart
     - lib/**.freezed.dart

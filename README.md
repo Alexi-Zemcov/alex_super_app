@@ -20,7 +20,6 @@ packages/
   integrations/
 
 tools/
-  mason/
   scripts/
 ```
 

@@ -29,7 +29,7 @@ packages/
     scoped_di/                # shared DI primitives
 
 tools/
-  mason/                      # генераторы и служебные инструменты
+  scripts/                    # служебные утилиты
 ```
 
 ## Роли директорий
