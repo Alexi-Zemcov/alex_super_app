@@ -30,9 +30,33 @@ class QuestionRepositoryImpl implements QuestionRepository {
   }
 
   @override
+  Future<Ticket?> getTicketById(int id) async {
+    final tickets = await getTickets();
+    for (final ticket in tickets) {
+      if (ticket.id == id) {
+        return ticket;
+      }
+    }
+
+    return null;
+  }
+
+  @override
   Future<List<Topic>> getTopics() async {
     final questions = await getAllQuestions();
     return _catalogBuilder.buildTopics(questions);
+  }
+
+  @override
+  Future<Topic?> getTopicById(int id) async {
+    final topics = await getTopics();
+    for (final topic in topics) {
+      if (topic.id == id) {
+        return topic;
+      }
+    }
+
+    return null;
   }
 
   Future<List<QuizQuestion>> _loadQuestions() async {

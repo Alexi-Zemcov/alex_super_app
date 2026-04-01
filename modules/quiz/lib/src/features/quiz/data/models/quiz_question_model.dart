@@ -15,6 +15,16 @@ class QuizQuestionModel {
   final int correct;
   final String explanation;
 
+  factory QuizQuestionModel.fromEntity(QuizQuestion entity) {
+    return QuizQuestionModel(
+      category: entity.category,
+      question: entity.question,
+      options: entity.options,
+      correct: entity.correctIndex,
+      explanation: entity.explanation,
+    );
+  }
+
   factory QuizQuestionModel.fromJson(Map<String, dynamic> json) {
     final options = (json['options'] as List<dynamic>? ?? const [])
         .map((option) => option.toString())
@@ -43,5 +53,15 @@ class QuizQuestionModel {
       correctIndex: correct,
       explanation: explanation,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'category': category,
+      'question': question,
+      'options': options,
+      'correct': correct,
+      'explanation': explanation,
+    };
   }
 }

@@ -18,7 +18,11 @@ final class HomeLoading extends HomeState {
 }
 
 final class HomeLoaded extends HomeState {
-  const HomeLoaded({required this.progress, required this.destinations, this.pendingDestination});
+  const HomeLoaded({
+    required this.progress,
+    required this.destinations,
+    this.pendingDestination,
+  });
 
   final HomeProgress progress;
   final List<HomeDestination> destinations;

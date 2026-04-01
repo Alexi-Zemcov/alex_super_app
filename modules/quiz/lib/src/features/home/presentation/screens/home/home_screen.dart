@@ -7,7 +7,6 @@ import 'package:quiz/src/features/home/presentation/screens/home/bloc/home_event
 import 'package:quiz/src/features/home/presentation/screens/home/bloc/home_state.dart';
 import 'package:quiz/src/features/home/presentation/screens/home/models/home_destination.dart';
 import 'package:quiz/src/features/home/presentation/screens/home/models/home_destination_tone.dart';
-import 'package:quiz/src/navigation/quiz_route_names.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -16,24 +15,38 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<HomeBloc, HomeState>(
       listenWhen: (previous, current) {
-        final previousDestination = previous is HomeLoaded ? previous.pendingDestination : null;
-        final currentDestination = current is HomeLoaded ? current.pendingDestination : null;
+        final previousDestination = previous is HomeLoaded
+            ? previous.pendingDestination
+            : null;
+        final currentDestination = current is HomeLoaded
+            ? current.pendingDestination
+            : null;
 
-        return currentDestination != null && currentDestination != previousDestination;
+        return currentDestination != null &&
+            currentDestination != previousDestination;
       },
       listener: (context, state) async {
         final currentState = state as HomeLoaded;
         final destination = currentState.pendingDestination!;
 
         context.read<HomeBloc>().add(const HomeNavigationHandled());
-        await Navigator.of(context).pushNamed(QuizRouteNames.destination, arguments: destination);
+        await Navigator.of(context).pushNamed(
+          destination.routeName,
+          arguments: destination.routeArguments,
+        );
+        if (!context.mounted) {
+          return;
+        }
+        context.read<HomeBloc>().add(const HomeStarted());
       },
       child: Scaffold(
         body: SafeArea(
           child: BlocBuilder<HomeBloc, HomeState>(
             builder: (context, state) {
               return switch (state) {
-                HomeInitial() || HomeLoading() => const Center(child: CircularProgressIndicator()),
+                HomeInitial() || HomeLoading() => const Center(
+                  child: CircularProgressIndicator(),
+                ),
                 HomeFailure() => _HomeFailureView(message: state.message),
                 HomeLoaded() => _HomeLoadedView(state: state),
               };
@@ -111,9 +124,10 @@ class _HomeTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.quizColors;
-    final titleStyle = Theme.of(
-      context,
-    ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800, color: colors.textStrong);
+    final titleStyle = Theme.of(context).textTheme.headlineMedium?.copyWith(
+      fontWeight: FontWeight.w800,
+      color: colors.textStrong,
+    );
 
     return Center(
       child: Text.rich(
@@ -142,13 +156,18 @@ class _HeroCard extends StatelessWidget {
     final colors = context.quizColors;
 
     return DecoratedBox(
-      decoration: BoxDecoration(color: colors.card, borderRadius: BorderRadius.circular(24)),
+      decoration: BoxDecoration(
+        color: colors.card,
+        borderRadius: BorderRadius.circular(24),
+      ),
       child: Column(
         children: [
           DecoratedBox(
             decoration: BoxDecoration(
               color: colors.cardAlt,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(24),
+              ),
             ),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
@@ -158,7 +177,8 @@ class _HeroCard extends StatelessWidget {
                     alignment: Alignment.topRight,
                     child: _ThemeToggleButton(
                       themePreference: context.select(
-                        (AppThemeController controller) => controller.themePreference,
+                        (AppThemeController controller) =>
+                            controller.themePreference,
                       ),
                     ),
                   ),
@@ -243,7 +263,12 @@ class _ThemeToggleButton extends StatelessWidget {
           },
           child: SizedBox.square(
             dimension: 48,
-            child: Center(child: Text(themePreference.icon, style: const TextStyle(fontSize: 26))),
+            child: Center(
+              child: Text(
+                themePreference.icon,
+                style: const TextStyle(fontSize: 26),
+              ),
+            ),
           ),
         ),
       ),
@@ -274,9 +299,10 @@ class _ProgressStat extends StatelessWidget {
         children: [
           Text(
             '$completed / $total',
-            style: Theme.of(
-              context,
-            ).textTheme.titleSmall?.copyWith(color: colors.textSoft, fontWeight: FontWeight.w700),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: colors.textSoft,
+              fontWeight: FontWeight.w700,
+            ),
           ),
           const SizedBox(height: 8),
           ClipRRect(
@@ -291,7 +317,9 @@ class _ProgressStat extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             label,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.textMuted),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
             textAlign: TextAlign.center,
           ),
         ],

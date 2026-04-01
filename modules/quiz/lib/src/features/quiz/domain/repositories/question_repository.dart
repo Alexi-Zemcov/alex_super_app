@@ -7,5 +7,9 @@ abstract interface class QuestionRepository {
 
   Future<List<Ticket>> getTickets();
 
+  Future<Ticket?> getTicketById(int id);
+
   Future<List<Topic>> getTopics();
+
+  Future<Topic?> getTopicById(int id);
 }
