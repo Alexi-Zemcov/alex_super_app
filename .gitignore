@@ -31,7 +31,7 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 **/build/
-/coverage/
+**/coverage/
 
 # Symbolication related
 app.*.symbols
@@ -40,9 +40,69 @@ app.*.symbols
 app.*.map.json
 
 # Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+
+# Android / Gradle generated files
+**/android/.gradle/
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/local.properties
+**/android/gradle/wrapper/gradle-wrapper.jar
+**/android/.cxx/
+**/android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
+**/key.properties
+**/*.keystore
+**/*.jks
+
+# Apple / Xcode generated files
+**/dgph
+*.mode1v3
+*.mode2v3
+*.moved-aside
+*.pbxuser
+*.perspectivev3
+**/*sync/
+.sconsign.dblite
+.tags*
+**/.vagrant/
+**/DerivedData/
+**/xcuserdata/
+**/.generated/
+**/Pods/
+**/.symlinks/
+**/ios/profile
+**/ios/Icon?
+**/ios/ServiceDefinitions.json
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/Flutter/ephemeral/
+**/ios/Flutter/app.flx
+**/ios/Flutter/app.zip
+**/ios/Flutter/flutter_assets/
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Runner/GeneratedPluginRegistrant.*
+
+# Exceptions to above rules.
+!default.mode1v3
+!default.mode2v3
+!default.pbxuser
+!default.perspectivev3
+
+# Desktop / Windows generated files
+**/flutter/ephemeral/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+**/windows/x64/
+**/windows/x86/
+*.[Cc]ache
+!*.[Cc]ache/
 
 # FVM — keep fvm_config.json; ignore local SDK symlinks
 .fvm/flutter_sdk
