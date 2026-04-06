@@ -7,7 +7,7 @@
 - `Provider` — для простых зависимостей и use case
 - `RepositoryProvider` — для repository-контрактов
 - `ChangeNotifierProvider` — для `ChangeNotifier`
-- `BlocProvider` — для `Bloc`/`Cubit`
+- `BlocProvider` — для `Bloc`
 
 DI строится через дерево виджетов, а не через глобальный service locator.
 
@@ -75,13 +75,13 @@ Feature DI отвечает за wiring конкретной feature или эк
 Подходит для:
 
 - экранных use case
-- route-specific `Bloc`/`Cubit`
+- route-specific `Bloc`
 - зависимостей, которые нужны только внутри конкретного route subtree
 
 Дефолтное правило:
 
 - repository держим в module scope
-- `Bloc`/`Cubit` держим в route scope
+- `Bloc` держим в route scope
 
 Если dependency реально нужна нескольким маршрутам внутри модуля, её можно поднять выше в `FeatureScope`.
 

@@ -27,6 +27,7 @@ packages/
     app_theme/                # общая тема и theme controller
     module_contracts/         # публичные контракты shell <-> modules
     scoped_di/                # shared DI primitives
+  integrations/              # shared adapters over SDKs and external services
 
 tools/
   scripts/                    # служебные утилиты
@@ -37,6 +38,7 @@ tools/
 - `apps/*` - runnable приложения и composition roots.
 - `modules/*` - самостоятельные продуктовые модули.
 - `packages/core/*` - shared contracts и infrastructure packages.
+- `packages/integrations/*` - shared integration packages над внешними SDK и сервисами.
 - `tools/*` - шаблоны, генераторы и утилиты, не runtime-слой.
 
 ## Роль shell-приложения
@@ -100,3 +102,20 @@ modules/quiz/lib/src/
 - `scoped_di` - shared primitives для provider-based scope tree
 
 Сюда имеет смысл класть только то, что действительно переиспользуется несколькими пакетами.
+
+## Роль integration-пакетов
+
+`packages/integrations/*` - runtime-пакеты для интеграции с внешними SDK, платформенными bridge и backend-сервисами.
+
+Сюда имеет смысл класть:
+
+- shared vendor adapters
+- typed wrappers над third-party SDK
+- общий runtime wiring интеграций
+- integration packages, которые нужны нескольким приложениям или модулям, либо оформляют отдельную product-agnostic integration boundary
+
+Сюда не стоит класть:
+
+- продуктовую логику конкретного модуля
+- shell-only orchestration
+- adapter, который нужен только одному модулю и не оформлен как отдельная стабильная integration boundary
