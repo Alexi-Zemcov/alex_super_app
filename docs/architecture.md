@@ -16,6 +16,8 @@
   [data-layer.md](architecture/data-layer.md)
 - Нужно разобраться с provider-based DI и scope tree:
   [di.md](architecture/di.md)
+- Нужно понять, почему выбрана конкретная технология или подход:
+  [Architecture Decision Records](adr/README.md)
 
 ## Быстрый контекст
 

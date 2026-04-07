@@ -1,62 +1,220 @@
-# alex-super-app
+![Flutter](https://img.shields.io/badge/Flutter-3.41.0-02569B?logo=flutter)
+![Dart](https://img.shields.io/badge/Dart-3.11+-0175C2?logo=dart)
+![License](https://img.shields.io/badge/License-MIT-green)
 
-Flutter monorepo for a personal super app of pet projects, built on Dart/Flutter workspaces.
+# Alex Super App
 
-## Workspace Layout
+Flutter-монорепозиторий пет-проектов — модульное приложение с масштабируемой архитектурой,
+построенное на нативных Dart Workspaces.
+
+## Об авторе
+
+**Алексей Земцов** — Flutter-разработчик с 2021 года.
+Работал в сильнейших командах с одними из лучших разработчиков РФ — как над стартапами,
+так и над сложными enterprise-приложениями в области финтеха и ретейла.
+
+<!-- TODO: добавить ссылки на GitHub / LinkedIn / Telegram -->
+
+## Цели проекта
+
+- **Архитектура.** Практика и демонстрация умения проектировать сложные масштабируемые
+  приложения: модульный монорепозиторий, чистые границы зависимостей, provider-based DI,
+  кастомные lint-правила.
+- **AI-driven разработка.** Практика в создании проектов с активным использованием
+  AI-агентов — от кодогенерации до архитектурных решений.
+- **Быстрая реализация идей.** Готовая инфраструктура позволяет сосредоточиться
+  на продуктовой логике нового модуля, не тратя время на настройку окружения.
+
+## Демо
+
+<!-- TODO: добавить скриншоты и/или GIF-демонстрации модулей -->
+
+## Модули
+
+### Quiz
+
+Викторина для освежения знаний по заданной теме. Офлайн-режим, билеты, прогресс.
+
+Сейчас доступны вопросы по Flutter. В ближайших планах — темы Android, iOS,
+теория музыки и другие.
+
+**Roadmap:**
+- Новые типы вопросов (не только single choice)
+- Кнопка «Обсудить вопрос с AI»
+- Расширение базы тем
+
+### Circle of Fifths
+
+Интерактивная реализация квинто-квартового круга — инструмент для музыкантов,
+помогающий находить новые музыкальные идеи и разбирать существующие.
+Поддержка MIDI-воспроизведения аккордов через встроенный SF2-синтезатор.
+
+**Roadmap:**
+- Отображение аппликатуры аккордов на гитаре
+- Запись последовательностей аккордов
+- Экспорт в MIDI / передача данных другому модулю
+- Сейчас звук воспроизводится только на мобилке. Нужно расширить поддержку Web и Desktop
+
+## Структура воркспейса
 
 ```text
 apps/
-  super_app/
+  super_app/                 # Shell-приложение: единая точка входа для всех модулей
+  quiz_app/                  # Standalone-хост для Quiz (изолированная разработка и тестирование)
+  circle_of_fifths_app/      # Standalone-хост для Circle of Fifths
 
 modules/
-  quiz/
-  circle_of_fifths/
+  quiz/                      # Модуль викторин (BLoC, офлайн, JSON-база вопросов)
+  circle_of_fifths/          # Модуль квинтового круга (BLoC, MIDI, SF2)
 
 packages/
   core/
-    app_theme/
-    design_system/
-    module_contracts/
-  integrations/
+    app_theme/               # Общая тема приложения, ThemeController, цветовые схемы
+    module_contracts/         # Контракт модуля: AppModuleDescriptor, rootRoute
+    scoped_di/               # Provider-based DI: ScopeModule, FeatureScope, RouteScope
 
 tools/
-  scripts/
+  alex_workspace_lints/      # Кастомный analyzer plugin с правилами для воркспейса
 ```
 
-## Flutter SDK
+Каждый модуль экспортирует единственный публичный `AppModuleDescriptor` и скрывает
+внутреннюю реализацию (`src/`). Shell-приложение регистрирует модули и строит навигацию
+из их `rootRoute`.
 
-This repo uses [FVM](https://fvm.app/) and pins Flutter in [`.fvmrc`](./.fvmrc).
+Standalone app-хосты позволяют запускать модуль изолированно — для быстрой разработки
+и как готовая основа для публикации модуля в виде отдельного приложения.
+
+## Технологии
+
+| Технология | Роль |
+|---|---|
+| **Flutter 3.41 / Dart 3.11** | Фреймворк и язык |
+| **Dart Pub Workspaces** | Нативное управление монорепозиторием ([почему не Melos?](docs/adr/README.md#adr-001-dart-workspaces-вместо-melos)) |
+| **go_router + go_router_builder** | Декларативная навигация с типизированными роутами |
+| **flutter_bloc** | Управление состоянием внутри модулей |
+| **provider + scoped_di** | Иерархический DI, привязанный к дереву виджетов |
+| **flutter_midi_pro** | MIDI-воспроизведение в модуле Circle of Fifths |
+| **FVM** | Фиксация версии Flutter SDK |
+| **alex_workspace_lints** | Кастомные lint-правила для поддержания архитектурных конвенций |
+
+## Быстрый старт
+
+### Требования
+
+- [FVM](https://fvm.app/) для управления версией Flutter SDK
+- Flutter 3.41.0 (устанавливается через FVM)
+
+### Установка
 
 ```sh
+# Установить нужную версию Flutter
 fvm install
+
+# Разрешить зависимости всего воркспейса
 fvm flutter pub get
 ```
 
-## Common Commands
-
-Resolve the whole workspace from the repository root:
+### Запуск
 
 ```sh
-fvm flutter pub get
-fvm dart pub workspace list
-```
-
-Run the current app shell:
-
-```sh
+# Super App — все модули
 cd apps/super_app
+fvm flutter run
+
+# Отдельный модуль
+cd apps/quiz_app
 fvm flutter run
 ```
 
-Run tests for a member package:
+### Тесты
 
 ```sh
+# Тесты конкретного модуля
 cd modules/quiz
 fvm flutter test
+
+# Все пакеты воркспейса
+fvm dart pub workspace list
 ```
 
-## Notes
+## Архитектура
 
-- The repository root is a workspace root, not a runnable Flutter app.
-- `apps/super_app` is the current executable shell.
-- `modules/circle_of_fifths`, `packages/core/design_system`, and `packages/integrations` are reserved for future packages and intentionally do not have `pubspec.yaml` files yet.
+Базовая единица архитектуры — отдельный Dart/Flutter-пакет внутри воркспейса.
+Зависимости строго направлены: `apps` → `modules` → `packages/core`.
+Модули не знают друг о друге и общаются только через контракты в `packages/core`.
+
+Подробное описание архитектуры, правил зависимостей, DI-модели и data layer:
+
+- [Карта архитектурных документов](docs/architecture.md) — навигатор по всей архитектурной документации
+- [Architecture Decision Records](docs/adr/README.md) — ключевые решения, их причины и альтернативы
+
+> Код и комментарии в репозитории на английском языке. Документация — на русском.
+
+## Разработка с AI-агентами
+
+Одна из целей проекта — практика AI-driven разработки. Репозиторий содержит
+систему правил и навыков, которые позволяют AI-агентам (Cursor, Codex)
+понимать архитектуру проекта и генерировать код, соответствующий принятым конвенциям.
+
+### AGENTS.md — правила для агентов
+
+Корневой файл [`AGENTS.md`](AGENTS.md) автоматически загружается AI-агентами
+при работе с репозиторием. Он содержит:
+
+- Описание структуры воркспейса и ролей каждого слоя (`apps`, `modules`, `packages/core`, `tools`)
+- Правила зависимостей между пакетами — что от чего может зависеть, а что запрещено
+- Правила интеграции модулей — единый публичный entry point, запрет экспорта `src/`
+- DI-модель — какие абстракции использовать, где создавать зависимости
+- Правила data layer — контракты между фичами, репозитории, datasource
+- Ссылки на скиллы и документацию
+
+Это создаёт систему ограничений, в которой агент не может случайно нарушить
+архитектуру — аналог code review, но до написания кода.
+
+### .codex/skills/ — навыки агента
+
+Навыки — это контекстные инструкции, которые агент загружает под конкретную задачу.
+Каждый навык содержит: когда его применять, какие файлы прочитать первыми, пошаговый
+workflow и антипаттерны.
+
+| Навык | Когда используется |
+|---|---|
+| **workspace-boundaries** | Решение, куда положить новый код; допустимость импорта между пакетами |
+| **module-integration** | Добавление нового модуля, оформление публичного entry point |
+| **feature-scoped-di** | Работа с `ScopeModule`, `FeatureScope`, `RouteScope`; перенос DI из виджетов |
+| **presentation-layer** | Организация `screens/` и `widgets/`, колокация BLoC с экраном |
+| **feature-contracts-data** | Проектирование контрактов между фичами, выбор между Stream и command/query |
+
+### docs/architecture/ — архитектурная документация
+
+Детальные документы по каждому аспекту архитектуры, используемые как людьми,
+так и агентами:
+
+| Документ | Тема |
+|---|---|
+| [workspace-packages.md](docs/architecture/workspace-packages.md) | Структура пакетов и правила размещения кода |
+| [module-entrypoints.md](docs/architecture/module-entrypoints.md) | Публичные entry points модулей |
+| [dependency-boundaries.md](docs/architecture/dependency-boundaries.md) | Граф допустимых зависимостей |
+| [di.md](docs/architecture/di.md) | Provider-based DI и scope tree |
+| [data-layer.md](docs/architecture/data-layer.md) | DTO, репозитории, datasource, кеширование |
+
+### Как это работает на практике
+
+```text
+Разработчик ставит задачу
+        ↓
+Агент загружает AGENTS.md → понимает границы
+        ↓
+Агент активирует нужный skill → получает пошаговый workflow
+        ↓
+Агент читает docs/architecture/* → уточняет детали
+        ↓
+Код генерируется в рамках конвенций проекта
+```
+
+Такой подход превращает AI-агента из «генератора кода» в «младшего разработчика,
+который прочитал всю документацию и следует code style».
+
+## Лицензия
+
+[MIT](LICENSE) — свободное использование, модификация и распространение.
