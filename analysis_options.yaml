@@ -12,13 +12,17 @@ include: package:flutter_lints/flutter.yaml
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
 
+plugins:
+  alex_workspace_lints:
+    path: tools/alex_workspace_lints
+    diagnostics:
+      avoid_await_in_lib: false
+
 analyzer:
   errors:
     avoid_dynamic_calls: warning
     avoid_annotating_with_dynamic: warning
     unawaited_futures: warning
-  plugins:
-    - custom_lint
   exclude:
     - modules/**/lib/**.g.dart
     - lib/**.g.dart

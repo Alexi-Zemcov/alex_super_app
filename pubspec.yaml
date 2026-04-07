@@ -13,3 +13,4 @@ workspace:
   - packages/core/app_theme
   - packages/core/module_contracts
   - packages/core/scoped_di
+  - tools/alex_workspace_lints
