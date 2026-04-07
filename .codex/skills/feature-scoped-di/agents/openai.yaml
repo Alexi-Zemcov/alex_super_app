@@ -1,6 +1,6 @@
 interface:
   display_name: "Feature Scoped DI"
-  short_description: "Wire provider scopes at module and route level."
-  default_prompt: "Use $feature-scoped-di to place these providers in the right scope and keep wiring out of UI."
+  short_description: "Wire provider scopes at app, module, and route level."
+  default_prompt: "Use $feature-scoped-di to place these providers in the right app, module, or route scope and keep wiring out of UI."
 policy:
   allow_implicit_invocation: true

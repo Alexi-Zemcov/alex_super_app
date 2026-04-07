@@ -1,0 +1,6 @@
+interface:
+  display_name: "Feature Contracts & Data"
+  short_description: "Choose mediators, streams, DTO, and repository boundaries."
+  default_prompt: "Use $feature-contracts-data to choose the right feature contract, decide whether Stream is justified, and keep DTO, datasource, repository, and cache boundaries clean."
+policy:
+  allow_implicit_invocation: true

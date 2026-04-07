@@ -1,6 +1,6 @@
 interface:
   display_name: "Workspace Boundaries"
-  short_description: "Place code in the right workspace package."
-  default_prompt: "Use $workspace-boundaries to decide where this code belongs and whether the dependency is allowed."
+  short_description: "Place code in the right app, module, package, or tool."
+  default_prompt: "Use $workspace-boundaries to decide where this code belongs across apps, modules, packages/core, packages/integrations, or tools, and whether the dependency is allowed."
 policy:
   allow_implicit_invocation: true
