@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:quiz/quiz.dart';
+import 'package:quiz/quiz_assets.dart';
 import 'package:scoped_di/scoped_di.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -103,7 +104,7 @@ class _QuizTestScopeModule extends ScopeModule {
 }
 
 class _TestQuizAssetBundle extends CachingAssetBundle {
-  static const _questionsKey = 'packages/quiz/assets/data/questions.json';
+  static const _questionsKey = QuizPackageAssets.questions;
   static const _questionsJson = '''
 [
   {

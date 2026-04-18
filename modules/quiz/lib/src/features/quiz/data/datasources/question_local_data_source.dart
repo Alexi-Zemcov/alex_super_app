@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+import 'package:quiz/quiz_assets.dart';
 
 import 'package:quiz/src/features/quiz/data/models/quiz_question_model.dart';
 
@@ -14,7 +15,7 @@ class AssetQuestionLocalDataSource implements QuestionLocalDataSource {
     required this.assetPath,
   }) : _assetBundle = assetBundle;
 
-  static const defaultAssetPath = 'packages/quiz/assets/data/questions.json';
+  static const defaultAssetPath = QuizPackageAssets.questions;
 
   final AssetBundle _assetBundle;
   final String assetPath;

@@ -1,6 +1,7 @@
 import 'package:app_theme/app_theme.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:quiz/quiz_assets.dart';
 import 'package:quiz_app/src/app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -147,7 +148,7 @@ void main() {
 }
 
 class _SingleQuestionQuizAssetBundle extends CachingAssetBundle {
-  static const _questionsKey = 'packages/quiz/assets/data/questions.json';
+  static const _questionsKey = QuizPackageAssets.questions;
   static const _questionsJson = '''
 [
   {
@@ -176,7 +177,7 @@ class _SingleQuestionQuizAssetBundle extends CachingAssetBundle {
 }
 
 class _ThreeQuestionQuizAssetBundle extends CachingAssetBundle {
-  static const _questionsKey = 'packages/quiz/assets/data/questions.json';
+  static const _questionsKey = QuizPackageAssets.questions;
   static const _questionsJson = '''
 [
   {
@@ -219,7 +220,7 @@ class _ThreeQuestionQuizAssetBundle extends CachingAssetBundle {
 }
 
 class _ErrorsQuizAssetBundle extends CachingAssetBundle {
-  static const _questionsKey = 'packages/quiz/assets/data/questions.json';
+  static const _questionsKey = QuizPackageAssets.questions;
   static const _questionsJson = '''
 [
   {

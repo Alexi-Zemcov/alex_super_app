@@ -1,6 +1,7 @@
 import 'package:app_theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz/quiz_assets.dart';
 import 'package:quiz/src/features/overview/presentation/screens/overview/bloc/overview_bloc.dart';
 import 'package:quiz/src/features/overview/presentation/screens/overview/bloc/overview_event.dart';
 import 'package:quiz/src/features/overview/presentation/screens/overview/bloc/overview_state.dart';
@@ -90,7 +91,7 @@ class _OverviewLoadedView extends StatelessWidget {
                     child: Column(
                       children: [
                         Image.asset(
-                          'assets/images/dashatars.png',
+                          QuizAssets.dashatars,
                           package: 'quiz',
                           height: 180,
                           fit: BoxFit.contain,

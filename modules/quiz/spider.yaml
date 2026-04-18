@@ -1,0 +1,12 @@
+generate_tests: false
+no_comments: true
+export: true
+use_part_of: true
+package: resources
+
+groups:
+  - paths:
+      - assets/data
+      - assets/images
+    class_name: QuizAssets
+    types: [ .json, .png, .jpg, .jpeg, .webp, .webm, .bmp ]

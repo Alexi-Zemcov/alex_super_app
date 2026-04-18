@@ -1,6 +1,7 @@
 import 'package:app_theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz/quiz_assets.dart';
 import 'package:quiz/src/features/home/domain/entities/home_progress.dart';
 import 'package:quiz/src/features/home/presentation/screens/home/bloc/home_bloc.dart';
 import 'package:quiz/src/features/home/presentation/screens/home/bloc/home_event.dart';
@@ -204,7 +205,7 @@ class _HeroCard extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 8),
                     child: Center(
                       child: Image.asset(
-                        'assets/images/dashatars.png',
+                        QuizAssets.dashatars,
                         package: 'quiz',
                         height: 188,
                         fit: BoxFit.contain,

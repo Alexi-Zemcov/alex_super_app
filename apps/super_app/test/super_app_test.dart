@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:module_contracts/module_contracts.dart';
 import 'package:provider/provider.dart';
+import 'package:quiz/quiz_assets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:super_app/src/app.dart';
 
@@ -135,7 +136,7 @@ void main() {
 }
 
 class _ThreeQuestionQuizAssetBundle extends CachingAssetBundle {
-  static const _questionsKey = 'packages/quiz/assets/data/questions.json';
+  static const _questionsKey = QuizPackageAssets.questions;
   static const _questionsJson = '''
 [
   {
