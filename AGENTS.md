@@ -46,6 +46,10 @@
 - Repository implementations own cache policy and source selection.
 - Datasources provide low-level read and write access only.
 
+## Code style
+
+- Prefer enum members over local enum extensions. If an enum is declared in the same editable library, keep getters, methods, and static helpers inside the enum. Use `extension on enum` only when the enum cannot be changed, when serialization should stay separate, or when a layer-local API should stay outside the enum's public contract. See `docs/code-style.md`.
+
 ## Repo-local skills
 
 - Use `$workspace-boundaries` when deciding where new code belongs, whether a new package is needed, or whether an import is allowed.
