@@ -1,8 +1,9 @@
 import 'package:equatable/equatable.dart';
 
-enum SavedInstrumentKind { guitar, bass }
+enum SavedInstrumentKind {
+  guitar,
+  bass;
 
-extension SavedInstrumentKindX on SavedInstrumentKind {
   static SavedInstrumentKind fromStorageValue(String value) {
     return switch (value) {
       'guitar' => SavedInstrumentKind.guitar,
@@ -14,9 +15,10 @@ extension SavedInstrumentKindX on SavedInstrumentKind {
   String get storageValue => name;
 }
 
-enum SavedStringSetId { dxl, k1 }
+enum SavedStringSetId {
+  dxl,
+  k1;
 
-extension SavedStringSetIdX on SavedStringSetId {
   static SavedStringSetId fromStorageValue(String value) {
     return switch (value) {
       'dxl' => SavedStringSetId.dxl,
@@ -84,8 +86,8 @@ class SavedInstrumentRecord extends Equatable {
     return SavedInstrumentRecord(
       id: json['id'] as String,
       name: json['name'] as String,
-      kind: SavedInstrumentKindX.fromStorageValue(json['kind'] as String),
-      stringSetId: SavedStringSetIdX.fromStorageValue(
+      kind: SavedInstrumentKind.fromStorageValue(json['kind'] as String),
+      stringSetId: SavedStringSetId.fromStorageValue(
         json['stringSetId'] as String,
       ),
       strings: rawStrings

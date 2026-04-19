@@ -56,7 +56,11 @@ class _CircleOfFifthsWidgetState extends State<CircleOfFifthsWidget> {
                   currentKey: widget.currentKey,
                   lastPlayedChord: widget.lastPlayedChord,
                   backgroundColor: colors.background,
-                  ringColors: [colors.cardAlt, colors.card, colors.cardAlt.withValues(alpha: 0.88)],
+                  ringColors: [
+                    colors.cardAlt,
+                    colors.card,
+                    colors.cardAlt.withValues(alpha: 0.88),
+                  ],
                   centerColor: colors.background,
                   centerForegroundColor: colors.textStrong,
                   mutedLabelColor: colors.textStrong.withValues(alpha: 0.72),

@@ -1,3 +1,4 @@
+import 'package:app_theme/src/parse_theme_preference.dart';
 import 'package:app_theme/src/theme_preference.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

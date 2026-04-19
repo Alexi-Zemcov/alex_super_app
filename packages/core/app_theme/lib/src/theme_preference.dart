@@ -1,6 +1,8 @@
-enum ThemePreference { dark, white, black }
+enum ThemePreference {
+  dark,
+  white,
+  black;
 
-extension ThemePreferenceX on ThemePreference {
   String get storageValue {
     switch (this) {
       case ThemePreference.dark:
@@ -43,20 +45,5 @@ extension ThemePreferenceX on ThemePreference {
       case ThemePreference.black:
         return ThemePreference.dark;
     }
-  }
-}
-
-ThemePreference parseThemePreference(String? rawValue) {
-  switch (rawValue) {
-    case 'white':
-    case 'white-contrast':
-      return ThemePreference.white;
-    case 'black':
-    case 'black-contrast':
-      return ThemePreference.black;
-    case 'dark':
-    case 'default':
-    default:
-      return ThemePreference.dark;
   }
 }

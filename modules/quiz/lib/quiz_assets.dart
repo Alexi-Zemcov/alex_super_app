@@ -1,4 +1,4 @@
-import 'resources/resources.dart';
+import 'package:quiz/resources/resources.dart';
 
 export 'resources/resources.dart' show QuizAssets;
 

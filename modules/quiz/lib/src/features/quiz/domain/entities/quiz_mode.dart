@@ -1,6 +1,11 @@
-enum QuizMode { ticket, blitz, topic, marathon, errors, favorites }
+enum QuizMode {
+  ticket,
+  blitz,
+  topic,
+  marathon,
+  errors,
+  favorites;
 
-extension QuizModeX on QuizMode {
   String get storageValue {
     switch (this) {
       case QuizMode.ticket:

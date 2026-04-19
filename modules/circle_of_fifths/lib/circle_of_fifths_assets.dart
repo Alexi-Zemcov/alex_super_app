@@ -1,4 +1,4 @@
-import 'resources/resources.dart';
+import 'package:circle_of_fifths/resources/resources.dart';
 
 export 'resources/resources.dart' show CircleOfFifthsAssets;
 

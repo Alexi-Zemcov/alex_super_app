@@ -1,8 +1,9 @@
 import 'package:equatable/equatable.dart';
 
-enum InstrumentType { guitar, bass }
+enum InstrumentType {
+  guitar,
+  bass;
 
-extension InstrumentTypeX on InstrumentType {
   String get titleRu => switch (this) {
     InstrumentType.guitar => 'Гитара',
     InstrumentType.bass => 'Бас',
@@ -11,9 +12,10 @@ extension InstrumentTypeX on InstrumentType {
 
 enum StringSetId { dxl, k1 }
 
-enum WoundType { plain, wound }
+enum WoundType {
+  plain,
+  wound;
 
-extension WoundTypeX on WoundType {
   String get shortLabel => switch (this) {
     WoundType.plain => 'p',
     WoundType.wound => 'w',

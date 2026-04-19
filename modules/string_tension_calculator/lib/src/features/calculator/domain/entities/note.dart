@@ -2,9 +2,20 @@ import 'dart:math' as math;
 
 import 'package:equatable/equatable.dart';
 
-enum MusicalNote { c, cSharp, d, dSharp, e, f, fSharp, g, gSharp, a, aSharp, b }
+enum MusicalNote {
+  c,
+  cSharp,
+  d,
+  dSharp,
+  e,
+  f,
+  fSharp,
+  g,
+  gSharp,
+  a,
+  aSharp,
+  b;
 
-extension MusicalNoteX on MusicalNote {
   String get label => switch (this) {
     MusicalNote.c => 'C',
     MusicalNote.cSharp => 'C#',
@@ -51,7 +62,7 @@ class ScientificNote extends Equatable {
     }
 
     return ScientificNote(
-      note: MusicalNoteX.fromLabel(match.group(1)!),
+      note: MusicalNote.fromLabel(match.group(1)!),
       octave: int.parse(match.group(2)!),
     );
   }

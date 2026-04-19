@@ -1,6 +1,8 @@
-enum CalculatorMode { guitar, bass, myGuitars }
+enum CalculatorMode {
+  guitar,
+  bass,
+  myGuitars;
 
-extension CalculatorModeX on CalculatorMode {
   bool get isManual => this != CalculatorMode.myGuitars;
 
   String get titleRu => switch (this) {

@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 abstract final class AppThemeFactory {
   static ThemeData fromPreference(ThemePreference preference) {
     final palette = _paletteFor(preference);
-    final brightness = preference == ThemePreference.white ? Brightness.light : Brightness.dark;
+    final brightness = preference == ThemePreference.white
+        ? Brightness.light
+        : Brightness.dark;
 
     final colorScheme = ColorScheme(
       brightness: brightness,

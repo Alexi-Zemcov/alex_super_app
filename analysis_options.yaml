@@ -16,7 +16,6 @@ plugins:
   alex_workspace_lints:
     path: tools/alex_workspace_lints
     diagnostics:
-      avoid_await_in_lib: false
       prefer_enum_members_over_extension: true
 
 analyzer:
@@ -25,6 +24,7 @@ analyzer:
     avoid_annotating_with_dynamic: warning
     unawaited_futures: warning
   exclude:
+    - tools/alex_workspace_lints # The analyzer plugin must be excluded, otherwise the analyzer crashes while trying to check itself.
     - modules/**/lib/**.g.dart
     - lib/**.g.dart
     - lib/**.freezed.dart
