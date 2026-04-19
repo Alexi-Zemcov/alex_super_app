@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:circle_of_fifths/circle_of_fifths_assets.dart';
 import 'package:circle_of_fifths/src/core/audio/audio_playback_service.dart';
 import 'package:circle_of_fifths/src/features/circle/domain/entities/chord.dart';
 import 'package:flutter/services.dart';
@@ -18,8 +19,7 @@ class FlutterMidiAudioPlaybackService implements AudioPlaybackService {
   static const int _channel = 0;
   static const int _baseVelocity = 127;
   static const int _octave = 4;
-  static const String _soundfontPath =
-      'packages/circle_of_fifths/assets/sf2/soundfont.sf2';
+  static const String _soundfontPath = CircleOfFifthsPackageAssets.soundfont;
 
   @override
   bool get isMuted => _isMuted;

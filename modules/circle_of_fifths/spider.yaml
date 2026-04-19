@@ -1,0 +1,10 @@
+generate_tests: false
+no_comments: true
+export: true
+use_part_of: true
+package: resources
+
+groups:
+  - path: assets/sf2
+    class_name: CircleOfFifthsAssets
+    types: [ .sf2 ]

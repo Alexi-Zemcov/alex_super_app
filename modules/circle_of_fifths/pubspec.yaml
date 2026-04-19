@@ -27,6 +27,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   go_router_builder: ^4.2.1
+  spider: ^4.2.3
 
 flutter:
   uses-material-design: true
