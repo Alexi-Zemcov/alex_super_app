@@ -1,5 +1,5 @@
-name: super_app
-description: Shell application that hosts pet-project modules.
+name: string_tension_calculator
+description: Standalone string tension calculator module.
 publish_to: none
 version: 0.1.0
 
@@ -11,17 +11,15 @@ resolution: workspace
 dependencies:
   flutter:
     sdk: flutter
-  app_theme: ^0.1.0
-  circle_of_fifths: ^0.1.0
+  equatable: ^2.0.7
+  flutter_bloc: ^9.1.1
   go_router: ^17.1.0
   module_contracts: ^0.1.0
   provider: ^6.1.5+1
-  quiz: ^0.1.0
   scoped_di: ^0.1.0
-  shared_preferences: ^2.5.3
-  string_tension_calculator: ^0.1.0
 
 dev_dependencies:
+  bloc_test: ^10.0.0
   build_runner: ^2.13.1
   flutter_lints: ^6.0.0
   flutter_test:

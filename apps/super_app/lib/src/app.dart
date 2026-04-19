@@ -7,8 +7,15 @@ import 'package:provider/provider.dart';
 import 'package:quiz/quiz.dart';
 import 'package:scoped_di/scoped_di.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:string_tension_calculator/string_tension_calculator.dart';
 import 'package:super_app/src/di/super_app_scope_module.dart';
 import 'package:super_app/src/navigation/super_app_router.dart';
+
+final List<AppModuleDescriptor> _defaultModules = List.unmodifiable([
+  quizModule,
+  circleOfFifthsModule,
+  stringTensionCalculatorModule,
+]);
 
 class SuperApp extends StatelessWidget {
   SuperApp({
@@ -18,9 +25,9 @@ class SuperApp extends StatelessWidget {
     this.initialLocation,
     List<AppModuleDescriptor>? modules,
     super.key,
-  }) : modules = modules ?? [quizModule, circleOfFifthsModule],
+  }) : modules = modules ?? _defaultModules,
        _router = buildSuperAppRouter(
-         moduleRoutes: (modules ?? [quizModule, circleOfFifthsModule])
+         moduleRoutes: (modules ?? _defaultModules)
              .map((module) => module.rootRoute)
              .toList(growable: false),
          initialLocation: initialLocation,

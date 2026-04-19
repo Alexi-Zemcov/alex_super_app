@@ -10,6 +10,7 @@ workspace:
   - apps/super_app
   - modules/circle_of_fifths
   - modules/quiz
+  - modules/string_tension_calculator
   - packages/core/app_theme
   - packages/core/module_contracts
   - packages/core/scoped_di
