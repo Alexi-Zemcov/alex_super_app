@@ -17,6 +17,7 @@ plugins:
     path: tools/alex_workspace_lints
     diagnostics:
       avoid_await_in_lib: false
+      prefer_enum_members_over_extension: true
 
 analyzer:
   errors:
