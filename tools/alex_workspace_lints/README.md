@@ -16,10 +16,14 @@ lib/
   src/
     plugin.dart
     rules/
+      register_architecture_rules.dart
       register_style_rules.dart
+      architecture/
+        enforce_layer_import_direction_rule.dart
       style/
         prefer_enum_members_over_extension_rule.dart
     shared/
+      clean_architecture_layer.dart
     fixes/
     assists/
 doc/
@@ -50,3 +54,8 @@ Do not add package-level plugin configuration. Open the repo from the workspace 
 3. Register the rule explicitly in a `register_*.dart` file.
 4. Keep the rule disabled by default in the root `analysis_options.yaml`.
 5. Enable it in a dedicated follow-up change once the rule is validated on the workspace.
+
+## Current rules
+
+- `prefer_enum_members_over_extension` enforces the enum style convention from [docs/code-style.md](../../docs/code-style.md).
+- `enforce_layer_import_direction` checks clean-architecture import direction inside a package based on the layer rules documented in `docs/architecture/workspace-packages.md`, `docs/architecture/data-layer.md`, and `docs/architecture/di.md`.

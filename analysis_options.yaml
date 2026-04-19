@@ -16,6 +16,7 @@ plugins:
   alex_workspace_lints:
     path: tools/alex_workspace_lints
     diagnostics:
+      enforce_layer_import_direction: true
       prefer_enum_members_over_extension: true
 
 analyzer:

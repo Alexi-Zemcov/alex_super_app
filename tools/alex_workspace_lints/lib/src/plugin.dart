@@ -1,3 +1,4 @@
+import 'package:alex_workspace_lints/src/rules/register_architecture_rules.dart';
 import 'package:alex_workspace_lints/src/rules/register_style_rules.dart';
 import 'package:analysis_server_plugin/plugin.dart';
 import 'package:analysis_server_plugin/registry.dart';
@@ -8,6 +9,7 @@ class AlexWorkspaceLintsPlugin extends Plugin {
 
   @override
   void register(PluginRegistry registry) {
+    registerArchitectureRules(registry);
     registerStyleRules(registry);
   }
 }
