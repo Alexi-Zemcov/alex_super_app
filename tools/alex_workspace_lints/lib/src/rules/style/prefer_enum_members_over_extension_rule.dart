@@ -29,14 +29,15 @@ class PreferEnumMembersOverExtensionRule extends AnalysisRule {
     RuleVisitorRegistry registry,
     RuleContext context,
   ) {
-    registry.addExtensionDeclaration(this, _Visitor(this));
+    registry.addExtensionDeclaration(this, _Visitor(this, context));
   }
 }
 
 class _Visitor extends SimpleAstVisitor<void> {
-  _Visitor(this.rule);
+  _Visitor(this.rule, this.context);
 
   final PreferEnumMembersOverExtensionRule rule;
+  final RuleContext context;
 
   @override
   void visitExtensionDeclaration(ExtensionDeclaration node) {
@@ -50,13 +51,14 @@ class _Visitor extends SimpleAstVisitor<void> {
       return;
     }
 
-    final extensionLibrary = node.declaredFragment?.element.library;
-    final enumLibrary = extendedElement.library;
-    if (extensionLibrary == null || enumLibrary == null) {
+    final extensionLibrary = context.libraryElement;
+    if (extensionLibrary == null) {
       return;
     }
 
-    if (!identical(enumLibrary, extensionLibrary)) {
+    final enumLibrary = extendedElement.library;
+    if (enumLibrary.firstFragment.source.fullName !=
+        extensionLibrary.firstFragment.source.fullName) {
       return;
     }
 

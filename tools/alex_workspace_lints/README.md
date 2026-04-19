@@ -16,9 +16,9 @@ lib/
   src/
     plugin.dart
     rules/
-      register_example_rules.dart
-      examples/
-        avoid_await_in_lib_rule.dart
+      register_style_rules.dart
+      style/
+        prefer_enum_members_over_extension_rule.dart
     shared/
     fixes/
     assists/
@@ -38,7 +38,7 @@ plugins:
   alex_workspace_lints:
     path: tools/alex_workspace_lints
     diagnostics:
-      avoid_await_in_lib: false
+      prefer_enum_members_over_extension_rule: true
 ```
 
 Do not add package-level plugin configuration. Open the repo from the workspace root so every package shares the same plugin setup.
