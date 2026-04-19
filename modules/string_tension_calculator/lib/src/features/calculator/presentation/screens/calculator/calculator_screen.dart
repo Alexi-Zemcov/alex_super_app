@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_instruments/my_instruments.dart';
 import 'package:string_tension_calculator/src/features/calculator/domain/entities/entities.dart';
 import 'package:string_tension_calculator/src/features/calculator/domain/repositories/calculator_repository.dart';
 import 'package:string_tension_calculator/src/features/calculator/domain/services/calculator_engine.dart';
 import 'package:string_tension_calculator/src/features/calculator/presentation/screens/calculator/bloc/calculator_bloc.dart';
 import 'package:string_tension_calculator/src/features/calculator/presentation/screens/calculator/bloc/calculator_event.dart';
 import 'package:string_tension_calculator/src/features/calculator/presentation/screens/calculator/bloc/calculator_state.dart';
+import 'package:string_tension_calculator/src/features/calculator/presentation/screens/calculator/models/calculator_mode.dart';
 import 'package:string_tension_calculator/src/features/calculator/presentation/widgets/calculator_cell.dart';
-import 'package:string_tension_calculator/src/features/calculator/presentation/widgets/instrument_type_switch.dart';
+import 'package:string_tension_calculator/src/features/calculator/presentation/widgets/calculator_mode_switch.dart';
+import 'package:string_tension_calculator/src/features/calculator/presentation/widgets/my_instruments_empty_state.dart';
+import 'package:string_tension_calculator/src/features/calculator/presentation/widgets/save_instrument_dialog.dart';
 import 'package:string_tension_calculator/src/features/calculator/presentation/widgets/tension_help_card.dart';
 
 class CalculatorScreen extends StatelessWidget {
@@ -61,7 +65,8 @@ class _CalculatorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentInstrument = state.snapshot.currentInstrument;
+    final activeInstrument = state.activeInstrument;
+    final isMyGuitarsMode = state.selectedMode == CalculatorMode.myGuitars;
 
     return Theme(
       data: Theme.of(context).copyWith(
@@ -99,49 +104,116 @@ class _CalculatorCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            InstrumentTypeSwitch(
-              selectedType: currentInstrument.type,
-              onSelectionChanged: (_) {
+            CalculatorModeSwitch(
+              selectedMode: state.selectedMode,
+              onSelectionChanged: (mode) {
                 context.read<CalculatorBloc>().add(
-                  const CalculatorInstrumentToggled(),
+                  CalculatorModeSelected(mode),
                 );
               },
             ),
             const SizedBox(height: 16),
-            _ScalePresetSelector(
-              presets: state.scalePresets,
-              selectedPreset: state.selectedScalePreset,
-            ),
-            const SizedBox(height: 16),
-            _StringSetSelector(
-              stringSets: state.availableStringSets,
-              selectedId: currentInstrument.stringSetId,
-            ),
+            if (state.selectedMode == CalculatorMode.myGuitars)
+              _MyInstrumentsSelector(
+                savedInstruments: state.savedInstruments,
+                selectedSavedInstrumentId: state.selectedSavedInstrumentId,
+              )
+            else ...[
+              _ScalePresetSelector(
+                presets: state.scalePresets,
+                selectedPreset: state.selectedScalePreset,
+              ),
+              const SizedBox(height: 16),
+              _StringSetSelector(
+                stringSets: state.availableStringSets,
+                selectedId: activeInstrument!.stringSetId,
+              ),
+            ],
             const SizedBox(height: 20),
             const Divider(color: Color(0xFF292B33), height: 1),
             const SizedBox(height: 20),
-            _CalculatorTable(
-              snapshot: state.snapshot,
-              isHelpVisible: state.isHelpVisible,
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: 180,
-              child: FilledButton.icon(
-                key: const Key('add-string-button'),
-                onPressed: () {
-                  context.read<CalculatorBloc>().add(
-                    const CalculatorStringAdded(),
-                  );
-                },
-                icon: const Icon(Icons.add),
-                label: const Text('Добавить струну'),
+            if (state.isMyGuitarsEmptyState)
+              const MyInstrumentsEmptyState()
+            else if (activeInstrument != null)
+              _CalculatorTable(
+                instrument: activeInstrument,
+                isHelpVisible: state.isHelpVisible,
+                isReadOnly: isMyGuitarsMode,
               ),
-            ),
+            if (activeInstrument != null) ...[
+              const SizedBox(height: 20),
+              if (isMyGuitarsMode)
+                SizedBox(
+                  width: 220,
+                  child: FilledButton.icon(
+                    key: const Key('edit-saved-instrument-button'),
+                    onPressed: () {
+                      context.read<CalculatorBloc>().add(
+                        const CalculatorSavedInstrumentEditRequested(),
+                      );
+                    },
+                    icon: const Icon(Icons.edit_outlined),
+                    label: const Text('Отредактировать'),
+                  ),
+                )
+              else
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: [
+                    SizedBox(
+                      width: 220,
+                      child: FilledButton.icon(
+                        key: const Key('add-string-button'),
+                        onPressed: () {
+                          context.read<CalculatorBloc>().add(
+                            const CalculatorStringAdded(),
+                          );
+                        },
+                        icon: const Icon(Icons.add),
+                        label: const Text('Добавить струну'),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 220,
+                      child: FilledButton.tonalIcon(
+                        key: const Key('save-my-instruments-button'),
+                        onPressed: () => _showSaveDialog(context),
+                        icon: const Icon(Icons.save_outlined),
+                        label: const Text('Сохранить в мои гитары'),
+                      ),
+                    ),
+                  ],
+                ),
+            ],
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _showSaveDialog(BuildContext context) async {
+    final submission = await showDialog(
+      context: context,
+      builder: (dialogContext) => SaveInstrumentDialog(
+        initialName: state.selectedMode == CalculatorMode.myGuitars
+            ? (state.selectedSavedInstrument?.name ?? '')
+            : '',
+        initialKind: state.selectedMode == CalculatorMode.bass
+            ? SavedInstrumentKind.bass
+            : state.selectedSavedInstrument?.kind ?? SavedInstrumentKind.guitar,
+        isEditingExisting:
+            state.selectedMode == CalculatorMode.myGuitars &&
+            state.selectedSavedInstrumentId != null,
+      ),
+    );
+
+    if (submission == null || !context.mounted) {
+      return;
+    }
+
+    context.read<CalculatorBloc>().add(CalculatorSaveSubmitted(submission));
   }
 }
 
@@ -225,17 +297,81 @@ class _StringSetSelector extends StatelessWidget {
   }
 }
 
-class _CalculatorTable extends StatelessWidget {
-  const _CalculatorTable({required this.snapshot, required this.isHelpVisible});
+class _MyInstrumentsSelector extends StatelessWidget {
+  const _MyInstrumentsSelector({
+    required this.savedInstruments,
+    required this.selectedSavedInstrumentId,
+  });
 
-  final CalculatorSnapshot snapshot;
+  final List<SavedInstrumentRecord> savedInstruments;
+  final String? selectedSavedInstrumentId;
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<String>(
+      key: const Key('my-instruments-selector'),
+      initialValue:
+          savedInstruments.any(
+            (instrument) => instrument.id == selectedSavedInstrumentId,
+          )
+          ? selectedSavedInstrumentId
+          : null,
+      dropdownColor: const Color(0xFF2A2A33),
+      decoration: const InputDecoration(
+        labelText: 'Мои гитары',
+        labelStyle: TextStyle(color: Colors.white70),
+      ),
+      hint: const Text(
+        'Нет сохранённых инструментов',
+        style: TextStyle(color: Colors.white70),
+      ),
+      iconEnabledColor: Colors.white,
+      style: const TextStyle(color: Colors.white),
+      items: [
+        for (final instrument in savedInstruments)
+          DropdownMenuItem<String>(
+            value: instrument.id,
+            child: Text(
+              '${instrument.name} · ${_savedKindLabel(instrument.kind)}',
+            ),
+          ),
+      ],
+      onChanged: savedInstruments.isEmpty
+          ? null
+          : (savedInstrumentId) {
+              if (savedInstrumentId == null) {
+                return;
+              }
+              context.read<CalculatorBloc>().add(
+                CalculatorSavedInstrumentSelected(savedInstrumentId),
+              );
+            },
+    );
+  }
+
+  String _savedKindLabel(SavedInstrumentKind kind) {
+    return switch (kind) {
+      SavedInstrumentKind.guitar => 'Гитара',
+      SavedInstrumentKind.bass => 'Бас',
+    };
+  }
+}
+
+class _CalculatorTable extends StatelessWidget {
+  const _CalculatorTable({
+    required this.instrument,
+    required this.isHelpVisible,
+    required this.isReadOnly,
+  });
+
+  final Instrument instrument;
   final bool isHelpVisible;
+  final bool isReadOnly;
 
   @override
   Widget build(BuildContext context) {
     final engine = context.read<CalculatorEngine>();
     final repository = context.read<CalculatorRepository>();
-    final instrument = snapshot.currentInstrument;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -265,6 +401,7 @@ class _CalculatorTable extends StatelessWidget {
                 instrumentType: instrument.type,
                 engine: engine,
                 repository: repository,
+                isReadOnly: isReadOnly,
               ),
             ],
           ],
@@ -321,6 +458,7 @@ class _StringRow extends StatelessWidget {
     required this.instrumentType,
     required this.engine,
     required this.repository,
+    required this.isReadOnly,
   });
 
   final int index;
@@ -329,6 +467,7 @@ class _StringRow extends StatelessWidget {
   final InstrumentType instrumentType;
   final CalculatorEngine engine;
   final CalculatorRepository repository;
+  final bool isReadOnly;
 
   @override
   Widget build(BuildContext context) {
@@ -344,12 +483,16 @@ class _StringRow extends StatelessWidget {
     return Row(
       children: [
         CalculatorCell(
-          onIncrement: () {
-            bloc.add(CalculatorScaleIncremented(index));
-          },
-          onDecrement: () {
-            bloc.add(CalculatorScaleDecremented(index));
-          },
+          onIncrement: isReadOnly
+              ? null
+              : () {
+                  bloc.add(CalculatorScaleIncremented(index));
+                },
+          onDecrement: isReadOnly
+              ? null
+              : () {
+                  bloc.add(CalculatorScaleDecremented(index));
+                },
           child: Text(
             '${formatDecimal(string.scaleLengthInches)}"',
             style: const TextStyle(
@@ -360,12 +503,16 @@ class _StringRow extends StatelessWidget {
         ),
         _gap,
         CalculatorCell(
-          onIncrement: () {
-            bloc.add(CalculatorNoteIncremented(index));
-          },
-          onDecrement: () {
-            bloc.add(CalculatorNoteDecremented(index));
-          },
+          onIncrement: isReadOnly
+              ? null
+              : () {
+                  bloc.add(CalculatorNoteIncremented(index));
+                },
+          onDecrement: isReadOnly
+              ? null
+              : () {
+                  bloc.add(CalculatorNoteDecremented(index));
+                },
           child: Text(
             string.note.label,
             style: const TextStyle(
@@ -376,12 +523,16 @@ class _StringRow extends StatelessWidget {
         ),
         _gap,
         CalculatorCell(
-          onIncrement: () {
-            bloc.add(CalculatorGaugeIncremented(index));
-          },
-          onDecrement: () {
-            bloc.add(CalculatorGaugeDecremented(index));
-          },
+          onIncrement: isReadOnly
+              ? null
+              : () {
+                  bloc.add(CalculatorGaugeIncremented(index));
+                },
+          onDecrement: isReadOnly
+              ? null
+              : () {
+                  bloc.add(CalculatorGaugeDecremented(index));
+                },
           child: Text(
             formatGauge(physical.gaugeInches),
             style: const TextStyle(

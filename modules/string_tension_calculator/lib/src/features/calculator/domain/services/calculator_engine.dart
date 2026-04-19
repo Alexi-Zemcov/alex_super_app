@@ -80,26 +80,44 @@ class CalculatorEngine {
     CalculatorSnapshot snapshot,
     ScalePreset preset,
   ) {
-    final updatedInstrument = _applyScalePreset(
+    final updatedInstrument = applyScalePresetToInstrument(
       snapshot.currentInstrument,
       preset,
     );
     return snapshot.copyWith(currentInstrument: updatedInstrument);
   }
 
+  Instrument applyScalePresetToInstrument(
+    Instrument instrument,
+    ScalePreset preset,
+  ) {
+    return _applyScalePreset(instrument, preset);
+  }
+
   CalculatorSnapshot changeStringSet(
     CalculatorSnapshot snapshot,
     StringSetId stringSetId,
   ) {
-    final current = snapshot.currentInstrument;
-    if (current.stringSetId == stringSetId) {
-      return snapshot;
+    return snapshot.copyWith(
+      currentInstrument: changeStringSetForInstrument(
+        snapshot.currentInstrument,
+        stringSetId,
+      ),
+    );
+  }
+
+  Instrument changeStringSetForInstrument(
+    Instrument instrument,
+    StringSetId stringSetId,
+  ) {
+    if (instrument.stringSetId == stringSetId) {
+      return instrument;
     }
 
-    final remappedStrings = current.strings
+    final remappedStrings = instrument.strings
         .map((string) {
           final currentPhysicalString = _repository.getPhysicalString(
-            current.stringSetId,
+            instrument.stringSetId,
             string.physicalStringId,
           );
           final targetSet = _repository.getStringSet(stringSetId);
@@ -122,11 +140,9 @@ class CalculatorEngine {
         })
         .toList(growable: false);
 
-    return snapshot.copyWith(
-      currentInstrument: current.copyWith(
-        stringSetId: stringSetId,
-        strings: remappedStrings,
-      ),
+    return instrument.copyWith(
+      stringSetId: stringSetId,
+      strings: remappedStrings,
     );
   }
 
@@ -135,34 +151,81 @@ class CalculatorEngine {
     int index,
   ) => _changeScale(snapshot, index, 0.1);
 
+  Instrument incrementScaleAtIndexOnInstrument(
+    Instrument instrument,
+    int index,
+  ) {
+    return _changeScaleOnInstrument(instrument, index, 0.1);
+  }
+
   CalculatorSnapshot decrementScaleAtIndex(
     CalculatorSnapshot snapshot,
     int index,
   ) => _changeScale(snapshot, index, -0.1);
+
+  Instrument decrementScaleAtIndexOnInstrument(
+    Instrument instrument,
+    int index,
+  ) {
+    return _changeScaleOnInstrument(instrument, index, -0.1);
+  }
 
   CalculatorSnapshot incrementNoteAtIndex(
     CalculatorSnapshot snapshot,
     int index,
   ) => _changeNote(snapshot, index, true);
 
+  Instrument incrementNoteAtIndexOnInstrument(
+    Instrument instrument,
+    int index,
+  ) {
+    return _changeNoteOnInstrument(instrument, index, true);
+  }
+
   CalculatorSnapshot decrementNoteAtIndex(
     CalculatorSnapshot snapshot,
     int index,
   ) => _changeNote(snapshot, index, false);
+
+  Instrument decrementNoteAtIndexOnInstrument(
+    Instrument instrument,
+    int index,
+  ) {
+    return _changeNoteOnInstrument(instrument, index, false);
+  }
 
   CalculatorSnapshot incrementGaugeAtIndex(
     CalculatorSnapshot snapshot,
     int index,
   ) => _changeGauge(snapshot, index, true);
 
+  Instrument incrementGaugeAtIndexOnInstrument(
+    Instrument instrument,
+    int index,
+  ) {
+    return _changeGaugeOnInstrument(instrument, index, true);
+  }
+
   CalculatorSnapshot decrementGaugeAtIndex(
     CalculatorSnapshot snapshot,
     int index,
   ) => _changeGauge(snapshot, index, false);
 
+  Instrument decrementGaugeAtIndexOnInstrument(
+    Instrument instrument,
+    int index,
+  ) {
+    return _changeGaugeOnInstrument(instrument, index, false);
+  }
+
   CalculatorSnapshot addString(CalculatorSnapshot snapshot) {
-    final current = snapshot.currentInstrument;
-    final lastString = current.strings.last;
+    return snapshot.copyWith(
+      currentInstrument: addStringToInstrument(snapshot.currentInstrument),
+    );
+  }
+
+  Instrument addStringToInstrument(Instrument instrument) {
+    final lastString = instrument.strings.last;
     var newNote = lastString.note;
     for (var i = 0; i < 5; i++) {
       newNote = newNote.previous();
@@ -175,11 +238,11 @@ class CalculatorEngine {
     );
 
     final referenceTension = tensionLbs(
-      stringSetId: current.stringSetId,
+      stringSetId: instrument.stringSetId,
       string: lastString,
     );
 
-    final set = _repository.getStringSet(current.stringSetId);
+    final set = _repository.getStringSet(instrument.stringSetId);
     var bestString = baseString;
     var bestDelta = double.infinity;
 
@@ -188,7 +251,7 @@ class CalculatorEngine {
         physicalStringId: physicalString.id,
       );
       final candidateTension = tensionLbs(
-        stringSetId: current.stringSetId,
+        stringSetId: instrument.stringSetId,
         string: candidate,
       );
       final delta = (referenceTension - candidateTension).abs();
@@ -198,11 +261,7 @@ class CalculatorEngine {
       }
     }
 
-    return snapshot.copyWith(
-      currentInstrument: current.copyWith(
-        strings: [...current.strings, bestString],
-      ),
-    );
+    return instrument.copyWith(strings: [...instrument.strings, bestString]);
   }
 
   CalculatorSnapshot _changeScale(
@@ -211,15 +270,24 @@ class CalculatorEngine {
     double delta,
   ) {
     return snapshot.copyWith(
-      currentInstrument: _mapString(
+      currentInstrument: _changeScaleOnInstrument(
         snapshot.currentInstrument,
         index,
-        (string) => string.copyWith(
-          scaleLengthInches: roundToDecimals(
-            string.scaleLengthInches + delta,
-            1,
-          ),
-        ),
+        delta,
+      ),
+    );
+  }
+
+  Instrument _changeScaleOnInstrument(
+    Instrument instrument,
+    int index,
+    double delta,
+  ) {
+    return _mapString(
+      instrument,
+      index,
+      (string) => string.copyWith(
+        scaleLengthInches: roundToDecimals(string.scaleLengthInches + delta, 1),
       ),
     );
   }
@@ -230,12 +298,24 @@ class CalculatorEngine {
     bool increment,
   ) {
     return snapshot.copyWith(
-      currentInstrument: _mapString(
+      currentInstrument: _changeNoteOnInstrument(
         snapshot.currentInstrument,
         index,
-        (string) => string.copyWith(
-          note: increment ? string.note.next() : string.note.previous(),
-        ),
+        increment,
+      ),
+    );
+  }
+
+  Instrument _changeNoteOnInstrument(
+    Instrument instrument,
+    int index,
+    bool increment,
+  ) {
+    return _mapString(
+      instrument,
+      index,
+      (string) => string.copyWith(
+        note: increment ? string.note.next() : string.note.previous(),
       ),
     );
   }
@@ -245,20 +325,31 @@ class CalculatorEngine {
     int index,
     bool increment,
   ) {
-    final current = snapshot.currentInstrument;
-    final set = _repository.getStringSet(current.stringSetId);
-
     return snapshot.copyWith(
-      currentInstrument: _mapString(current, index, (string) {
-        final nextId = increment
-            ? (string.physicalStringId + 1)
-            : (string.physicalStringId - 1);
-        if (nextId < 0 || nextId >= set.strings.length) {
-          return string;
-        }
-        return string.copyWith(physicalStringId: nextId);
-      }),
+      currentInstrument: _changeGaugeOnInstrument(
+        snapshot.currentInstrument,
+        index,
+        increment,
+      ),
     );
+  }
+
+  Instrument _changeGaugeOnInstrument(
+    Instrument instrument,
+    int index,
+    bool increment,
+  ) {
+    final set = _repository.getStringSet(instrument.stringSetId);
+
+    return _mapString(instrument, index, (string) {
+      final nextId = increment
+          ? (string.physicalStringId + 1)
+          : (string.physicalStringId - 1);
+      if (nextId < 0 || nextId >= set.strings.length) {
+        return string;
+      }
+      return string.copyWith(physicalStringId: nextId);
+    });
   }
 
   Instrument _applyScalePreset(Instrument instrument, ScalePreset preset) {

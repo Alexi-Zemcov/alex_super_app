@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:scoped_di/scoped_di.dart';
 import 'package:string_tension_calculator/src/features/calculator/data/datasources/calculator_catalog_datasource.dart';
+import 'package:string_tension_calculator/src/features/calculator/data/mappers/saved_instrument_mapper.dart';
 import 'package:string_tension_calculator/src/features/calculator/data/repositories/local_calculator_repository.dart';
 import 'package:string_tension_calculator/src/features/calculator/domain/repositories/calculator_repository.dart';
 import 'package:string_tension_calculator/src/features/calculator/domain/services/calculator_engine.dart';
@@ -23,6 +24,11 @@ class StringTensionCalculatorScopeModule extends ScopeModule {
     Provider<CalculatorEngine>(
       create: (context) =>
           CalculatorEngine(repository: context.read<CalculatorRepository>()),
+    ),
+    Provider<SavedInstrumentMapper>(
+      create: (context) => SavedInstrumentMapper(
+        repository: context.read<CalculatorRepository>(),
+      ),
     ),
   ];
 }

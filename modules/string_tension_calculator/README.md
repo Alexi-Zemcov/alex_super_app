@@ -1,6 +1,6 @@
 # string_tension_calculator
 
-Самостоятельный модуль с локальным клоном основного калькулятора с [stringtensioncalculator.com](https://www.stringtensioncalculator.com/). Реализация повторяет базовый UI и вычислительную модель исходного сайта, но не включает share-link, query-sync и мультиязычность.
+Самостоятельный модуль с локальным клоном основного калькулятора с [stringtensioncalculator.com](https://www.stringtensioncalculator.com/). Реализация повторяет базовый UI и вычислительную модель исходного сайта, но не включает share-link, query-sync и мультиязычность. Поверх базового калькулятора добавлен локальный режим `Мои гитары` для сохранения пользовательских конфигураций.
 
 ## Источник логики
 
@@ -10,22 +10,29 @@
 
 - datasource: `lib/src/features/calculator/data/datasources/calculator_catalog_datasource.dart`
 - repository: `lib/src/features/calculator/data/repositories/local_calculator_repository.dart`
+- saved instrument mapper: `lib/src/features/calculator/data/mappers/saved_instrument_mapper.dart`
 - engine: `lib/src/features/calculator/domain/services/calculator_engine.dart`
 - экран: `lib/src/features/calculator/presentation/screens/calculator/calculator_screen.dart`
 
 ## Что реализовано в v1
 
 - переключение `Гитара/Бас`
+- режим `Мои гитары`
 - выбор пресета мензуры
 - выбор набора струн
+- dropdown сохранённых инструментов
 - редактируемая таблица `Мензура / Нота / Калибр / Натяжение / Частота`
 - help box по цветовой индикации натяжения
 - `Добавить струну`
+- `Сохранить в мои гитары`
+- read-only просмотр `Моих гитар` с кнопкой `Отредактировать`
 
 Публичный API модуля не менялся:
 
 - `lib/string_tension_calculator.dart`
 - `lib/src/module/string_tension_calculator_module.dart`
+
+Shared runtime-контракт для сохранённых пользовательских инструментов вынесен в workspace package `packages/core/my_instruments`.
 
 ## Локальные данные
 
@@ -62,6 +69,12 @@
 - id струн: `34 41 51 61`
 
 Переключение `Гитара/Бас` просто меняет местами `currentInstrument` и `otherInstrument`, поэтому пользовательский state обоих инструментов сохраняется.
+
+Отдельно от manual drafts модуль держит:
+
+- список `savedInstruments`
+- `selectedSavedInstrumentId`
+- read-only draft для режима `Мои гитары`
 
 ## Пресеты мензуры
 
@@ -100,7 +113,7 @@ tension = unitWeight * (2 * scale * freq)^2 / 386.4
 
 Поддерживаются те же базовые операции, что и в web-версии:
 
-- `Instrument toggle` — меняет текущий инструмент
+- `Mode switch` — меняет активный режим `Гитара | Бас | Мои гитары`
 - `Scale preset` — применяет single-scale или multiscale пресет
 - `Scale +/-` — меняет мензуру выбранной струны на `0.1"`
 - `Note +/-` — меняет ноту на один полутон
@@ -114,6 +127,41 @@ tension = unitWeight * (2 * scale * freq)^2 / 386.4
 2. копируется её мензура
 3. нота понижается на 5 полутонов
 4. внутри текущего набора выбирается струна с минимальной разницей по натяжению относительно предыдущей последней струны
+
+### Режим `Мои гитары`
+
+Режим `Мои гитары` использует shared repository `MyInstrumentsRepository` из пакета `my_instruments`.
+
+Поведение:
+
+- вместо `Выберите мензуру` и `Набор струн` показывается dropdown `Мои гитары`
+- если список пуст, рендерится empty state и таблица скрывается
+- если записи есть, по умолчанию выбирается самая свежая по `updatedAt`
+- выбранная запись загружается в read-only draft
+- таблица в этом режиме не редактируется: стрелки `Scale/Note/Gauge` скрыты
+- вместо `Добавить струну` и `Сохранить в мои гитары` показывается кнопка `Отредактировать`
+- `Отредактировать` переносит выбранный инструмент в manual draft вкладки `Гитара` или `Бас` в зависимости от типа
+
+### Сохранение
+
+Кнопка `Сохранить в мои гитары` открывает диалог с полями:
+
+- `Название`
+- `Тип инструмента`
+
+Сценарии:
+
+- из manual режимов всегда создаётся новая запись
+- режим `Мои гитары` сам по себе ничего не сохраняет: сначала нужно перейти в `Гитара` или `Бас` через `Отредактировать`
+
+В DTO сохраняются:
+
+- `name`
+- `kind`
+- `stringSetId`
+- массив струн с `noteLabel`, `scaleLengthInches`, `physicalStringId`, `gaugeInches`
+- `createdAt`
+- `updatedAt`
 
 ## Цветовая индикация натяжения
 
@@ -134,15 +182,22 @@ tension = unitWeight * (2 * scale * freq)^2 / 386.4
 Структура feature-first:
 
 - `data` — локальный datasource и repository без сети
+- `data/mappers` — адаптер между shared DTO `my_instruments` и внутренними сущностями калькулятора
 - `domain` — сущности, формулы и pure-logic engine
 - `presentation` — экран, bloc и feature widgets
 - `di` — module scope и route scope
 
 DI:
 
-- `StringTensionCalculatorScopeModule` публикует datasource, repository и engine
-- `CalculatorModule` публикует `CalculatorBloc`
+- `StringTensionCalculatorScopeModule` публикует datasource, repository, engine и mapper
+- `CalculatorModule` публикует `CalculatorBloc` и читает `MyInstrumentsRepository` из родительского scope
 - `CalculatorRouteScope` поднимает `RouteScope(modules: [CalculatorModule()])`
+
+Shell wiring:
+
+- `apps/super_app` публикует singleton `MyInstrumentsRepository`
+- реализация для v1 — `SharedPreferencesMyInstrumentsRepository`
+- storage key: `myInstruments.v1`
 
 ## Ограничения v1
 
@@ -151,3 +206,4 @@ DI:
 - нет мультиязычности
 - нет backend, scraper и live sync
 - данные string sets локальные и immutable
+- нет delete, reorder, отдельного списка/редактора записей вне калькулятора

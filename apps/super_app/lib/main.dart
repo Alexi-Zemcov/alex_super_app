@@ -9,12 +9,21 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final sharedPreferences = await SharedPreferences.getInstance();
-  final themeStore = SharedPreferencesThemeStore(sharedPreferences: sharedPreferences);
-  final themeController = AppThemeController(initialTheme: themeStore.loadTheme());
+  final themeStore = SharedPreferencesThemeStore(
+    sharedPreferences: sharedPreferences,
+  );
+  final themeController = AppThemeController(
+    initialTheme: themeStore.loadTheme(),
+  );
 
   themeController.addListener(() {
     unawaited(themeStore.saveTheme(themeController.themePreference));
   });
 
-  runApp(SuperApp(sharedPreferences: sharedPreferences, themeController: themeController));
+  runApp(
+    SuperApp(
+      sharedPreferences: sharedPreferences,
+      themeController: themeController,
+    ),
+  );
 }

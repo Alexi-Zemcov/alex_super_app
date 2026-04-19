@@ -12,6 +12,7 @@ workspace:
   - modules/quiz
   - modules/string_tension_calculator
   - packages/core/app_theme
+  - packages/core/my_instruments
   - packages/core/module_contracts
   - packages/core/scoped_di
   - tools/alex_workspace_lints

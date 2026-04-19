@@ -1,5 +1,8 @@
 import 'package:equatable/equatable.dart';
+import 'package:my_instruments/my_instruments.dart';
 import 'package:string_tension_calculator/src/features/calculator/domain/entities/entities.dart';
+import 'package:string_tension_calculator/src/features/calculator/presentation/screens/calculator/models/calculator_mode.dart';
+import 'package:string_tension_calculator/src/features/calculator/presentation/screens/calculator/models/save_instrument_submission.dart';
 
 sealed class CalculatorEvent extends Equatable {
   const CalculatorEvent();
@@ -12,8 +15,13 @@ final class CalculatorStarted extends CalculatorEvent {
   const CalculatorStarted();
 }
 
-final class CalculatorInstrumentToggled extends CalculatorEvent {
-  const CalculatorInstrumentToggled();
+final class CalculatorModeSelected extends CalculatorEvent {
+  const CalculatorModeSelected(this.mode);
+
+  final CalculatorMode mode;
+
+  @override
+  List<Object?> get props => [mode];
 }
 
 final class CalculatorScalePresetSelected extends CalculatorEvent {
@@ -32,6 +40,28 @@ final class CalculatorStringSetSelected extends CalculatorEvent {
 
   @override
   List<Object?> get props => [stringSetId];
+}
+
+final class CalculatorSavedInstrumentsChanged extends CalculatorEvent {
+  const CalculatorSavedInstrumentsChanged(this.savedInstruments);
+
+  final List<SavedInstrumentRecord> savedInstruments;
+
+  @override
+  List<Object?> get props => [savedInstruments];
+}
+
+final class CalculatorSavedInstrumentSelected extends CalculatorEvent {
+  const CalculatorSavedInstrumentSelected(this.savedInstrumentId);
+
+  final String savedInstrumentId;
+
+  @override
+  List<Object?> get props => [savedInstrumentId];
+}
+
+final class CalculatorSavedInstrumentEditRequested extends CalculatorEvent {
+  const CalculatorSavedInstrumentEditRequested();
 }
 
 final class CalculatorScaleIncremented extends CalculatorEvent {
@@ -94,4 +124,13 @@ final class CalculatorHelpToggled extends CalculatorEvent {
 
 final class CalculatorStringAdded extends CalculatorEvent {
   const CalculatorStringAdded();
+}
+
+final class CalculatorSaveSubmitted extends CalculatorEvent {
+  const CalculatorSaveSubmitted(this.submission);
+
+  final SaveInstrumentSubmission submission;
+
+  @override
+  List<Object?> get props => [submission];
 }

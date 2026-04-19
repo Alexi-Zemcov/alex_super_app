@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:module_contracts/module_contracts.dart';
+import 'package:my_instruments/my_instruments.dart';
 import 'package:provider/provider.dart';
 import 'package:quiz/quiz_assets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,7 +28,14 @@ void main() {
       rootRoute: GoRoute(
         path: '/quiz',
         builder: (context, state) {
-          return const Scaffold(body: Center(child: Text('Fake module page')));
+          final repository = context.read<MyInstrumentsRepository>();
+          return Scaffold(
+            body: Center(
+              child: Text(
+                'Fake module page (${repository.getRecords().length})',
+              ),
+            ),
+          );
         },
       ),
     );
@@ -48,7 +56,7 @@ void main() {
 
     await tester.tap(find.text('Открыть'));
     await tester.pumpAndSettle();
-    expect(find.text('Fake module page'), findsOneWidget);
+    expect(find.text('Fake module page (0)'), findsOneWidget);
   });
 
   testWidgets('starts directly on /quiz and renders the quiz home route', (
