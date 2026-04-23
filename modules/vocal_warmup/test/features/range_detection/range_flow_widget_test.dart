@@ -20,7 +20,7 @@ void main() {
   testWidgets(
     'requires directional hold before moving from low note to high note',
     (tester) async {
-      final pitchService = _ControlledPitchDetectionService();
+      final pitchService = _ScriptedPitchDetectionService();
       final notePreviewService = _RecordingNotePreviewService();
       await _pumpRangeFlow(
         tester,
@@ -30,42 +30,13 @@ void main() {
 
       expect(find.textContaining('двигайтесь вниз'), findsOneWidget);
 
-      pitchService.emitNote(RangeDetectionTarget.lowest, 'G3', elapsedMs: 0);
-      await tester.pump();
-      pitchService.emitNote(RangeDetectionTarget.lowest, 'F3', elapsedMs: 1000);
-      await tester.pump();
-      pitchService.emitNote(RangeDetectionTarget.lowest, 'E2', elapsedMs: 2000);
-      await tester.pump();
-      pitchService.emitNote(RangeDetectionTarget.lowest, 'E2', elapsedMs: 4000);
-      await tester.pump();
-
+      await tester.pump(const Duration(milliseconds: 450));
       expect(find.textContaining('двигайтесь вниз'), findsOneWidget);
 
-      pitchService.emitNote(RangeDetectionTarget.lowest, 'E2', elapsedMs: 5000);
-      await tester.pump();
-      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 200));
       expect(find.textContaining('двигайтесь вверх'), findsOneWidget);
 
-      pitchService.emitNote(RangeDetectionTarget.highest, 'G3', elapsedMs: 0);
-      await tester.pump();
-      pitchService.emitNote(
-        RangeDetectionTarget.highest,
-        'A3',
-        elapsedMs: 1000,
-      );
-      await tester.pump();
-      pitchService.emitNote(
-        RangeDetectionTarget.highest,
-        'C5',
-        elapsedMs: 2000,
-      );
-      await tester.pump();
-      pitchService.emitNote(
-        RangeDetectionTarget.highest,
-        'C5',
-        elapsedMs: 5000,
-      );
-      await tester.pumpAndSettle();
+      await tester.pumpAndSettle(const Duration(milliseconds: 800));
 
       expect(find.text('Ваш диапазон'), findsOneWidget);
       expect(find.text('E2'), findsOneWidget);
@@ -92,7 +63,7 @@ void main() {
   testWidgets('allows adjusting the detected range from the result screen', (
     tester,
   ) async {
-    final pitchService = _ControlledPitchDetectionService();
+    final pitchService = _ScriptedPitchDetectionService();
     final notePreviewService = _RecordingNotePreviewService();
     await _pumpRangeFlow(
       tester,
@@ -100,7 +71,7 @@ void main() {
       notePreviewService: notePreviewService,
     );
 
-    await _completeDetectionFlow(tester, pitchService);
+    await tester.pumpAndSettle(const Duration(milliseconds: 1600));
 
     await tester.tap(find.byKey(const Key('rangeFlow.lowestEndpoint')));
     await tester.pumpAndSettle();
@@ -117,6 +88,7 @@ void main() {
     await tester.tap(find.text('Готово'));
     await tester.pumpAndSettle();
 
+    await tester.ensureVisible(find.text('Продолжить'));
     await tester.tap(find.text('Продолжить'));
     await tester.pumpAndSettle();
 
@@ -124,16 +96,21 @@ void main() {
   });
 
   testWidgets('restart returns to the first detection step', (tester) async {
-    final pitchService = _ControlledPitchDetectionService();
-    await _pumpRangeFlow(tester, pitchService: pitchService);
+    final pitchService = _ScriptedPitchDetectionService();
+    await _pumpRangeFlow(
+      tester,
+      pitchService: pitchService,
+      notePreviewService: _RecordingNotePreviewService(),
+    );
 
-    await _completeDetectionFlow(tester, pitchService);
+    await tester.pumpAndSettle(const Duration(milliseconds: 1600));
 
     await tester.ensureVisible(find.text('Заново'));
     await tester.tap(find.text('Заново'));
     await tester.pump();
 
     expect(find.textContaining('двигайтесь вниз'), findsOneWidget);
+    await tester.pumpAndSettle(const Duration(milliseconds: 1600));
   });
 
   testWidgets('opens exercise selection when a range is already stored', (
@@ -197,90 +174,61 @@ Future<void> _pumpRangeFlow(
   await tester.pump();
 }
 
-Future<void> _completeDetectionFlow(
-  WidgetTester tester,
-  _ControlledPitchDetectionService pitchService,
-) async {
-  pitchService.emitNote(RangeDetectionTarget.lowest, 'G3', elapsedMs: 0);
-  pitchService.emitNote(RangeDetectionTarget.lowest, 'F3', elapsedMs: 1000);
-  pitchService.emitNote(RangeDetectionTarget.lowest, 'E2', elapsedMs: 2000);
-  pitchService.emitNote(RangeDetectionTarget.lowest, 'E2', elapsedMs: 5000);
-  await tester.pump();
-  await tester.pump();
-
-  pitchService.emitNote(RangeDetectionTarget.highest, 'G3', elapsedMs: 0);
-  pitchService.emitNote(RangeDetectionTarget.highest, 'A3', elapsedMs: 1000);
-  pitchService.emitNote(RangeDetectionTarget.highest, 'C5', elapsedMs: 2000);
-  pitchService.emitNote(RangeDetectionTarget.highest, 'C5', elapsedMs: 5000);
-  await tester.pump();
-  await tester.pumpAndSettle();
-}
-
-class _ControlledPitchDetectionService implements PitchDetectionService {
-  final Map<RangeDetectionTarget, StreamController<DetectedPitchSample>?>
-  _controllers = {
-    RangeDetectionTarget.lowest: null,
-    RangeDetectionTarget.highest: null,
-  };
-  final Map<RangeDetectionTarget, List<DetectedPitchSample>> _pendingSamples = {
-    RangeDetectionTarget.lowest: <DetectedPitchSample>[],
-    RangeDetectionTarget.highest: <DetectedPitchSample>[],
-  };
-
-  final Map<RangeDetectionTarget, DateTime> _baseTimes = {
-    RangeDetectionTarget.lowest: DateTime.utc(2026, 4, 23, 0, 0, 0),
-    RangeDetectionTarget.highest: DateTime.utc(2026, 4, 23, 0, 1, 0),
-  };
-
+class _ScriptedPitchDetectionService implements PitchDetectionService {
   @override
   Future<void> prepareDetection() => Future<void>.value();
 
   @override
   Stream<DetectedPitchSample> observeDetectedPitches(
     RangeDetectionTarget target,
-  ) {
-    final controller = StreamController<DetectedPitchSample>();
-    _controllers[target] = controller;
-    for (final sample in _pendingSamples[target]!) {
-      controller.add(sample);
+  ) async* {
+    final baseTime = target == RangeDetectionTarget.lowest
+        ? DateTime.utc(2026, 4, 23, 0, 0, 0)
+        : DateTime.utc(2026, 4, 23, 0, 1, 0);
+    final script = target == RangeDetectionTarget.lowest
+        ? _lowestScript
+        : _highestScript;
+
+    for (final step in script) {
+      await Future<void>.delayed(Duration(milliseconds: step.delayMs));
+      yield DetectedPitchSample(
+        note: ScientificNote.parse(step.noteLabel),
+        timestamp: baseTime.add(Duration(milliseconds: step.timestampMs)),
+        isPitched: true,
+      );
     }
-    _pendingSamples[target]!.clear();
-    return controller.stream;
   }
 
   @override
-  Future<void> stopDetection() async {
-    for (final entry in _controllers.entries.toList()) {
-      await entry.value?.close();
-      _controllers[entry.key] = null;
-    }
-  }
+  Future<void> stopDetection() => Future<void>.value();
+}
 
-  void emitNote(
-    RangeDetectionTarget target,
-    String noteLabel, {
-    required int elapsedMs,
-  }) {
-    final controller = _controllers[target];
-    if (controller == null) {
-      _pendingSamples[target]!.add(
-        DetectedPitchSample(
-          note: ScientificNote.parse(noteLabel),
-          timestamp: _baseTimes[target]!.add(Duration(milliseconds: elapsedMs)),
-          isPitched: true,
-        ),
-      );
-      return;
-    }
+const _lowestScript = [
+  _PitchScriptStep(noteLabel: 'G3', delayMs: 0, timestampMs: 0),
+  _PitchScriptStep(noteLabel: 'F3', delayMs: 100, timestampMs: 1000),
+  _PitchScriptStep(noteLabel: 'E2', delayMs: 100, timestampMs: 2000),
+  _PitchScriptStep(noteLabel: 'E2', delayMs: 200, timestampMs: 4000),
+  _PitchScriptStep(noteLabel: 'E2', delayMs: 100, timestampMs: 5000),
+];
 
-    controller.add(
-      DetectedPitchSample(
-        note: ScientificNote.parse(noteLabel),
-        timestamp: _baseTimes[target]!.add(Duration(milliseconds: elapsedMs)),
-        isPitched: true,
-      ),
-    );
-  }
+const _highestScript = [
+  _PitchScriptStep(noteLabel: 'G3', delayMs: 0, timestampMs: 0),
+  _PitchScriptStep(noteLabel: 'A3', delayMs: 100, timestampMs: 1000),
+  _PitchScriptStep(noteLabel: 'C5', delayMs: 100, timestampMs: 2000),
+  _PitchScriptStep(noteLabel: 'C5', delayMs: 200, timestampMs: 4000),
+  _PitchScriptStep(noteLabel: 'C5', delayMs: 100, timestampMs: 5000),
+];
+
+class _PitchScriptStep {
+  const _PitchScriptStep({
+    required this.noteLabel,
+    required this.delayMs,
+    required this.timestampMs,
+  });
+
+  final String noteLabel;
+  final int delayMs;
+  final int timestampMs;
 }
 
 class _RecordingNotePreviewService implements NotePreviewService {

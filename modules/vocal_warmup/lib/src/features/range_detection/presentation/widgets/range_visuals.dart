@@ -121,13 +121,9 @@ class StaticRangeSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final span = _maxMidi - _minMidi;
-    final start = ((range.lowestNote.midi - _minMidi) / span)
-        .clamp(0.0, 1.0)
-        .toDouble();
-    final end = ((range.highestNote.midi - _minMidi) / span)
-        .clamp(0.0, 1.0)
-        .toDouble();
+    const span = _maxMidi - _minMidi;
+    final start = ((range.lowestNote.midi - _minMidi) / span).clamp(0.0, 1.0);
+    final end = ((range.highestNote.midi - _minMidi) / span).clamp(0.0, 1.0);
 
     return SizedBox(
       height: 32,

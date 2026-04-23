@@ -164,9 +164,10 @@ class _RangeListeningScreen extends StatelessWidget {
     if (state.holdProgress <= 0) {
       return 'Зафиксируйте ${state.currentNote!.label()} на 3 секунды';
     }
-    final remainingSeconds = (_holdSeconds * (1 - state.holdProgress))
-        .clamp(0.0, _holdSeconds)
-        .toDouble();
+    final remainingSeconds = (_holdSeconds * (1 - state.holdProgress)).clamp(
+      0.0,
+      _holdSeconds,
+    );
     return 'Удерживайте ${state.currentNote!.label()} ещё ${remainingSeconds.toStringAsFixed(1)} сек.';
   }
 }
@@ -541,13 +542,15 @@ class _RangeResultScreenState extends State<_RangeResultScreen> {
   List<ScientificNote> _pickerNotes(_RangeEndpointType endpointType) {
     final minMidi = endpointType == _RangeEndpointType.lowest
         ? _pickerMinMidi
-        : (_selectedRange.lowestNote.midi + 1)
-              .clamp(_pickerMinMidi, _pickerMaxMidi)
-              .toInt();
+        : (_selectedRange.lowestNote.midi + 1).clamp(
+            _pickerMinMidi,
+            _pickerMaxMidi,
+          );
     final maxMidi = endpointType == _RangeEndpointType.lowest
-        ? (_selectedRange.highestNote.midi - 1)
-              .clamp(_pickerMinMidi, _pickerMaxMidi)
-              .toInt()
+        ? (_selectedRange.highestNote.midi - 1).clamp(
+            _pickerMinMidi,
+            _pickerMaxMidi,
+          )
         : _pickerMaxMidi;
 
     return [

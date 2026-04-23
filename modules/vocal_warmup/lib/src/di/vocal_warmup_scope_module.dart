@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:midi_playback/midi_playback.dart';
 import 'package:provider/provider.dart';
@@ -9,8 +11,8 @@ import 'package:vocal_warmup/src/features/range_detection/data/repositories/shar
 import 'package:vocal_warmup/src/features/range_detection/data/services/fake_pitch_detection_service.dart';
 import 'package:vocal_warmup/src/features/range_detection/data/services/midi_note_preview_service.dart';
 import 'package:vocal_warmup/src/features/range_detection/data/services/native_vocal_pitch_detection_service.dart';
-import 'package:vocal_warmup/src/features/range_detection/domain/services/note_preview_service.dart';
 import 'package:vocal_warmup/src/features/range_detection/domain/repositories/vocal_range_repository.dart';
+import 'package:vocal_warmup/src/features/range_detection/domain/services/note_preview_service.dart';
 import 'package:vocal_warmup/src/features/range_detection/domain/services/pitch_detection_service.dart';
 import 'package:vocal_warmup/src/features/range_detection/domain/services/voice_classifier.dart';
 
@@ -34,7 +36,7 @@ class VocalWarmupScopeModule extends ScopeModule {
     Provider<MidiPlaybackService>(
       create: (_) => FlutterMidiPlaybackService(),
       dispose: (_, service) {
-        service.dispose();
+        unawaited(service.dispose());
       },
     ),
     Provider<NotePreviewService>(
@@ -46,7 +48,7 @@ class VocalWarmupScopeModule extends ScopeModule {
         return MidiNotePreviewService(context.read<MidiPlaybackService>());
       },
       dispose: (_, service) {
-        service.dispose();
+        unawaited(service.dispose());
       },
     ),
     Provider<VocalRangeStorageDataSource>(

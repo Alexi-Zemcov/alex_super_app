@@ -26,9 +26,7 @@ class NativeVocalPitchDetectionService implements PitchDetectionService {
 
   @override
   Future<void> prepareDetection() async {
-    _log('prepareDetection');
     final status = await _client.requestMicrophonePermission();
-    _log('prepareDetection permissionStatus=$status');
 
     if (status.isGranted) {
       return;
@@ -42,22 +40,11 @@ class NativeVocalPitchDetectionService implements PitchDetectionService {
   }
 
   @override
-  Stream<DetectedPitchSample> observeDetectedPitches(
-    RangeDetectionTarget target,
-  ) {
-    _log('observeDetectedPitches target=$target');
-    var sampleLogCount = 0;
-
+  Stream<DetectedPitchSample> observeDetectedPitches(RangeDetectionTarget _) {
     return _client.frames().map((frame) {
       final note = frame.isPitched
           ? _nearestScientificNote(frame.frequencyHz)
           : null;
-      if (sampleLogCount < 10 || sampleLogCount % 30 == 0) {
-        _log(
-          'sample[$sampleLogCount] target=$target pitched=${frame.isPitched} freq=${frame.frequencyHz.toStringAsFixed(2)}Hz note=${note?.label() ?? '-'}',
-        );
-      }
-      sampleLogCount += 1;
       return DetectedPitchSample(
         note: note,
         timestamp: frame.timestamp,
@@ -68,16 +55,11 @@ class NativeVocalPitchDetectionService implements PitchDetectionService {
 
   @override
   Future<void> stopDetection() async {
-    _log('stopDetection');
     await _client.stop();
   }
 
   ScientificNote _nearestScientificNote(double frequencyHz) {
     final midi = (69 + 12 * (math.log(frequencyHz / 440) / math.ln2)).round();
     return ScientificNote.fromMidi(midi);
-  }
-
-  void _log(String message) {
-    debugPrint('[VocalWarmup][NativePitchDetectionService] $message');
   }
 }

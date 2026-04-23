@@ -1,4 +1,5 @@
-import 'package:flutter/foundation.dart';
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:music_theory/music_theory.dart';
 import 'package:pitch_detection/pitch_detection.dart';
@@ -53,23 +54,17 @@ class RangeFlowBloc extends Bloc<RangeFlowEvent, RangeFlowState> {
     RangeFlowStarted event,
     Emitter<RangeFlowState> emit,
   ) async {
-    _log('event=started');
     emit(const RangeFlowLoading());
 
     try {
       final storedRange = await _loadRange();
-      _log(
-        'storedRange=${storedRange == null ? 'null' : '${storedRange.lowestNote.label()}-${storedRange.highestNote.label()}'}',
-      );
       if (storedRange != null) {
-        _log('opening exercise selection from stored range');
         emit(RangeFlowExerciseSelection(range: storedRange));
         return;
       }
 
       await _detectRange(emit);
     } catch (error) {
-      _log('started failed: $error');
       emit(RangeFlowFailure(_mapFailureMessage(error)));
     }
   }
@@ -79,24 +74,19 @@ class RangeFlowBloc extends Bloc<RangeFlowEvent, RangeFlowState> {
     Emitter<RangeFlowState> emit,
   ) async {
     emit(const RangeFlowLoading());
-    _log('event=restarted');
     try {
       await _detectRange(emit);
     } catch (error) {
-      _log('restart failed: $error');
       emit(RangeFlowFailure(_mapFailureMessage(error)));
     }
   }
 
-  void _onContinuePressed(
+  Future<void> _onContinuePressed(
     RangeFlowContinuePressed event,
     Emitter<RangeFlowState> emit,
   ) async {
     final selectedRange = event.selectedRange;
     if (selectedRange.highestNote.midi <= selectedRange.lowestNote.midi) {
-      _log(
-        'continue rejected because highest <= lowest (${selectedRange.highestNote.label()} <= ${selectedRange.lowestNote.label()})',
-      );
       emit(
         const RangeFlowFailure(
           'Верхняя нота должна быть выше нижней. Попробуйте ещё раз.',
@@ -105,44 +95,31 @@ class RangeFlowBloc extends Bloc<RangeFlowEvent, RangeFlowState> {
       return;
     }
 
-    _log(
-      'continue pressed with range=${selectedRange.lowestNote.label()}-${selectedRange.highestNote.label()}',
-    );
     emit(const RangeFlowLoading());
 
     try {
       await _saveRange(selectedRange);
-      _log(
-        'range saved: ${selectedRange.lowestNote.label()}-${selectedRange.highestNote.label()}',
-      );
       emit(RangeFlowExerciseSelection(range: selectedRange));
     } catch (error) {
-      _log('continue failed: $error');
       emit(RangeFlowFailure(_mapFailureMessage(error)));
     }
   }
 
   Future<void> _detectRange(Emitter<RangeFlowState> emit) async {
-    _log('prepare detection');
     await _prepareDetection();
 
     final lowestNote = await _detectBoundary(
       target: RangeDetectionTarget.lowest,
       emit: emit,
     );
-    _log('detect range: lowest=${lowestNote.label()}');
 
     final highestNote = await _detectBoundary(
       target: RangeDetectionTarget.highest,
       emit: emit,
       lowestNote: lowestNote,
     );
-    _log('detect range: highest=${highestNote.label()}');
 
     if (highestNote.midi <= lowestNote.midi) {
-      _log(
-        'detect range failed: highest <= lowest (${highestNote.label()} <= ${lowestNote.label()})',
-      );
       emit(
         const RangeFlowFailure(
           'Верхняя нота должна быть выше нижней. Попробуйте ещё раз.',
@@ -157,7 +134,6 @@ class RangeFlowBloc extends Bloc<RangeFlowEvent, RangeFlowState> {
       detectedAt: DateTime.now(),
     );
     emit(RangeFlowResult(range: range, voiceType: _classifyVoice(range)));
-    _log('result emitted');
   }
 
   Future<ScientificNote> _detectBoundary({
@@ -165,10 +141,6 @@ class RangeFlowBloc extends Bloc<RangeFlowEvent, RangeFlowState> {
     required Emitter<RangeFlowState> emit,
     ScientificNote? lowestNote,
   }) async {
-    _log(
-      'detect boundary start target=$target lowestNote=${lowestNote?.label()}',
-    );
-
     ScientificNote? comfortNote;
     ScientificNote? streakNote;
     DateTime? streakStartedAt;
@@ -176,8 +148,13 @@ class RangeFlowBloc extends Bloc<RangeFlowEvent, RangeFlowState> {
 
     emit(RangeFlowListening(target: target, lowestNote: lowestNote));
 
+    final iterator = StreamIterator<DetectedPitchSample>(
+      _observeDetectedPitch(target),
+    );
+
     try {
-      await for (final sample in _observeDetectedPitch(target)) {
+      while (await iterator.moveNext()) {
+        final sample = iterator.current;
         final nextState = _buildListeningState(
           sample: sample,
           target: target,
@@ -195,17 +172,14 @@ class RangeFlowBloc extends Bloc<RangeFlowEvent, RangeFlowState> {
         emit(nextState.state);
 
         if (nextState.completedNote case final completedNote?) {
-          _log(
-            'boundary fixed target=$target note=${completedNote.label()} holdProgress=${nextState.state.holdProgress.toStringAsFixed(2)}',
-          );
           return completedNote;
         }
       }
     } finally {
+      await iterator.cancel();
       await _stopDetection();
     }
 
-    _log('detect boundary ended without stable note target=$target');
     throw PitchDetectionException.noStablePitch();
   }
 
@@ -232,21 +206,16 @@ class RangeFlowBloc extends Bloc<RangeFlowEvent, RangeFlowState> {
     } else {
       if (nextComfortNote == null) {
         nextComfortNote = note;
-        _log('comfort note target=$target note=${note.label()}');
       } else if (!nextHasMovedTowardTarget &&
           _movedTowardTarget(nextComfortNote, note, target)) {
         nextHasMovedTowardTarget = true;
         nextStreakNote = note;
         nextStreakStartedAt = sample.timestamp;
-        _log(
-          'movement started target=$target comfort=${nextComfortNote.label()} note=${note.label()}',
-        );
       } else if (nextHasMovedTowardTarget &&
           _movedTowardTarget(nextComfortNote, note, target)) {
         if (nextStreakNote != note) {
           nextStreakNote = note;
           nextStreakStartedAt = sample.timestamp;
-          _log('hold note updated target=$target note=${note.label()}');
         }
       } else if (nextHasMovedTowardTarget) {
         nextStreakNote = null;
@@ -295,11 +264,9 @@ class RangeFlowBloc extends Bloc<RangeFlowEvent, RangeFlowState> {
 
   String _mapFailureMessage(Object error) {
     if (error is! PitchDetectionException) {
-      _log('map failure: generic error=$error');
       return 'Не удалось определить диапазон. Попробуйте ещё раз.';
     }
 
-    _log('map failure: code=${error.code.value} message=${error.message}');
     return switch (error.code) {
       PitchDetectionErrorCode.permissionDenied ||
       PitchDetectionErrorCode.permissionPermanentlyDenied =>
@@ -312,10 +279,6 @@ class RangeFlowBloc extends Bloc<RangeFlowEvent, RangeFlowState> {
       PitchDetectionErrorCode.nativeFailure =>
         'Не удалось определить диапазон. Попробуйте ещё раз.',
     };
-  }
-
-  void _log(String message) {
-    debugPrint('[VocalWarmup][RangeFlowBloc] $message');
   }
 }
 
