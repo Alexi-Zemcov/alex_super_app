@@ -43,10 +43,9 @@ class WarmupSequencePlanner {
     for (var offset = 0; offset <= transpositionSteps; offset++) {
       final semitoneOffset = direction == WarmupDirection.up ? offset : -offset;
       final baseNote = startNote.transpose(semitoneOffset);
-      final includesPattern = steps.length < 3;
 
       if (!_isBaseNoteAllowed(baseNote, voiceType) ||
-          (includesPattern && !_doesPatternFit(baseNote, voiceType))) {
+          !_doesPatternFit(baseNote, voiceType)) {
         onRangeClamp();
         break;
       }
@@ -55,7 +54,6 @@ class WarmupSequencePlanner {
         WarmupStep(
           baseNote: baseNote,
           direction: direction,
-          includesPattern: includesPattern,
           tonicChord: Chord(baseNote.note, ChordQuality.major),
           patternNotes: _patternIntervals
               .map(baseNote.transpose)

@@ -66,9 +66,8 @@ void main() {
         WarmupStep(
           baseNote: ScientificNote.parse('C4'),
           direction: WarmupDirection.up,
-          includesPattern: false,
           tonicChord: const Chord(Note.c, ChordQuality.major),
-          patternNotes: const [],
+          patternNotes: [ScientificNote.parse('C4')],
         ),
       ],
       isRangeClamped: false,

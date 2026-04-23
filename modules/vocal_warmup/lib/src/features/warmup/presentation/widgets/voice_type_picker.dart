@@ -43,6 +43,7 @@ Future<void> showVoiceTypeSelectionSheet(
 
   return showModalBottomSheet<void>(
     context: context,
+    isScrollControlled: true,
     backgroundColor: colors.card,
     builder: (context) {
       return SafeArea(

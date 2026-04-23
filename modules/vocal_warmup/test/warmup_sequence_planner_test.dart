@@ -34,24 +34,16 @@ void main() {
     );
   });
 
-  test('marks the first three steps of each direction as pattern steps', () {
+  test('adds pattern notes to every step in each direction', () {
     final plan = planner.plan(
       voiceType: VoiceType.tenor,
       stepsUp: 4,
       stepsDown: 4,
     );
 
-    expect(plan.steps.take(5).map((step) => step.includesPattern).toList(), [
-      true,
-      true,
-      true,
-      false,
-      false,
-    ]);
-    expect(
-      plan.steps.skip(5).take(5).map((step) => step.includesPattern).toList(),
-      [true, true, true, false, false],
-    );
+    expect(plan.steps, hasLength(10));
+    expect(plan.steps.every((step) => step.patternNotes.length == 5), isTrue);
+    expect(plan.steps.every((step) => step.phases.length == 6), isTrue);
   });
 
   test('clamps the route when the requested range exceeds the preset', () {
@@ -62,6 +54,6 @@ void main() {
     );
 
     expect(plan.isRangeClamped, isTrue);
-    expect(plan.steps.last.baseNote, ScientificNote.parse('E4'));
+    expect(plan.steps.last.baseNote, ScientificNote.parse('C4'));
   });
 }
