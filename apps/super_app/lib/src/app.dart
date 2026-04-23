@@ -10,11 +10,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:string_tension_calculator/string_tension_calculator.dart';
 import 'package:super_app/src/di/super_app_scope_module.dart';
 import 'package:super_app/src/navigation/super_app_router.dart';
+import 'package:vocal_warmup/vocal_warmup.dart';
 
 final List<AppModuleDescriptor> _defaultModules = List.unmodifiable([
   quizModule,
   circleOfFifthsModule,
   stringTensionCalculatorModule,
+  vocalWarmupModule,
 ]);
 
 class SuperApp extends StatelessWidget {

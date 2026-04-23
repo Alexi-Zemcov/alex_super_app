@@ -1,0 +1,24 @@
+name: midi_playback
+description: Shared MIDI playback adapter and soundfont asset for music modules.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.11.0
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_midi_pro: ^3.1.6
+  music_theory: ^0.1.0
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  assets:
+    - assets/sf2/soundfont.sf2

@@ -1,21 +1,7 @@
-import 'package:circle_of_fifths/src/features/circle/domain/entities/chord.dart';
+import 'package:midi_playback/midi_playback.dart';
 
-abstract interface class AudioPlaybackService {
-  bool get isMuted;
+export 'package:midi_playback/midi_playback.dart'
+    show MidiPlaybackService, PlaybackAvailability;
+export 'package:music_theory/music_theory.dart' show ScientificNote;
 
-  double get masterVolume;
-
-  Future<void> initialize();
-
-  void setMutedAndStopAll(bool value);
-
-  void setMasterVolume(double volume);
-
-  Future<void> playChord(Chord chord);
-
-  void stopChord(Chord chord);
-
-  Future<void> stopAll();
-
-  Future<void> dispose();
-}
+typedef AudioPlaybackService = MidiPlaybackService;

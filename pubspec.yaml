@@ -8,11 +8,15 @@ workspace:
   - apps/circle_of_fifths_app
   - apps/quiz_app
   - apps/super_app
+  - apps/vocal_warmup_app
   - modules/circle_of_fifths
   - modules/quiz
   - modules/string_tension_calculator
+  - modules/vocal_warmup
   - packages/core/app_theme
+  - packages/core/music_theory
   - packages/core/my_instruments
   - packages/core/module_contracts
   - packages/core/scoped_di
+  - packages/integrations/midi_playback
   - tools/alex_workspace_lints

@@ -21,6 +21,7 @@ dependencies:
   scoped_di: ^0.1.0
   shared_preferences: ^2.5.3
   string_tension_calculator: ^0.1.0
+  vocal_warmup: ^0.1.0
 
 dev_dependencies:
   build_runner: ^2.13.1

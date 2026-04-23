@@ -64,6 +64,9 @@ void main() {
 
 class _FakeAudioPlaybackService implements AudioPlaybackService {
   @override
+  PlaybackAvailability get availability => PlaybackAvailability.supported;
+
+  @override
   bool get isMuted => false;
 
   @override
@@ -76,7 +79,10 @@ class _FakeAudioPlaybackService implements AudioPlaybackService {
   Future<void> initialize() async {}
 
   @override
-  Future<void> playChord(Chord chord) async {}
+  Future<void> playChord(Chord chord, {int octave = 4}) async {}
+
+  @override
+  Future<void> playNote(ScientificNote note) async {}
 
   @override
   void setMasterVolume(double volume) {}
@@ -88,5 +94,8 @@ class _FakeAudioPlaybackService implements AudioPlaybackService {
   Future<void> stopAll() async {}
 
   @override
-  void stopChord(Chord chord) {}
+  void stopChord(Chord chord, {int octave = 4}) {}
+
+  @override
+  void stopNote(ScientificNote note) {}
 }

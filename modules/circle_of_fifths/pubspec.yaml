@@ -14,9 +14,10 @@ dependencies:
   app_theme: ^0.1.0
   equatable: ^2.0.7
   flutter_bloc: ^9.1.1
-  flutter_midi_pro: ^3.1.6
   go_router: ^17.1.0
+  midi_playback: ^0.1.0
   module_contracts: ^0.1.0
+  music_theory: ^0.1.0
   provider: ^6.1.5+1
   scoped_di: ^0.1.0
   shared_preferences: ^2.5.3
@@ -27,9 +28,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   go_router_builder: ^4.2.1
-  spider: ^4.2.3
 
 flutter:
   uses-material-design: true
-  assets:
-    - assets/sf2/soundfont.sf2

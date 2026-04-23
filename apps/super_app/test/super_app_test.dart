@@ -124,6 +124,33 @@ void main() {
     },
   );
 
+  testWidgets(
+    'starts directly on /vocal-warmup with stored settings after bootstrap',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({
+        'vocalWarmupSettings':
+            '{"voiceType":"mezzo","exercise":"humming","tempoBpm":80,"stepsUp":6,"stepsDown":6}',
+      });
+      final sharedPreferences = await SharedPreferences.getInstance();
+      final themeController = AppThemeController();
+
+      await tester.pumpWidget(
+        Provider<AudioPlaybackService>.value(
+          value: _FakeAudioPlaybackService(),
+          child: SuperApp(
+            sharedPreferences: sharedPreferences,
+            themeController: themeController,
+            initialLocation: '/vocal-warmup',
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Распевка'), findsOneWidget);
+      expect(find.text('Mezzo'), findsWidgets);
+    },
+  );
+
   testWidgets('shows router-level 404 for unknown locations', (tester) async {
     SharedPreferences.setMockInitialValues({});
     final sharedPreferences = await SharedPreferences.getInstance();
@@ -188,6 +215,9 @@ class _ThreeQuestionQuizAssetBundle extends CachingAssetBundle {
 
 class _FakeAudioPlaybackService implements AudioPlaybackService {
   @override
+  PlaybackAvailability get availability => PlaybackAvailability.supported;
+
+  @override
   bool get isMuted => false;
 
   @override
@@ -200,7 +230,10 @@ class _FakeAudioPlaybackService implements AudioPlaybackService {
   Future<void> initialize() async {}
 
   @override
-  Future<void> playChord(Chord chord) async {}
+  Future<void> playChord(Chord chord, {int octave = 4}) async {}
+
+  @override
+  Future<void> playNote(ScientificNote note) async {}
 
   @override
   void setMasterVolume(double volume) {}
@@ -212,5 +245,8 @@ class _FakeAudioPlaybackService implements AudioPlaybackService {
   Future<void> stopAll() async {}
 
   @override
-  void stopChord(Chord chord) {}
+  void stopChord(Chord chord, {int octave = 4}) {}
+
+  @override
+  void stopNote(ScientificNote note) {}
 }
