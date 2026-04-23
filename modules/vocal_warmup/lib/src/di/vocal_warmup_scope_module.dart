@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vocal_warmup/src/features/range_detection/data/datasources/vocal_range_storage_datasource.dart';
 import 'package:vocal_warmup/src/features/range_detection/data/repositories/shared_preferences_vocal_range_repository.dart';
 import 'package:vocal_warmup/src/features/range_detection/data/services/fake_pitch_detection_service.dart';
+import 'package:vocal_warmup/src/features/range_detection/data/services/native_vocal_pitch_detection_service.dart';
 import 'package:vocal_warmup/src/features/range_detection/domain/repositories/vocal_range_repository.dart';
 import 'package:vocal_warmup/src/features/range_detection/domain/services/pitch_detection_service.dart';
 import 'package:vocal_warmup/src/features/range_detection/domain/services/voice_classifier.dart';
@@ -16,9 +17,16 @@ class VocalWarmupScopeModule extends ScopeModule {
   @override
   List<SingleChildWidget> get providers => [
     Provider<PitchDetectionService>(
-      create: (context) =>
-          context.read<PitchDetectionService?>() ??
-          const FakePitchDetectionService(),
+      create: (context) {
+        final override = context.read<PitchDetectionService?>();
+        if (override != null) {
+          return override;
+        }
+        if (NativeVocalPitchDetectionService.isSupportedPlatform) {
+          return NativeVocalPitchDetectionService();
+        }
+        return const FakePitchDetectionService();
+      },
     ),
     Provider<VocalRangeStorageDataSource>(
       create: (context) => SharedPreferencesVocalRangeStorageDataSource(

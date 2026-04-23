@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:music_theory/music_theory.dart';
+import 'package:pitch_detection/pitch_detection.dart';
 import 'package:provider/provider.dart';
 import 'package:scoped_di/scoped_di.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -78,6 +79,21 @@ void main() {
     expect(find.text('Выберите тип упражнения'), findsOneWidget);
     expect(find.text('Диапазон E2 - C5'), findsOneWidget);
   });
+
+  testWidgets('shows microphone error when permission is denied', (
+    tester,
+  ) async {
+    await _pumpRangeFlow(
+      tester,
+      pitchService: _FailingPitchDetectionService(
+        PitchDetectionException.permissionDenied(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Нужен доступ к микрофону.'), findsOneWidget);
+    expect(find.text('Повторить'), findsOneWidget);
+  });
 }
 
 Future<void> _pumpRangeFlow(
@@ -124,5 +140,16 @@ class _ControlledPitchDetectionService implements PitchDetectionService {
     }
 
     pending.removeAt(0).complete(ScientificNote.parse(noteLabel));
+  }
+}
+
+class _FailingPitchDetectionService implements PitchDetectionService {
+  const _FailingPitchDetectionService(this.error);
+
+  final Exception error;
+
+  @override
+  Future<ScientificNote> detectStableNote(RangeDetectionTarget target) {
+    return Future<ScientificNote>.error(error);
   }
 }

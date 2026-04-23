@@ -1,9 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:music_theory/music_theory.dart';
+import 'package:pitch_detection/pitch_detection.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vocal_warmup/src/features/range_detection/data/datasources/vocal_range_storage_datasource.dart';
 import 'package:vocal_warmup/src/features/range_detection/data/repositories/shared_preferences_vocal_range_repository.dart';
 import 'package:vocal_warmup/src/features/range_detection/data/services/fake_pitch_detection_service.dart';
+import 'package:vocal_warmup/src/features/range_detection/data/services/native_vocal_pitch_detection_service.dart';
 import 'package:vocal_warmup/src/features/range_detection/domain/entities/range_detection_target.dart';
 import 'package:vocal_warmup/src/features/range_detection/domain/entities/vocal_range.dart';
 import 'package:vocal_warmup/src/features/range_detection/domain/services/voice_classifier.dart';
@@ -60,6 +62,27 @@ void main() {
     });
   });
 
+  group('NativeVocalPitchDetectionService', () {
+    test('maps detected frequency to nearest scientific note', () async {
+      final platform = _NativePitchDetectionPlatformFake()
+        ..frameStream = Stream<PitchFrame>.fromIterable([
+          _pitchFrame(82.0),
+          _pitchFrame(82.2),
+          _pitchFrame(81.9),
+          _pitchFrame(82.1),
+          _pitchFrame(82.0),
+        ]);
+      final service = NativeVocalPitchDetectionService(
+        client: PitchDetectionClient(platform: platform),
+      );
+
+      expect(
+        await service.detectStableNote(RangeDetectionTarget.lowest),
+        ScientificNote.parse('E2'),
+      );
+    });
+  });
+
   group('SimpleVoiceClassifier', () {
     test('classifies E2-C5 as dramatic tenor', () {
       const classifier = SimpleVoiceClassifier();
@@ -75,4 +98,32 @@ void main() {
       expect(voiceType.description, 'Драматический');
     });
   });
+}
+
+class _NativePitchDetectionPlatformFake extends PitchDetectionPlatform {
+  Stream<PitchFrame> frameStream = const Stream<PitchFrame>.empty();
+
+  @override
+  Stream<PitchFrame> pitchFrames() => frameStream;
+
+  @override
+  Future<MicrophonePermissionStatus> requestMicrophonePermission() async {
+    return MicrophonePermissionStatus.granted;
+  }
+
+  @override
+  Future<void> startDetection(PitchDetectionConfig config) async {}
+
+  @override
+  Future<void> stop() async {}
+}
+
+PitchFrame _pitchFrame(double frequencyHz) {
+  return PitchFrame(
+    frequencyHz: frequencyHz,
+    amplitude: 0.02,
+    confidence: 0.8,
+    isPitched: true,
+    timestamp: DateTime.fromMillisecondsSinceEpoch(1000),
+  );
 }

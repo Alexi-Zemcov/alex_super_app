@@ -19,4 +19,5 @@ workspace:
   - packages/core/module_contracts
   - packages/core/scoped_di
   - packages/integrations/midi_playback
+  - packages/integrations/pitch_detection
   - tools/alex_workspace_lints

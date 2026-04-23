@@ -31,4 +31,6 @@ dev_dependencies:
   go_router_builder: ^4.2.1
 
 flutter:
+  config:
+    enable-swift-package-manager: true
   uses-material-design: true

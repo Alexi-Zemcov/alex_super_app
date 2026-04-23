@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pitch_detection/pitch_detection.dart';
 import 'package:vocal_warmup/src/features/range_detection/domain/entities/range_detection_target.dart';
 import 'package:vocal_warmup/src/features/range_detection/domain/entities/vocal_range.dart';
 import 'package:vocal_warmup/src/features/range_detection/domain/usecases/classify_voice_use_case.dart';
@@ -43,8 +44,8 @@ class RangeFlowBloc extends Bloc<RangeFlowEvent, RangeFlowState> {
       }
 
       await _detectRange(emit);
-    } catch (_) {
-      emit(const RangeFlowFailure('Не удалось начать определение диапазона.'));
+    } catch (error) {
+      emit(RangeFlowFailure(_mapFailureMessage(error)));
     }
   }
 
@@ -54,8 +55,8 @@ class RangeFlowBloc extends Bloc<RangeFlowEvent, RangeFlowState> {
   ) async {
     try {
       await _detectRange(emit);
-    } catch (_) {
-      emit(const RangeFlowFailure('Не удалось определить диапазон заново.'));
+    } catch (error) {
+      emit(RangeFlowFailure(_mapFailureMessage(error)));
     }
   }
 
@@ -100,5 +101,24 @@ class RangeFlowBloc extends Bloc<RangeFlowEvent, RangeFlowState> {
     await _saveRange(range);
 
     emit(RangeFlowResult(range: range, voiceType: _classifyVoice(range)));
+  }
+
+  String _mapFailureMessage(Object error) {
+    if (error is! PitchDetectionException) {
+      return 'Не удалось определить диапазон. Попробуйте ещё раз.';
+    }
+
+    return switch (error.code) {
+      PitchDetectionErrorCode.permissionDenied ||
+      PitchDetectionErrorCode.permissionPermanentlyDenied =>
+        'Нужен доступ к микрофону.',
+      PitchDetectionErrorCode.noStablePitch =>
+        'Не удалось определить ноту. Попробуйте ещё раз.',
+      PitchDetectionErrorCode.unsupportedPlatform =>
+        'Определение диапазона недоступно на этом устройстве.',
+      PitchDetectionErrorCode.alreadyListening ||
+      PitchDetectionErrorCode.nativeFailure =>
+        'Не удалось определить диапазон. Попробуйте ещё раз.',
+    };
   }
 }
