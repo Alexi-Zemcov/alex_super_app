@@ -9,6 +9,7 @@ import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import be.tarsos.dsp.pitch.PitchDetector
@@ -45,8 +46,10 @@ class PitchDetectionPlugin :
     private var audioRecord: AudioRecord? = null
     private var detectionExecutor: ExecutorService? = null
     private val isDetecting = AtomicBoolean(false)
+    private var emittedFrameCount = 0
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        log("onAttachedToEngine")
         applicationContext = binding.applicationContext
         methodChannel =
             MethodChannel(
@@ -63,39 +66,47 @@ class PitchDetectionPlugin :
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        log("onDetachedFromEngine")
         stopDetection()
         methodChannel.setMethodCallHandler(null)
         eventChannel.setStreamHandler(null)
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        log("onAttachedToActivity")
         activity = binding.activity
         activityBinding = binding
         binding.addRequestPermissionsResultListener(this)
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
+        log("onDetachedFromActivityForConfigChanges")
         detachActivity()
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+        log("onReattachedToActivityForConfigChanges")
         onAttachedToActivity(binding)
     }
 
     override fun onDetachedFromActivity() {
+        log("onDetachedFromActivity")
         detachActivity()
     }
 
     override fun onListen(arguments: Any?, events: EventChannel.EventSink) {
+        log("onListen")
         eventSink = events
     }
 
     override fun onCancel(arguments: Any?) {
+        log("onCancel")
         eventSink = null
         stopDetection()
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        log("onMethodCall method=${call.method}")
         when (call.method) {
             "requestMicrophonePermission" -> requestMicrophonePermission(result)
             "startDetection" -> {
@@ -128,6 +139,9 @@ class PitchDetectionPlugin :
 
         val granted =
             grantResults.isNotEmpty() && grantResults.first() == PackageManager.PERMISSION_GRANTED
+        log(
+            "onRequestPermissionsResult granted=$granted grantResults=${grantResults.joinToString()} activity=${activity != null}",
+        )
         if (granted) {
             pendingResult.success("granted")
             return true
@@ -140,11 +154,13 @@ class PitchDetectionPlugin :
                     currentActivity,
                     Manifest.permission.RECORD_AUDIO,
                 )
+        log("permission denied permanently=$isPermanentlyDenied")
         pendingResult.success(if (isPermanentlyDenied) "permanentlyDenied" else "denied")
         return true
     }
 
     private fun requestMicrophonePermission(result: MethodChannel.Result) {
+        log("requestMicrophonePermission hasPermission=${hasMicrophonePermission()}")
         if (hasMicrophonePermission()) {
             result.success("granted")
             return
@@ -152,16 +168,19 @@ class PitchDetectionPlugin :
 
         val currentActivity = activity
         if (currentActivity == null) {
+            log("requestMicrophonePermission without activity")
             result.success("denied")
             return
         }
 
         if (permissionResult != null) {
+            log("requestMicrophonePermission already pending")
             result.error("nativeFailure", "A permission request is already active.", null)
             return
         }
 
         permissionResult = result
+        log("requestMicrophonePermission launching system dialog")
         ActivityCompat.requestPermissions(
             currentActivity,
             arrayOf(Manifest.permission.RECORD_AUDIO),
@@ -170,15 +189,19 @@ class PitchDetectionPlugin :
     }
 
     private fun startDetection(config: DetectionConfig, result: MethodChannel.Result) {
+        log("startDetection sampleRate=${config.sampleRate} bufferSize=${config.bufferSize} overlap=${config.bufferOverlap} hasPermission=${hasMicrophonePermission()} sink=${eventSink != null}")
         if (!hasMicrophonePermission()) {
+            log("startDetection aborted: permission denied")
             result.error("permissionDenied", "Microphone permission denied.", null)
             return
         }
         if (eventSink == null) {
+            log("startDetection aborted: missing event sink")
             result.error("nativeFailure", "Pitch frame listener is not attached.", null)
             return
         }
         if (!isDetecting.compareAndSet(false, true)) {
+            log("startDetection aborted: already listening")
             result.error("alreadyListening", "Pitch detection session is already active.", null)
             return
         }
@@ -191,11 +214,13 @@ class PitchDetectionPlugin :
             )
         if (minBufferSize == AudioRecord.ERROR || minBufferSize == AudioRecord.ERROR_BAD_VALUE) {
             isDetecting.set(false)
+            log("startDetection failed: invalid min buffer size=$minBufferSize")
             result.error("nativeFailure", "Unable to determine AudioRecord buffer size.", null)
             return
         }
 
         val recordBufferSize = max(minBufferSize, config.bufferSize * 2)
+        log("startDetection minBufferSize=$minBufferSize recordBufferSize=$recordBufferSize")
         val recorder =
             AudioRecord(
                 MediaRecorder.AudioSource.MIC,
@@ -207,18 +232,22 @@ class PitchDetectionPlugin :
         if (recorder.state != AudioRecord.STATE_INITIALIZED) {
             recorder.release()
             isDetecting.set(false)
+            log("startDetection failed: AudioRecord state=${recorder.state}")
             result.error("nativeFailure", "Unable to initialize AudioRecord.", null)
             return
         }
 
+        emittedFrameCount = 0
         audioRecord = recorder
         detectionExecutor = Executors.newSingleThreadExecutor()
         detectionExecutor?.execute { detectOnBackgroundThread(recorder, config) }
+        log("startDetection accepted")
         result.success(null)
     }
 
     private fun detectOnBackgroundThread(recorder: AudioRecord, config: DetectionConfig) {
         try {
+            log("detectOnBackgroundThread started")
             val detector =
                 PitchProcessor.PitchEstimationAlgorithm.YIN.getDetector(
                     config.sampleRate.toFloat(),
@@ -235,6 +264,7 @@ class PitchDetectionPlugin :
             if (initialRead <= 0) {
                 throw IllegalStateException("AudioRecord returned no samples.")
             }
+            log("initial audio read=$initialRead")
             copyPcmToFloat(initialBuffer, frameBuffer, initialRead)
             if (initialRead < config.bufferSize) {
                 zeroFloatRange(frameBuffer, initialRead, config.bufferSize)
@@ -248,6 +278,7 @@ class PitchDetectionPlugin :
 
                 val stepRead = readIntoBuffer(recorder, stepBuffer)
                 if (stepRead <= 0) {
+                    log("step audio read ended with=$stepRead")
                     break
                 }
                 copyPcmToFloat(stepBuffer, frameBuffer, stepRead, config.bufferOverlap)
@@ -261,10 +292,12 @@ class PitchDetectionPlugin :
                 emitFrame(detector, frameBuffer, config)
             }
         } catch (error: Exception) {
+            log("detectOnBackgroundThread failed: ${error.message}")
             mainHandler.post {
                 eventSink?.error("nativeFailure", error.message ?: "Pitch detection failed.", null)
             }
         } finally {
+            log("detectOnBackgroundThread finished")
             stopDetection()
         }
     }
@@ -292,12 +325,19 @@ class PitchDetectionPlugin :
                 "isPitched" to isPitched,
                 "timestampMillis" to System.currentTimeMillis(),
             )
+        if (emittedFrameCount < 5 || emittedFrameCount % 25 == 0) {
+            log(
+                "emitFrame[$emittedFrameCount] pitched=$isPitched freq=$pitch amp=$amplitude conf=$confidence",
+            )
+        }
+        emittedFrameCount += 1
         mainHandler.post {
             eventSink?.success(payload)
         }
     }
 
     private fun stopDetection() {
+        log("stopDetection")
         isDetecting.set(false)
 
         val recorder = audioRecord
@@ -314,6 +354,7 @@ class PitchDetectionPlugin :
     }
 
     private fun detachActivity() {
+        log("detachActivity")
         activityBinding?.removeRequestPermissionsResultListener(this)
         activityBinding = null
         activity = null
@@ -397,5 +438,10 @@ class PitchDetectionPlugin :
 
     private companion object {
         const val microphonePermissionRequestCode = 9103
+        const val tag = "PitchDetectionPlugin"
+    }
+
+    private fun log(message: String) {
+        Log.d(tag, message)
     }
 }

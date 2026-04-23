@@ -112,34 +112,61 @@ class RangeStepIndicator extends StatelessWidget {
 }
 
 class StaticRangeSlider extends StatelessWidget {
-  const StaticRangeSlider({super.key});
+  const StaticRangeSlider({required this.range, super.key});
+
+  final VocalRange range;
+
+  static const _minMidi = 24.0;
+  static const _maxMidi = 96.0;
 
   @override
   Widget build(BuildContext context) {
+    final span = _maxMidi - _minMidi;
+    final start = ((range.lowestNote.midi - _minMidi) / span)
+        .clamp(0.0, 1.0)
+        .toDouble();
+    final end = ((range.highestNote.midi - _minMidi) / span)
+        .clamp(0.0, 1.0)
+        .toDouble();
+
     return SizedBox(
       height: 32,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Container(
-            height: 5,
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: const Color(0xFFE3E5EC),
-              borderRadius: BorderRadius.circular(5),
-            ),
-          ),
-          Container(
-            height: 5,
-            margin: const EdgeInsets.symmetric(horizontal: 48),
-            decoration: BoxDecoration(
-              color: VocalWarmupColors.accent,
-              borderRadius: BorderRadius.circular(5),
-            ),
-          ),
-          const Positioned(left: 40, child: _SliderThumb()),
-          const Positioned(right: 40, child: _SliderThumb()),
-        ],
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final trackWidth = constraints.maxWidth - 32;
+          final activeLeft = 16.0 + (trackWidth * start);
+          final activeRight = 16.0 + (trackWidth * end);
+
+          return Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                height: 5,
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE3E5EC),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+              ),
+              Positioned(
+                left: activeLeft,
+                right: constraints.maxWidth - activeRight,
+                child: Container(
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: VocalWarmupColors.accent,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                ),
+              ),
+              Positioned(left: activeLeft - 12, child: const _SliderThumb()),
+              Positioned(
+                right: constraints.maxWidth - activeRight - 12,
+                child: const _SliderThumb(),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

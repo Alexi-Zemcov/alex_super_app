@@ -20,13 +20,31 @@ final class RangeFlowLoading extends RangeFlowState {
 }
 
 final class RangeFlowListening extends RangeFlowState {
-  const RangeFlowListening({required this.target, this.lowestNote});
+  const RangeFlowListening({
+    required this.target,
+    this.lowestNote,
+    this.comfortNote,
+    this.currentNote,
+    this.hasMovedTowardTarget = false,
+    this.holdProgress = 0,
+  });
 
   final RangeDetectionTarget target;
   final ScientificNote? lowestNote;
+  final ScientificNote? comfortNote;
+  final ScientificNote? currentNote;
+  final bool hasMovedTowardTarget;
+  final double holdProgress;
 
   @override
-  List<Object?> get props => [target, lowestNote];
+  List<Object?> get props => [
+    target,
+    lowestNote,
+    comfortNote,
+    currentNote,
+    hasMovedTowardTarget,
+    holdProgress,
+  ];
 }
 
 final class RangeFlowResult extends RangeFlowState {

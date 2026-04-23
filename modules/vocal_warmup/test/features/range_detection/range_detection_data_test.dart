@@ -1,10 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:midi_playback/midi_playback.dart';
 import 'package:music_theory/music_theory.dart';
 import 'package:pitch_detection/pitch_detection.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vocal_warmup/src/features/range_detection/data/datasources/vocal_range_storage_datasource.dart';
 import 'package:vocal_warmup/src/features/range_detection/data/repositories/shared_preferences_vocal_range_repository.dart';
 import 'package:vocal_warmup/src/features/range_detection/data/services/fake_pitch_detection_service.dart';
+import 'package:vocal_warmup/src/features/range_detection/data/services/midi_note_preview_service.dart';
 import 'package:vocal_warmup/src/features/range_detection/data/services/native_vocal_pitch_detection_service.dart';
 import 'package:vocal_warmup/src/features/range_detection/domain/entities/range_detection_target.dart';
 import 'package:vocal_warmup/src/features/range_detection/domain/entities/vocal_range.dart';
@@ -48,38 +50,54 @@ void main() {
   });
 
   group('FakePitchDetectionService', () {
-    test('returns deterministic low and high notes', () async {
-      const service = FakePitchDetectionService(delay: Duration.zero);
+    test(
+      'emits deterministic samples ending with the expected extreme notes',
+      () async {
+        const service = FakePitchDetectionService(delay: Duration.zero);
 
-      expect(
-        await service.detectStableNote(RangeDetectionTarget.lowest),
-        ScientificNote.parse('E2'),
-      );
-      expect(
-        await service.detectStableNote(RangeDetectionTarget.highest),
-        ScientificNote.parse('C5'),
-      );
-    });
+        final lowestSamples = await service
+            .observeDetectedPitches(RangeDetectionTarget.lowest)
+            .toList();
+        final highestSamples = await service
+            .observeDetectedPitches(RangeDetectionTarget.highest)
+            .toList();
+
+        expect(lowestSamples.last.note, ScientificNote.parse('E2'));
+        expect(highestSamples.last.note, ScientificNote.parse('C5'));
+      },
+    );
   });
 
   group('NativeVocalPitchDetectionService', () {
-    test('maps detected frequency to nearest scientific note', () async {
+    test('maps pitch frames to nearest scientific notes', () async {
       final platform = _NativePitchDetectionPlatformFake()
         ..frameStream = Stream<PitchFrame>.fromIterable([
           _pitchFrame(82.0),
           _pitchFrame(82.2),
-          _pitchFrame(81.9),
-          _pitchFrame(82.1),
-          _pitchFrame(82.0),
         ]);
       final service = NativeVocalPitchDetectionService(
         client: PitchDetectionClient(platform: platform),
       );
 
-      expect(
-        await service.detectStableNote(RangeDetectionTarget.lowest),
-        ScientificNote.parse('E2'),
+      final samples = await service
+          .observeDetectedPitches(RangeDetectionTarget.lowest)
+          .toList();
+
+      expect(samples.first.note, ScientificNote.parse('E2'));
+    });
+  });
+
+  group('MidiNotePreviewService', () {
+    test('does nothing when playback is unsupported', () async {
+      final midiPlayback = _FakeMidiPlaybackService(
+        availability: PlaybackAvailability.unsupported,
       );
+      final service = MidiNotePreviewService(midiPlayback);
+
+      await service.previewNote(ScientificNote.parse('C4'));
+
+      expect(midiPlayback.initializeCalls, 0);
+      expect(midiPlayback.playedNotes, isEmpty);
     });
   });
 
@@ -102,13 +120,15 @@ void main() {
 
 class _NativePitchDetectionPlatformFake extends PitchDetectionPlatform {
   Stream<PitchFrame> frameStream = const Stream<PitchFrame>.empty();
+  MicrophonePermissionStatus permissionStatus =
+      MicrophonePermissionStatus.granted;
 
   @override
   Stream<PitchFrame> pitchFrames() => frameStream;
 
   @override
   Future<MicrophonePermissionStatus> requestMicrophonePermission() async {
-    return MicrophonePermissionStatus.granted;
+    return permissionStatus;
   }
 
   @override
@@ -116,6 +136,53 @@ class _NativePitchDetectionPlatformFake extends PitchDetectionPlatform {
 
   @override
   Future<void> stop() async {}
+}
+
+class _FakeMidiPlaybackService implements MidiPlaybackService {
+  _FakeMidiPlaybackService({required this.availability});
+
+  @override
+  final PlaybackAvailability availability;
+
+  int initializeCalls = 0;
+  final List<ScientificNote> playedNotes = [];
+
+  @override
+  bool get isMuted => false;
+
+  @override
+  double get masterVolume => 0.7;
+
+  @override
+  Future<void> dispose() async {}
+
+  @override
+  Future<void> initialize() async {
+    initializeCalls += 1;
+  }
+
+  @override
+  Future<void> playChord(Chord chord, {int octave = 4}) async {}
+
+  @override
+  Future<void> playNote(ScientificNote note) async {
+    playedNotes.add(note);
+  }
+
+  @override
+  void setMasterVolume(double volume) {}
+
+  @override
+  void setMutedAndStopAll(bool value) {}
+
+  @override
+  Future<void> stopAll() async {}
+
+  @override
+  void stopChord(Chord chord, {int octave = 4}) {}
+
+  @override
+  void stopNote(ScientificNote note) {}
 }
 
 PitchFrame _pitchFrame(double frequencyHz) {

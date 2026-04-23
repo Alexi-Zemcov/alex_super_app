@@ -8,6 +8,7 @@ public final class PitchDetectionPlugin: NSObject, FlutterPlugin, FlutterStreamH
   private var audioEngine: AudioEngine?
   private var silentOutput: Mixer?
   private var pitchTap: PitchTap?
+  private var emittedFrameCount = 0
 
   public static func register(with registrar: FlutterPluginRegistrar) {
     let methodChannel = FlutterMethodChannel(
@@ -20,11 +21,13 @@ public final class PitchDetectionPlugin: NSObject, FlutterPlugin, FlutterStreamH
     )
 
     let instance = PitchDetectionPlugin()
+    instance.log("register")
     registrar.addMethodCallDelegate(instance, channel: methodChannel)
     eventChannel.setStreamHandler(instance)
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    log("handle method=\(call.method)")
     switch call.method {
     case "requestMicrophonePermission":
       requestMicrophonePermission(result: result)
@@ -43,24 +46,30 @@ public final class PitchDetectionPlugin: NSObject, FlutterPlugin, FlutterStreamH
   }
 
   public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
+    log("onListen")
     eventSink = events
     return nil
   }
 
   public func onCancel(withArguments arguments: Any?) -> FlutterError? {
+    log("onCancel")
     eventSink = nil
     stopDetection()
     return nil
   }
 
   private func requestMicrophonePermission(result: @escaping FlutterResult) {
-    switch AVAudioSession.sharedInstance().recordPermission {
+    let permission = AVAudioSession.sharedInstance().recordPermission
+    log("requestMicrophonePermission current=\(permission.rawValue)")
+    switch permission {
     case .granted:
       result("granted")
     case .denied:
       result("permanentlyDenied")
     case .undetermined:
+      log("requestMicrophonePermission launching system dialog")
       AVAudioSession.sharedInstance().requestRecordPermission { granted in
+        self.log("requestMicrophonePermission completion granted=\(granted)")
         result(granted ? "granted" : "denied")
       }
     @unknown default:
@@ -69,15 +78,21 @@ public final class PitchDetectionPlugin: NSObject, FlutterPlugin, FlutterStreamH
   }
 
   private func startDetection(config: DetectionConfig, result: @escaping FlutterResult) {
+    log(
+      "startDetection sampleRate=\(config.sampleRate) bufferSize=\(config.bufferSize) permission=\(AVAudioSession.sharedInstance().recordPermission.rawValue) sink=\(eventSink != nil)"
+    )
     guard eventSink != nil else {
+      log("startDetection aborted: missing event sink")
       result(FlutterError(code: "nativeFailure", message: "Pitch frame listener is not attached.", details: nil))
       return
     }
     guard pitchTap == nil else {
+      log("startDetection aborted: already listening")
       result(FlutterError(code: "alreadyListening", message: "Pitch detection session is already active.", details: nil))
       return
     }
     guard AVAudioSession.sharedInstance().recordPermission == .granted else {
+      log("startDetection aborted: permission denied")
       result(FlutterError(code: "permissionDenied", message: "Microphone permission denied.", details: nil))
       return
     }
@@ -87,9 +102,11 @@ public final class PitchDetectionPlugin: NSObject, FlutterPlugin, FlutterStreamH
       try session.setCategory(.playAndRecord, mode: .measurement, options: [.defaultToSpeaker, .mixWithOthers])
       try session.setPreferredSampleRate(Double(config.sampleRate))
       try session.setActive(true)
+      log("audio session activated sampleRate=\(session.sampleRate)")
 
       let engine = AudioEngine()
       guard let input = engine.input else {
+        log("startDetection aborted: engine input unavailable")
         result(FlutterError(code: "unsupportedPlatform", message: "Audio input is unavailable.", details: nil))
         return
       }
@@ -105,11 +122,14 @@ public final class PitchDetectionPlugin: NSObject, FlutterPlugin, FlutterStreamH
       audioEngine = engine
       silentOutput = silent
       pitchTap = tap
+      emittedFrameCount = 0
 
       try engine.start()
       tap.start()
+      log("startDetection accepted")
       result(nil)
     } catch {
+      log("startDetection failed: \(error.localizedDescription)")
       stopDetection()
       result(FlutterError(code: "nativeFailure", message: error.localizedDescription, details: nil))
     }
@@ -128,6 +148,13 @@ public final class PitchDetectionPlugin: NSObject, FlutterPlugin, FlutterStreamH
         amplitude >= config.minAmplitude &&
         confidence >= config.minConfidence
 
+      if emittedFrameCount < 5 || emittedFrameCount % 25 == 0 {
+        log(
+          "emitFrame[\(emittedFrameCount)] pitched=\(isPitched) freq=\(frequency) amp=\(amplitude) conf=\(confidence)"
+        )
+      }
+      emittedFrameCount += 1
+
       sink([
         "frequencyHz": frequency,
         "amplitude": amplitude,
@@ -139,12 +166,17 @@ public final class PitchDetectionPlugin: NSObject, FlutterPlugin, FlutterStreamH
   }
 
   private func stopDetection() {
+    log("stopDetection")
     pitchTap?.stop()
     pitchTap = nil
     audioEngine?.stop()
     audioEngine = nil
     silentOutput = nil
     try? AVAudioSession.sharedInstance().setActive(false)
+  }
+
+  private func log(_ message: String) {
+    NSLog("[PitchDetectionPlugin][iOS] %@", message)
   }
 }
 

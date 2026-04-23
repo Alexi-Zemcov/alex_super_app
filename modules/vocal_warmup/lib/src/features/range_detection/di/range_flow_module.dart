@@ -6,9 +6,11 @@ import 'package:vocal_warmup/src/features/range_detection/domain/repositories/vo
 import 'package:vocal_warmup/src/features/range_detection/domain/services/pitch_detection_service.dart';
 import 'package:vocal_warmup/src/features/range_detection/domain/services/voice_classifier.dart';
 import 'package:vocal_warmup/src/features/range_detection/domain/usecases/classify_voice_use_case.dart';
-import 'package:vocal_warmup/src/features/range_detection/domain/usecases/detect_stable_note_use_case.dart';
 import 'package:vocal_warmup/src/features/range_detection/domain/usecases/load_vocal_range_use_case.dart';
+import 'package:vocal_warmup/src/features/range_detection/domain/usecases/observe_detected_pitch_use_case.dart';
+import 'package:vocal_warmup/src/features/range_detection/domain/usecases/prepare_pitch_detection_use_case.dart';
 import 'package:vocal_warmup/src/features/range_detection/domain/usecases/save_vocal_range_use_case.dart';
+import 'package:vocal_warmup/src/features/range_detection/domain/usecases/stop_pitch_detection_use_case.dart';
 import 'package:vocal_warmup/src/features/range_detection/presentation/screens/range_flow/bloc/range_flow_bloc.dart';
 import 'package:vocal_warmup/src/features/range_detection/presentation/screens/range_flow/bloc/range_flow_event.dart';
 
@@ -25,9 +27,17 @@ class RangeFlowModule extends ScopeModule {
       create: (context) =>
           SaveVocalRangeUseCase(context.read<VocalRangeRepository>()),
     ),
-    Provider<DetectStableNoteUseCase>(
+    Provider<ObserveDetectedPitchUseCase>(
       create: (context) =>
-          DetectStableNoteUseCase(context.read<PitchDetectionService>()),
+          ObserveDetectedPitchUseCase(context.read<PitchDetectionService>()),
+    ),
+    Provider<PreparePitchDetectionUseCase>(
+      create: (context) =>
+          PreparePitchDetectionUseCase(context.read<PitchDetectionService>()),
+    ),
+    Provider<StopPitchDetectionUseCase>(
+      create: (context) =>
+          StopPitchDetectionUseCase(context.read<PitchDetectionService>()),
     ),
     Provider<ClassifyVoiceUseCase>(
       create: (context) =>
@@ -37,7 +47,9 @@ class RangeFlowModule extends ScopeModule {
       create: (context) => RangeFlowBloc(
         loadRange: context.read<LoadVocalRangeUseCase>(),
         saveRange: context.read<SaveVocalRangeUseCase>(),
-        detectStableNote: context.read<DetectStableNoteUseCase>(),
+        prepareDetection: context.read<PreparePitchDetectionUseCase>(),
+        observeDetectedPitch: context.read<ObserveDetectedPitchUseCase>(),
+        stopDetection: context.read<StopPitchDetectionUseCase>(),
         classifyVoice: context.read<ClassifyVoiceUseCase>(),
       )..add(const RangeFlowStarted()),
     ),

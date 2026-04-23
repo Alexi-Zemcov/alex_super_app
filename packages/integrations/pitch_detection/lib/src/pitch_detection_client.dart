@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
+
 import 'models/microphone_permission_status.dart';
 import 'models/pitch_detection_config.dart';
 import 'models/pitch_detection_exception.dart';
@@ -17,14 +19,18 @@ class PitchDetectionClient {
   bool _sessionActive = false;
   Future<void> Function()? _stopSession;
 
-  Future<MicrophonePermissionStatus> requestMicrophonePermission() {
-    return _platform.requestMicrophonePermission();
+  Future<MicrophonePermissionStatus> requestMicrophonePermission() async {
+    _log('requestMicrophonePermission');
+    final status = await _platform.requestMicrophonePermission();
+    _log('requestMicrophonePermission -> $status');
+    return status;
   }
 
   Stream<PitchFrame> frames({
     PitchDetectionConfig config = const PitchDetectionConfig(),
   }) {
     if (_sessionActive) {
+      _log('frames rejected: session already active');
       return Stream<PitchFrame>.error(
         PitchDetectionException.alreadyListening(),
       );
@@ -39,6 +45,7 @@ class PitchDetectionClient {
           return;
         }
         cleanedUp = true;
+        _log('frames cleanup');
         _stopSession = null;
         _sessionActive = false;
         await rawSubscription?.cancel();
@@ -47,16 +54,28 @@ class PitchDetectionClient {
 
       _sessionActive = true;
       _stopSession = cleanup;
+      _log('frames start config=${config.toMap()}');
+      var frameLogCount = 0;
 
       unawaited(() async {
         try {
           rawSubscription = _platform.pitchFrames().listen(
-            controller.add,
+            (frame) {
+              if (frameLogCount < 5 || frameLogCount % 25 == 0) {
+                _log(
+                  'frame[$frameLogCount] pitched=${frame.isPitched} freq=${frame.frequencyHz.toStringAsFixed(2)} amp=${frame.amplitude.toStringAsFixed(3)} conf=${frame.confidence.toStringAsFixed(3)}',
+                );
+              }
+              frameLogCount += 1;
+              controller.add(frame);
+            },
             onError: controller.addError,
             onDone: controller.close,
           );
           await _platform.startDetection(config);
+          _log('platform.startDetection completed');
         } catch (error, stackTrace) {
+          _log('frames startup failed: $error');
           await cleanup();
           controller.addError(error, stackTrace);
           await controller.close();
@@ -71,15 +90,20 @@ class PitchDetectionClient {
     PitchDetectionConfig config = const PitchDetectionConfig(),
   }) async {
     if (_sessionActive) {
+      _log('detectStablePitch rejected: session already active');
       throw PitchDetectionException.alreadyListening();
     }
 
+    _log('detectStablePitch start config=${config.toMap()}');
     final completer = Completer<StablePitchResult>();
     final window = <PitchFrame>[];
     late final StreamSubscription<PitchFrame> subscription;
     Timer? timeoutTimer;
 
     Future<void> finishWithResult(StablePitchResult result) async {
+      _log(
+        'detectStablePitch success frequency=${result.frequencyHz.toStringAsFixed(2)} amp=${result.amplitude.toStringAsFixed(3)} conf=${result.confidence.toStringAsFixed(3)} frames=${result.frameCount}',
+      );
       timeoutTimer?.cancel();
       await subscription.cancel();
       if (!completer.isCompleted) {
@@ -88,6 +112,7 @@ class PitchDetectionClient {
     }
 
     Future<void> finishWithError(Object error, [StackTrace? stackTrace]) async {
+      _log('detectStablePitch error: $error');
       timeoutTimer?.cancel();
       await subscription.cancel();
       if (!completer.isCompleted) {
@@ -96,6 +121,9 @@ class PitchDetectionClient {
     }
 
     timeoutTimer = Timer(config.timeout, () {
+      _log(
+        'detectStablePitch timeout after ${config.timeout.inMilliseconds}ms',
+      );
       unawaited(finishWithError(PitchDetectionException.noStablePitch()));
     });
 
@@ -135,6 +163,9 @@ class PitchDetectionClient {
         }
 
         final stableFrames = stableEntry.value;
+        _log(
+          'stable window hit midi=${stableEntry.key} matches=${stableFrames.length} window=${window.length}',
+        );
         final frequencyHz =
             stableFrames
                 .map((frame) => frame.frequencyHz)
@@ -163,10 +194,12 @@ class PitchDetectionClient {
         );
       },
       onError: (error, stackTrace) {
+        _log('frames stream error while detecting: $error');
         unawaited(finishWithError(error, stackTrace));
       },
       onDone: () {
         if (!completer.isCompleted) {
+          _log('frames stream closed before stable pitch');
           unawaited(finishWithError(PitchDetectionException.noStablePitch()));
         }
       },
@@ -180,6 +213,7 @@ class PitchDetectionClient {
   }
 
   Future<void> stop() async {
+    _log('stop requested');
     final stopSession = _stopSession;
     if (stopSession != null) {
       await stopSession();
@@ -193,5 +227,9 @@ class PitchDetectionClient {
       return 0;
     }
     return (69 + 12 * (math.log(frequencyHz / 440) / math.ln2)).round();
+  }
+
+  void _log(String message) {
+    debugPrint('[PitchDetection][Client] $message');
   }
 }
