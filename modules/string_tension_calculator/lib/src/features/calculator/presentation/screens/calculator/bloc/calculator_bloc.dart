@@ -2,10 +2,11 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_instruments/my_instruments.dart';
-import 'package:string_tension_calculator/src/features/calculator/data/mappers/saved_instrument_mapper.dart';
 import 'package:string_tension_calculator/src/features/calculator/domain/entities/entities.dart';
 import 'package:string_tension_calculator/src/features/calculator/domain/repositories/calculator_repository.dart';
 import 'package:string_tension_calculator/src/features/calculator/domain/services/calculator_engine.dart';
+import 'package:string_tension_calculator/src/features/calculator/domain/usecases/load_selected_saved_instrument.dart';
+import 'package:string_tension_calculator/src/features/calculator/domain/usecases/save_calculator_instrument.dart';
 import 'package:string_tension_calculator/src/features/calculator/presentation/screens/calculator/bloc/calculator_event.dart';
 import 'package:string_tension_calculator/src/features/calculator/presentation/screens/calculator/bloc/calculator_state.dart';
 import 'package:string_tension_calculator/src/features/calculator/presentation/screens/calculator/models/calculator_mode.dart';
@@ -16,11 +17,13 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
     required CalculatorRepository repository,
     required CalculatorEngine engine,
     required MyInstrumentsRepository myInstrumentsRepository,
-    required SavedInstrumentMapper savedInstrumentMapper,
+    required LoadSelectedSavedInstrument loadSelectedSavedInstrument,
+    required SaveCalculatorInstrument saveCalculatorInstrument,
   }) : _repository = repository,
        _engine = engine,
        _myInstrumentsRepository = myInstrumentsRepository,
-       _savedInstrumentMapper = savedInstrumentMapper,
+       _loadSelectedSavedInstrument = loadSelectedSavedInstrument,
+       _saveCalculatorInstrument = saveCalculatorInstrument,
        super(const CalculatorInitial()) {
     on<CalculatorStarted>(_onStarted);
     on<CalculatorModeSelected>(_onModeSelected);
@@ -43,7 +46,8 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
   final CalculatorRepository _repository;
   final CalculatorEngine _engine;
   final MyInstrumentsRepository _myInstrumentsRepository;
-  final SavedInstrumentMapper _savedInstrumentMapper;
+  final LoadSelectedSavedInstrument _loadSelectedSavedInstrument;
+  final SaveCalculatorInstrument _saveCalculatorInstrument;
   StreamSubscription<List<SavedInstrumentRecord>>? _myInstrumentsSubscription;
 
   void _onStarted(CalculatorStarted event, Emitter<CalculatorState> emit) {
@@ -168,10 +172,11 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
     Emitter<CalculatorState> emit,
   ) {
     final currentState = _requireReadyState();
-    final record = currentState.savedInstruments.where(
-      (item) => item.id == event.savedInstrumentId,
+    final instrument = _loadSelectedSavedInstrument(
+      savedInstruments: currentState.savedInstruments,
+      selectedSavedInstrumentId: event.savedInstrumentId,
     );
-    if (record.isEmpty) {
+    if (instrument == null) {
       return;
     }
 
@@ -180,7 +185,7 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
         selectedMode: currentState.selectedMode,
         guitarDraft: currentState.guitarDraft,
         bassDraft: currentState.bassDraft,
-        myGuitarsDraft: _savedInstrumentMapper.toInstrument(record.first),
+        myGuitarsDraft: instrument,
         savedInstruments: currentState.savedInstruments,
         selectedSavedInstrumentId: event.savedInstrumentId,
         isHelpVisible: currentState.isHelpVisible,
@@ -327,32 +332,15 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
       return;
     }
 
-    final normalizedInstrument = activeInstrument.copyWith(
-      type: _savedInstrumentMapper.instrumentTypeFromSavedKind(
-        event.submission.kind,
-      ),
+    final savedRecord = await _saveCalculatorInstrument(
+      mode: event.submission.action == SaveInstrumentAction.update
+          ? SaveCalculatorInstrumentMode.update
+          : SaveCalculatorInstrumentMode.create,
+      instrument: activeInstrument,
+      name: event.submission.name,
+      kind: event.submission.kind,
+      existingRecordId: currentState.selectedSavedInstrumentId,
     );
-
-    final savedRecord = await switch (event.submission.action) {
-      SaveInstrumentAction.create ||
-      SaveInstrumentAction.clone => _myInstrumentsRepository.createRecord(
-        name: event.submission.name,
-        kind: event.submission.kind,
-        stringSetId: _savedInstrumentMapper.savedStringSetIdFromInstrument(
-          normalizedInstrument.stringSetId,
-        ),
-        strings: _savedInstrumentMapper.toSavedStrings(normalizedInstrument),
-      ),
-      SaveInstrumentAction.update => _myInstrumentsRepository.updateRecord(
-        id: currentState.selectedSavedInstrumentId!,
-        name: event.submission.name,
-        kind: event.submission.kind,
-        stringSetId: _savedInstrumentMapper.savedStringSetIdFromInstrument(
-          normalizedInstrument.stringSetId,
-        ),
-        strings: _savedInstrumentMapper.toSavedStrings(normalizedInstrument),
-      ),
-    };
 
     final savedInstruments = _myInstrumentsRepository.getRecords();
     emit(
@@ -360,7 +348,10 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
         selectedMode: currentState.selectedMode,
         guitarDraft: currentState.guitarDraft,
         bassDraft: currentState.bassDraft,
-        myGuitarsDraft: _savedInstrumentMapper.toInstrument(savedRecord),
+        myGuitarsDraft: _loadSelectedSavedInstrument(
+          savedInstruments: [savedRecord],
+          selectedSavedInstrumentId: savedRecord.id,
+        ),
         savedInstruments: savedInstruments,
         selectedSavedInstrumentId: savedRecord.id,
         isHelpVisible: currentState.isHelpVisible,
@@ -407,17 +398,10 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
     List<SavedInstrumentRecord> savedInstruments,
     String? selectedSavedInstrumentId,
   ) {
-    if (selectedSavedInstrumentId == null) {
-      return null;
-    }
-
-    for (final record in savedInstruments) {
-      if (record.id == selectedSavedInstrumentId) {
-        return _savedInstrumentMapper.toInstrument(record);
-      }
-    }
-
-    return null;
+    return _loadSelectedSavedInstrument(
+      savedInstruments: savedInstruments,
+      selectedSavedInstrumentId: selectedSavedInstrumentId,
+    );
   }
 
   void _emitWithUpdatedActiveInstrument(

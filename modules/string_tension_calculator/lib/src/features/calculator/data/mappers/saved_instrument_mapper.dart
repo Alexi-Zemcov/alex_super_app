@@ -1,8 +1,9 @@
 import 'package:my_instruments/my_instruments.dart';
 import 'package:string_tension_calculator/src/features/calculator/domain/entities/entities.dart';
 import 'package:string_tension_calculator/src/features/calculator/domain/repositories/calculator_repository.dart';
+import 'package:string_tension_calculator/src/features/calculator/domain/services/saved_instrument_converter.dart';
 
-class SavedInstrumentMapper {
+class SavedInstrumentMapper implements SavedInstrumentConverter {
   const SavedInstrumentMapper({required CalculatorRepository repository})
     : _repository = repository;
 
@@ -15,6 +16,7 @@ class SavedInstrumentMapper {
     };
   }
 
+  @override
   SavedStringSetId savedStringSetIdFromInstrument(StringSetId stringSetId) {
     return switch (stringSetId) {
       StringSetId.dxl => SavedStringSetId.dxl,
@@ -22,6 +24,7 @@ class SavedInstrumentMapper {
     };
   }
 
+  @override
   Instrument toInstrument(SavedInstrumentRecord record) {
     return Instrument(
       type: instrumentTypeFromSavedKind(record.kind),
@@ -38,6 +41,7 @@ class SavedInstrumentMapper {
     );
   }
 
+  @override
   List<SavedInstrumentString> toSavedStrings(Instrument instrument) {
     return instrument.strings
         .map((string) {
@@ -56,6 +60,7 @@ class SavedInstrumentMapper {
         .toList(growable: false);
   }
 
+  @override
   InstrumentType instrumentTypeFromSavedKind(SavedInstrumentKind kind) {
     return switch (kind) {
       SavedInstrumentKind.guitar => InstrumentType.guitar,

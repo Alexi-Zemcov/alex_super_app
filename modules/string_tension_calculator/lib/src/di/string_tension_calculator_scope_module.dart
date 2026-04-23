@@ -7,6 +7,7 @@ import 'package:string_tension_calculator/src/features/calculator/data/mappers/s
 import 'package:string_tension_calculator/src/features/calculator/data/repositories/local_calculator_repository.dart';
 import 'package:string_tension_calculator/src/features/calculator/domain/repositories/calculator_repository.dart';
 import 'package:string_tension_calculator/src/features/calculator/domain/services/calculator_engine.dart';
+import 'package:string_tension_calculator/src/features/calculator/domain/services/saved_instrument_converter.dart';
 
 class StringTensionCalculatorScopeModule extends ScopeModule {
   const StringTensionCalculatorScopeModule();
@@ -25,7 +26,7 @@ class StringTensionCalculatorScopeModule extends ScopeModule {
       create: (context) =>
           CalculatorEngine(repository: context.read<CalculatorRepository>()),
     ),
-    Provider<SavedInstrumentMapper>(
+    Provider<SavedInstrumentConverter>(
       create: (context) => SavedInstrumentMapper(
         repository: context.read<CalculatorRepository>(),
       ),

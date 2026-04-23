@@ -6,6 +6,8 @@ import 'package:string_tension_calculator/src/features/calculator/data/mappers/s
 import 'package:string_tension_calculator/src/features/calculator/data/repositories/local_calculator_repository.dart';
 import 'package:string_tension_calculator/src/features/calculator/domain/entities/entities.dart';
 import 'package:string_tension_calculator/src/features/calculator/domain/services/calculator_engine.dart';
+import 'package:string_tension_calculator/src/features/calculator/domain/usecases/load_selected_saved_instrument.dart';
+import 'package:string_tension_calculator/src/features/calculator/domain/usecases/save_calculator_instrument.dart';
 import 'package:string_tension_calculator/src/features/calculator/presentation/screens/calculator/bloc/calculator_bloc.dart';
 import 'package:string_tension_calculator/src/features/calculator/presentation/screens/calculator/bloc/calculator_event.dart';
 import 'package:string_tension_calculator/src/features/calculator/presentation/screens/calculator/bloc/calculator_state.dart';
@@ -18,16 +20,30 @@ void main() {
   const dataSource = CalculatorCatalogDataSource();
   const repository = LocalCalculatorRepository(dataSource: dataSource);
   const engine = CalculatorEngine(repository: repository);
-  const mapper = SavedInstrumentMapper(repository: repository);
+  const converter = SavedInstrumentMapper(repository: repository);
+
+  CalculatorBloc buildBloc({
+    FakeMyInstrumentsRepository? myInstrumentsRepository,
+  }) {
+    final instrumentsRepository =
+        myInstrumentsRepository ?? FakeMyInstrumentsRepository();
+    return CalculatorBloc(
+      repository: repository,
+      engine: engine,
+      myInstrumentsRepository: instrumentsRepository,
+      loadSelectedSavedInstrument: const LoadSelectedSavedInstrument(
+        converter: converter,
+      ),
+      saveCalculatorInstrument: SaveCalculatorInstrument(
+        repository: instrumentsRepository,
+        converter: converter,
+      ),
+    );
+  }
 
   blocTest<CalculatorBloc, CalculatorState>(
     'starts with manual guitar mode and empty saved instruments',
-    build: () => CalculatorBloc(
-      repository: repository,
-      engine: engine,
-      myInstrumentsRepository: FakeMyInstrumentsRepository(),
-      savedInstrumentMapper: mapper,
-    ),
+    build: buildBloc,
     act: (bloc) => bloc.add(const CalculatorStarted()),
     expect: () => [
       isA<CalculatorReady>()
@@ -52,12 +68,7 @@ void main() {
 
   blocTest<CalculatorBloc, CalculatorState>(
     'switches to My Guitars empty state when repository has no records',
-    build: () => CalculatorBloc(
-      repository: repository,
-      engine: engine,
-      myInstrumentsRepository: FakeMyInstrumentsRepository(),
-      savedInstrumentMapper: mapper,
-    ),
+    build: buildBloc,
     act: (bloc) {
       bloc.add(const CalculatorStarted());
       bloc.add(const CalculatorModeSelected(CalculatorMode.myGuitars));
@@ -76,9 +87,7 @@ void main() {
 
   blocTest<CalculatorBloc, CalculatorState>(
     'selects latest updated saved instrument when entering My Guitars',
-    build: () => CalculatorBloc(
-      repository: repository,
-      engine: engine,
+    build: () => buildBloc(
       myInstrumentsRepository: FakeMyInstrumentsRepository(
         initialRecords: [
           buildSavedInstrumentRecord(
@@ -97,7 +106,6 @@ void main() {
           ),
         ],
       ),
-      savedInstrumentMapper: mapper,
     ),
     act: (bloc) {
       bloc.add(const CalculatorStarted());
@@ -130,9 +138,7 @@ void main() {
 
   blocTest<CalculatorBloc, CalculatorState>(
     'redirects saved bass instrument to bass editing mode',
-    build: () => CalculatorBloc(
-      repository: repository,
-      engine: engine,
+    build: () => buildBloc(
       myInstrumentsRepository: FakeMyInstrumentsRepository(
         initialRecords: [
           buildSavedInstrumentRecord(
@@ -143,7 +149,6 @@ void main() {
           ),
         ],
       ),
-      savedInstrumentMapper: mapper,
     ),
     act: (bloc) {
       bloc.add(const CalculatorStarted());
@@ -180,13 +185,10 @@ void main() {
 
   blocTest<CalculatorBloc, CalculatorState>(
     'creates saved instrument from manual mode without leaving guitar mode',
-    build: () => CalculatorBloc(
-      repository: repository,
-      engine: engine,
+    build: () => buildBloc(
       myInstrumentsRepository: FakeMyInstrumentsRepository(
         now: () => DateTime.parse('2026-04-19T10:00:00.000Z'),
       ),
-      savedInstrumentMapper: mapper,
     ),
     act: (bloc) {
       bloc.add(const CalculatorStarted());
